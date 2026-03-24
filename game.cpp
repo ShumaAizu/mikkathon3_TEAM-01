@@ -134,8 +134,6 @@ void DrawGame(void)
 	// プレイヤーの描画
 	DrawPlayer();
 
-	DrawPlayerPreview();
-
 	// オブジェクトの描画
 	DrawObject();
 }

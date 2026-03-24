@@ -24,15 +24,15 @@
 //==============================================================
 // プレイヤーパラメータ
 #define PLAYER_PARAMETERS	"data\\INFO\\status\\playerplam.bin"
-#define MOVE_PLAYER			(0.1f)			// 移動速度
+#define MOVE_FORCE			(0.1f)			// 移動速度
+#define JUMP_FORCE			(0.3f)			// 上昇速度
 #define MAX_SPEED			(5.0f)			// 最大速度
-#define PLAYER_JUMPFORCE	(3.5f)			// ジャンプ力
 #define REV_PLAYER			(0.1f)			// 回転速度
 #define BULLET_SIZE			(3.0f)			// 弾の大きさ
 #define BULLET_SPPED		(3.0f)			// 弾の速度
 #define BULLET_LIFE			(50)			// 弾の寿命
 #define PLAYER_SHADOWSIZE	(15.0f)			// プレイヤーの影の大きさ
-#define POSMOVE_FACTOR		(0.1f)			// 移動慣性の補正係数
+#define POSMOVE_FACTOR		(0.05f)			// 移動慣性の補正係数
 #define ROTMOVE_FACTOR		(0.1f)			// 回転慣性の補正係数
 
 //==============================================================
@@ -89,6 +89,7 @@ typedef struct
 typedef struct
 {
 	float fSpeedforce,
+		fJumpforce,
 		fInertia,
 		fMaxSpeed;
 }PlayerPlam;

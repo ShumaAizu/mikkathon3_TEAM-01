@@ -1,335 +1,291 @@
- //=============================================================================
+//==================================================================================================================================
 //
-//	カメラ処理 [camera.cpp]
-//	Author : SHUMA AIZU
+//			カメラ処理 [camera.cpp]
+//			Author : ENDO HIDETO
 // 
-//=============================================================================
-
+//==================================================================================================================================
+//**************************************************************
+// インクルード
 #include "camera.h"
 #include "input.h"
-#include "debugproc.h"
 
-//*****************************************************************************
-// マクロ定義
-//*****************************************************************************
-#define CAMERA_MOVE					(0.0075f)	// カメラの移動速度
-#define CAMERAROT_RESTRICTION		(0.125f)	// カメラの角度制限
+#include "player.h"
 
-//*****************************************************************************
-// グローバル変数
-//*****************************************************************************
-Camera g_acamera[MAX_CAMERA];	// カメラの情報
-int g_nNumCamera = 0;			// カメラの数
+//**************************************************************
+// グローバル変数宣言
+Camera g_aCamera[MAX_CAMERA];
+bool g_bCameraMove = false;
 
-// カメラの情報格納用
-CameraInfo g_acameraInfo[] =
-{
-	{INIT_1PCAMERAPOSV, INIT_1PCAMERAPOSR, INIT_VECU, INIT_1PCAMERAROT, INIT_1PVEIWPORT },
-	{INIT_2PCAMERAPOSV, INIT_2PCAMERAPOSR, INIT_VECU, INIT_2PCAMERAROT, INIT_2PVEIWPORT },
-	{INIT_1PCAMERAPOSV, INIT_1PCAMERAPOSR, INIT_VECU, INIT_1PCAMERAROT, INIT_3PVEIWPORT },
-	{INIT_1PCAMERAPOSV, INIT_1PCAMERAPOSR, INIT_VECU, INIT_1PCAMERAROT, INIT_4PVEIWPORT },
-};
+//**************************************************************
+// プロトタイプ宣言
+void CameraFollow(P_CAMERA pCamera);		// プレイヤーに追従移動
+void CameraMove(P_CAMERA pCamera);			// カメラ移動処理
+void CameraRotation(P_CAMERA pCamera);		// カメラ回転処理
 
-//*****************************************************************************
-// 関数ポインタ配列の定義
-//*****************************************************************************
-void (*UpdateModeCamera[MODE_MAX])(void) =
-{
-	UpdateTitleCamera,
-	UpdateGameCamera,
-	UpdateResultCamera,
-};
-
-//=============================================================================
-//	カメラの初期化処理
-//=============================================================================
+//=========================================================================================
+// カメラ初期化
+//=========================================================================================
 void InitCamera(void)
 {
-	Camera* pCamera = &g_acamera[0];
-	CameraInfo* pCameraInfo = &g_acameraInfo[0];
+	//**************************************************************
+	// 変数宣言
+	P_CAMERA pCamera = GetCamera();
 
-	// 初期化
-	memset(pCamera, NULL, sizeof(Camera) * MAX_CAMERA);
-
-	for (int nCntCamera = 0; nCntCamera < MAX_CAMERA; nCntCamera++, pCamera++, pCameraInfo++)
-	{// カメラに予め用意した初期値を代入
-		// カメラの位置設定
-		pCamera->posV = pCameraInfo->posV;
-		pCamera->posR = pCameraInfo->posR;
-		pCamera->vecU = pCameraInfo->vecU;
-		pCamera->rot = pCameraInfo->rot;
-		pCamera->fSpeed = INIT_CAMERASPEED;
-		pCamera->fRadiusVertical = INIT_RADIUS;
-		pCamera->fRadiusHorizonttal = INIT_RADIUS;
-
-		pCamera->viewport = DEFAULT_VEIWPORT;		// ビューポート設定
-
-		// 目的位置
-		pCamera->posVDest = pCameraInfo->posV;
-		pCamera->posRDest = pCameraInfo->posR;
-
-		// 距離を離す
-		pCamera->posVDest.z = pCamera->posRDest.z + cosf(pCamera->rot.y) * CAMERAPOSR_DIS;
-		pCamera->posVDest.x = pCamera->posRDest.x + sinf(pCamera->rot.y) * CAMERAPOSR_DIS;
+	//**************************************************************
+	// 各値の初期化
+	for (int nCntCamera = 0; nCntCamera < MAX_CAMERA; nCntCamera++, pCamera++)
+	{
+		pCamera->posV = CAMERA_V_DEFPOS;										// 視点
+		pCamera->posR = CAMERA_R_DEFPOS;										// 注視点
+		pCamera->posRDest = CAMERA_R_DEFPOS;									// 目的の注視点
+		pCamera->rot = D3DXVECTOR3(D3DX_PI * 0.2f, D3DX_PI * 0.5f, 0.0f);		// カメラの角度
+		pCamera->rotDest = D3DXVECTOR3(D3DX_PI * 0.2f, D3DX_PI * 0.5f, 0.0f);	// カメラの角度
+		pCamera->vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);							// 上方向ベクトル
+		pCamera->fDist = CAMERA_DISTANS;										// 視点と注視点の距離
+		pCamera->fViewMin = VIEW_MINDEPTH;										// 最短描画距離
+		pCamera->fViewMax = VIEW_MAXDEPTH;										// 最長描画距離
+		pCamera->fViewRadian = VIEW_RADIAN;										// 視野角
+		pCamera->viewport.X = 0.0f;												// 画面左上 X 座標
+		pCamera->viewport.Y = 0.0f;												// 画面左上 Y 座標
+		pCamera->viewport.Width = SCREEN_WIDTH;									// 表示画面の横幅
+		pCamera->viewport.Height = SCREEN_HEIGHT;								// 表示画面の高さ
+		pCamera->viewport.MinZ = 0.0f;
+		pCamera->viewport.MaxZ = 1.0f;
+		pCamera->bUse = true;
 	}
-
-	g_nNumCamera = INIT_NUMCAMERA;
 }
 
-//=============================================================================
-//	カメラの終了処理
-//=============================================================================
+//=========================================================================================
+// カメラ終了
+//=========================================================================================
 void UninitCamera(void)
 {
 
 }
 
-//=============================================================================
-//	カメラの更新処理
-//=============================================================================
+//=========================================================================================
+// カメラ更新
+//=========================================================================================
 void UpdateCamera(MODE mode)
 {
-	Camera* pCamera = &g_acamera[0];
+	//**************************************************************
+	// 変数宣言
+	P_CAMERA pCamera = GetCamera();
 
-	if (GetKeyboardPress(DIK_W) == true)
+	// 追従
+	CameraFollow(pCamera);
+
+	if (g_bCameraMove)
 	{
-		pCamera->posRDest.x += sinf(pCamera->rot.y) * -5.0f;
-		pCamera->posRDest.z += cosf(pCamera->rot.y) * -5.0f;
+		// 移動
+		CameraMove(pCamera);
 	}
+		// 回転
+		CameraRotation(pCamera);
 
-	if (GetKeyboardPress(DIK_A) == true)
-	{
-		pCamera->posRDest.x += sinf(pCamera->rot.y + (D3DX_PI * -0.5f)) * -5.0f;
-		pCamera->posRDest.z += cosf(pCamera->rot.y + (D3DX_PI * -0.5f)) * -5.0f;
-	}
+	pCamera->posV.x = pCamera->posR.x - cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+	pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
+	pCamera->posV.z = pCamera->posR.z - sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
 
-	if (GetKeyboardPress(DIK_S) == true)
-	{
-		pCamera->posRDest.x += sinf(pCamera->rot.y + (D3DX_PI)) * -5.0f;
-		pCamera->posRDest.z += cosf(pCamera->rot.y + (D3DX_PI)) * -5.0f;
-	}
-
-	if (GetKeyboardPress(DIK_D) == true)
-	{
-		pCamera->posRDest.x += sinf(pCamera->rot.y + (D3DX_PI * 0.5f)) * -5.0f;
-		pCamera->posRDest.z += cosf(pCamera->rot.y + (D3DX_PI * 0.5f)) * -5.0f;
-	}
-
-	if (GetKeyboardPress(DIK_Q) == true)
-	{
-		pCamera->posRDest.y += 1.0f;
-	}
-
-	if (GetKeyboardPress(DIK_E) == true)
-	{
-		pCamera->posRDest.y += -1.0f;
-	}
-
-	if (GetKeyboardPress(DIK_I) == true)
-	{
-		pCamera->posVDest.y += 1.0f;
-	}
-
-	if (GetKeyboardPress(DIK_K) == true)
-	{
-		pCamera->posVDest.y += -1.0f;
-	}
-
-	if (GetKeyboardPress(DIK_Z) == true)
-	{
-		pCamera->rot.y += CAMERA_MOVE;
-	}
-
-	if (GetKeyboardPress(DIK_C) == true)
-	{
-		pCamera->rot.y += -CAMERA_MOVE;
-	}
-
-	// 目的視点を目的注視点から離す
-	pCamera->posVDest.x = pCamera->posRDest.x + sinf(pCamera->rot.y) * pCamera->fRadiusHorizonttal;
-	pCamera->posVDest.y = pCamera->posRDest.y + sinf(pCamera->rot.x) * pCamera->fRadiusVertical;
-	pCamera->posVDest.z = pCamera->posRDest.z + cosf(pCamera->rot.y) * pCamera->fRadiusHorizonttal;
-
-	// 注視点を目的注視点に移動
-	pCamera->posR.x += (pCamera->posRDest.x - pCamera->posR.x) * CAMERA_INERTIA;
-	pCamera->posR.y += (pCamera->posRDest.y - pCamera->posR.y) * CAMERA_INERTIA;
-	pCamera->posR.z += (pCamera->posRDest.z - pCamera->posR.z) * CAMERA_INERTIA;
-
-	// 視点を目的視点に移動
-	pCamera->posV.x += (pCamera->posVDest.x - pCamera->posV.x) * CAMERA_INERTIA;
-	pCamera->posV.y += (pCamera->posVDest.y - pCamera->posV.y) * CAMERA_INERTIA;
-	pCamera->posV.z += (pCamera->posVDest.z - pCamera->posV.z) * CAMERA_INERTIA;
-
-	PrintDebugProc("視点 = { %.2f %.2f %.2f }\n", pCamera->posV.x, pCamera->posV.y, pCamera->posV.z);
-	PrintDebugProc("注視点 = { %.2f %.2f %.2f }\n", pCamera->posR.x, pCamera->posR.y, pCamera->posR.z);
-	PrintDebugProc("カメラの向き = { %.2f %.2f %.2f }\n", pCamera->rot.x, pCamera->rot.y, pCamera->rot.z);
-
-#if 0
-	// モードに合わせたカメラ更新処理
-	if (UpdateModeCamera[mode] != NULL)
-	{// 関数が存在したら
-		UpdateModeCamera[mode]();
-	}
-#endif
-
+	if (GetKeyboardTrigger(DIK_F1))
+		g_bCameraMove = g_bCameraMove ^ 1;
 }
 
-//=============================================================================
-//	カメラの更新処理 (タイトル)
-//=============================================================================
-void UpdateTitleCamera(void)
+//==============================================================
+//	プレイヤーに追従
+void CameraFollow(P_CAMERA pCamera)
 {
+	//**************************************************************
+	// 変数宣言
+	Player* pPlayer = GetPlayer();				// プレイヤー情報
+	static float fPlayerMoveRot = atan2f(-pPlayer->move.x, -pPlayer->move.z);
 
+	//**************************************************************
+	// プレイヤーに追従
+	pCamera->posRDest.x = pPlayer->pos.x;
+	pCamera->posRDest.y = pPlayer->pos.y;
+	pCamera->posRDest.z = pPlayer->pos.z;
+
+	//**************************************************************
+	// カメラの位置を補正
+	pCamera->posR.x += (pCamera->posRDest.x - pCamera->posR.x) * CAMERA_FOLLOW_FACTOR;
+	pCamera->posR.y += (pCamera->posRDest.y - pCamera->posR.y) * CAMERA_FOLLOW_FACTOR;
+	pCamera->posR.z += (pCamera->posRDest.z - pCamera->posR.z) * CAMERA_FOLLOW_FACTOR;
 }
 
-//=============================================================================
-//	カメラの更新処理 (ゲーム)
-//=============================================================================
-void UpdateGameCamera(void)
+//==============================================================
+// 移動
+void CameraMove(P_CAMERA pCamera)
 {
-
+	vec3 stickLeft = vec3_ZORO;
+	if (GetJoypadStickLeft(&stickLeft.x, &stickLeft.y))
+	{
+		//**************************************************************
+		//移動
+		pCamera->posR.z += sinf(pCamera->rot.y) * stickLeft.x;
+		pCamera->posR.x += cosf(pCamera->rot.y) * stickLeft.y;
+	}
 }
 
-//=============================================================================
-//	カメラの更新処理 (リザルト)
-//=============================================================================
-void UpdateResultCamera(void)
+//==============================================================
+// 回転
+void CameraRotation(P_CAMERA pCamera)
 {
+	//**************************************************************
+	// 変数宣言
+	bool bUse = false;
+	vec3 stickRight;
 
+	//**************************************************************
+	// 注視点のまわりを回転
+	// コントローラー操作
+	if (GetJoypadStickRight(&stickRight.x, &stickRight.y))
+	{
+		pCamera->rot.y += stickRight.x * REV_PLAYER;
+		bUse = true;
+	}
+
+	//**************************************************************
+	// -πからπまでにする	
+	if (pCamera->rot.x < -D3DX_PI)
+		pCamera->rot.x = D3DX_PI;
+	else if (D3DX_PI < pCamera->rot.x)
+		pCamera->rot.x = -D3DX_PI;
+
+	if (pCamera->rot.y < -D3DX_PI)
+		pCamera->rot.y = D3DX_PI;
+	else if (D3DX_PI < pCamera->rot.y)
+		pCamera->rot.y = -D3DX_PI;
+
+	if (pCamera->rot.z < -D3DX_PI)
+		pCamera->rot.z = D3DX_PI;
+	else if (D3DX_PI < pCamera->rot.z)
+		pCamera->rot.z = -D3DX_PI;
 }
 
-//=============================================================================
-//	カメラの設定処理 [カメラの番号]
-//=============================================================================
-void SetCamera(int nIdx)
+//=========================================================================================
+// カメラ設置
+//=========================================================================================
+void SetCamera(void)
 {
-	Camera* pCamera = &g_acamera[nIdx];		// アドレス
+	//**************************************************************
+	// 変数宣言
+	LPDIRECT3DDEVICE9	pDevice = GetDevice();			// デバイスへのポインタ
+	P_CAMERA			pCamera = &g_aCamera[0];		// カメラポインタ
 
-	// デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();
-
+	//**************************************************************
 	// ビューポートの設定
 	pDevice->SetViewport(&pCamera->viewport);
 
-	// プロジェクションマトリックスを初期化
+	//**************************************************************
+	// プロジェクションマトリックスの初期化
 	D3DXMatrixIdentity(&pCamera->mtxProjection);
 
 	// プロジェクションマトリックスを作成
 	D3DXMatrixPerspectiveFovLH(&pCamera->mtxProjection,
-							D3DXToRadian(45.0f),
-							(float)pCamera->viewport.Width / (float)pCamera->viewport.Height,
-							10.0f,
-							15000.0f);
+		D3DXToRadian(pCamera->fViewRadian),					// 視野角
+		(float)pCamera->viewport.Width / (float)pCamera->viewport.Height,	// アスペクト比
+		pCamera->fViewMin,								// 最短描画距離
+		pCamera->fViewMax);								// 最大描画距離
 
-	// プロジェクションマトリックスの設定
+// プロジェクションマトリックスを設定
 	pDevice->SetTransform(D3DTS_PROJECTION, &pCamera->mtxProjection);
 
-	// ビューマトリックスを初期化
+	//**************************************************************
+	// ビューマトリックスの初期化
 	D3DXMatrixIdentity(&pCamera->mtxView);
 
-	// ビューマトリックスを作成
-	D3DXMatrixLookAtLH(&pCamera->mtxView,
-					   &pCamera->posV,
-					   &pCamera->posR,
-					   &pCamera->vecU);
-						
+	// ビューマトリックスの作成
+	D3DXMatrixLookAtLH(&pCamera->mtxView, &pCamera->posV, &pCamera->posR, &pCamera->vecU);
+
 	// ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &pCamera->mtxView);
 }
 
-//=============================================================================
-//	カメラの取得処理
-//=============================================================================
-Camera *GetCamera(void)
+//=========================================================================================
+// カメラ設置
+//=========================================================================================
+void SetUICamera(vec3 viewTopLeft, D3DXVECTOR2 size)
 {
-	return &g_acamera[0];
+	LPDIRECT3DDEVICE9	pDevice = GetDevice();		// デバイスへのポインタ
+	D3DXMATRIX mtxProjection, mtxView;
+	D3DVIEWPORT9 viewport;
+	viewport.X = viewTopLeft.x;
+	viewport.Y = viewTopLeft.y;
+	viewport.Width = size.x;
+	viewport.Height = size.y;
+	viewport.MinZ = 0.0f;
+	viewport.MaxZ = 1.0f;
+
+	vec3 vecU = vec3(0.0f, 1.0f, 0.0f),
+		posV = UICAMERA_POSV,
+		posR = UICAMERA_POSR;
+
+	float fViewRadian = 45.0f,
+		fViewMin = 10.0f,
+		fViewMax = 1000.0f;
+
+	//**************************************************************
+	// ビューポートの設定
+	pDevice->SetViewport(&viewport);
+
+	//**************************************************************
+	// プロジェクションマトリックスの初期化
+	D3DXMatrixIdentity(&mtxProjection);
+
+	// プロジェクションマトリックスを作成
+	D3DXMatrixPerspectiveFovLH(&mtxProjection,
+		D3DXToRadian(fViewRadian),						// 視野角
+		(float)viewport.Width / (float)viewport.Height,	// アスペクト比
+		fViewMin,										// 最短描画距離
+		fViewMax);										// 最大描画距離
+
+	// プロジェクションマトリックスを設定
+	pDevice->SetTransform(D3DTS_PROJECTION, &mtxProjection);
+
+	//**************************************************************
+	// ビューマトリックスの初期化
+	D3DXMatrixIdentity(&mtxView);
+
+	// ビューマトリックスの作成
+	D3DXMatrixLookAtLH(&mtxView, &posV, &posR, &vecU);
+
+	// ビューマトリックスの設定
+	pDevice->SetTransform(D3DTS_VIEW, &mtxView);
+
+	////Zテストを無効にする
+	//pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+	//pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+
+	//**************************************************************
+	// 画面クリア(バックバッファとZバッファのクリア)
+	pDevice->Clear(0, NULL,
+		(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER),
+		D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
 }
 
-//=============================================================================
-//	モードごとのカメラ設定処理
-//=============================================================================
-#if 0
-void SetModeCamera(MODE mode)
+//=========================================================================================
+// カメラの情報を取得
+//=========================================================================================
+P_CAMERA GetCamera(void)
 {
-	Camera* pCamera = &g_acamera[0];
-	CameraInfo* pCameraInfo = &g_acameraInfo[0];
-
-	switch (mode)
-	{
-	case MODE_START:
-		pCamera->posV		= INIT_LOGOCAMERA_POSV;
-		pCamera->posVDest	= INIT_LOGOCAMERA_POSV;
-		pCamera->posR		= INIT_LOGOCAMERA_POSR;
-		pCamera->posRDest	= INIT_LOGOCAMERA_POSR;
-		pCamera->vecU		= INIT_VECU;
-		pCamera->rot		= INIT_LOGOCAMERA_ROT;
-		pCamera->rotDest	= INIT_LOGOCAMERA_ROT;
-		break;
-
-	case MODE_TITLE:
-		SetNumCamera(mode);
-		pCamera->posV		= INIT_TITLECAMERA_POSV;
-		pCamera->posVDest	= INIT_TITLECAMERA_POSV;
-		pCamera->posR		= INIT_TITLECAMERA_POSR;
-		pCamera->posRDest	= INIT_TITLECAMERA_POSR;
-		pCamera->vecU		= INIT_VECU;
-		pCamera->rot		= INIT_TITLECAMERA_ROT;
-		pCamera->rotDest	= INIT_TITLECAMERA_ROT;
-		break;
-
-	case MODE_TUTORIAL:
-		SetNumCamera(mode);
-		break;
-
-	case MODE_GAME:
-		SetNumCamera(mode);
-		break;
-
-	case MODE_RESULT:
-		SetNumCamera(mode);
-		pCamera->posV		= INIT_RESULTCAMERA_POSV;
-		pCamera->posVDest	= INIT_RESULTCAMERA_POSV;
-		pCamera->posR		= INIT_RESULTCAMERA_POSR;
-		pCamera->posRDest	= INIT_RESULTCAMERA_POSR;
-		pCamera->vecU		= INIT_VECU;
-		pCamera->rot		= INIT_RESULTCAMERA_ROT;
-		pCamera->rotDest	= INIT_RESULTCAMERA_ROT;
-		break;
-
-	case MODE_DIAGNOSIS:
-		pCamera->posV = INIT_TITLECAMERA_POSV;
-		pCamera->posVDest = INIT_TITLECAMERA_POSV;
-		pCamera->posR = INIT_TITLECAMERA_POSR;
-		pCamera->posRDest = INIT_TITLECAMERA_POSR;
-		pCamera->vecU = INIT_VECU;
-		pCamera->rot = INIT_TITLECAMERA_ROT;
-		pCamera->rotDest = INIT_TITLECAMERA_ROT;
-		break;
-	}
-}
-#endif
-
-//=============================================================================
-//	カメラの数取得処理
-//=============================================================================
-int GetNumCamera(void)
-{
-	return g_nNumCamera;
+	return &g_aCamera[0];
 }
 
-//=============================================================================
-//	ビューポート生成処理
-//=============================================================================
-D3DVIEWPORT9 SetViewPort(DWORD X, DWORD Y, DWORD Width, DWORD Height)
+//=========================================================================================
+// カメラリセット
+//=========================================================================================
+void CameraReset(P_CAMERA pCamera)
 {
-	D3DVIEWPORT9 ViwePort = {};		// 返り値用変数
+	//**************************************************************
+	// 注視点
+	pCamera->posR = GetPlayer()->pos;
 
-	ViwePort.X = X;					// 左上X座標
-	ViwePort.Y = Y;					// 左上Y座標
-	ViwePort.Width = Width;			// 幅
-	ViwePort.Height = Height;		// 高さ
-	ViwePort.MinZ = 0.0f;			// 固定
-	ViwePort.MaxZ = 1.0f;			// 固定
-
-	return ViwePort;
+	//**************************************************************
+	// 注視点から視点を求める
+	pCamera->fDist = CAMERA_DISTANS;				// 視点と注視点の距離
+	pCamera->rot = CAMERA_ROT;						// カメラの角度
+	pCamera->posV.x = pCamera->posR.x - cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+	pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
+	pCamera->posV.z = pCamera->posR.z - sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
 }

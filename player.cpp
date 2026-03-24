@@ -188,7 +188,7 @@ void UpdatePlayer(void)
 
 		//**************************************************************
 		// 移動
-		// PlayerMove();
+		PlayerMove();
 
 		//**************************************************************
 		// 判定
@@ -220,7 +220,7 @@ void UpdatePlayer(void)
 		if (GetKeyboardRepeat(DIK_4))
 			g_playerPlam.fMaxSpeed -= 0.01f;;
 
-		PrintDebugProc("pos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
+		PrintDebugProc("\npos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
 		// PrintDebugProc(DEBUG_LEFT, "move:[%f, %f, %f]\n", g_player.move.x, g_player.move.y, g_player.move.z);
 
 #endif
@@ -322,13 +322,6 @@ void Keyboard(void)
 	} while (0);
 
 	//**************************************************************
-	// ジャンプ
-	if (GetKeyboardTrigger(PLAYER_JUMP_KEY))
-	{
-		g_player.move.y = PLAYER_JUMPFORCE;
-	}
-
-	//**************************************************************
 	// 回転
 	if (GetKeyboardRepeat(DIK_LSHIFT))
 	{// 反時計回り
@@ -347,16 +340,17 @@ void Joypad(void)
 	//**************************************************************
 	// 変数宣言
 	D3DXVECTOR3 ref = GetCamera()->rot;
-	D3DXVECTOR3 fLeftStick;
-	GetJoypadStickLeft(&fLeftStick.x, &fLeftStick.y);
+	D3DXVECTOR3 leftStick = vec3_ZORO;
+	GetJoypadStickLeft(&leftStick.x, &leftStick.y);
+	PrintDebugProc("\nLeftStick \nX: %f\nY: %f", leftStick.x, leftStick.y);
 
 	//**************************************************************
 	// 移動
-	if (fLeftStick.x != 0 || fLeftStick.y != 0)
-	{
-		g_player.move.x += (sinf(ref.y) * fLeftStick.x + cosf(ref.y) * fLeftStick.y) * g_playerPlam.fSpeedforce;
-		g_player.move.z += (cosf(-ref.y) * fLeftStick.x + sinf(-ref.y) * fLeftStick.y) * g_playerPlam.fSpeedforce;
-	}
+	if (leftStick.x != 0)
+		g_player.move.x += leftStick.x * g_playerPlam.fSpeedforce;
+	if(0 < leftStick.y)
+		g_player.move.y += leftStick.y * g_playerPlam.fJumpforce;
+
 }
 
 //==============================================================
@@ -400,6 +394,7 @@ void PlayerMove(void)
 		g_player.move.x = 0;
 		g_player.move.z = 0;
 	}
+
 	if (g_playerPlam.fMaxSpeed < fabs(g_player.move.x * g_player.move.x + g_player.move.z * g_player.move.z))
 	{// 移動速度、最大速度
 		//g_player.move.z = -sinf(-g_player.rot.y) * MAX_SPEED;
@@ -414,6 +409,7 @@ void PlayerMove(void)
 
 	//**************************************************************
 	// 移動・回転
+	PrintDebugProc("\nPlayerMove\nX:%f\nY%f", g_player.move.x, g_player.move.y);
 	if (g_player.move.x != 0 || g_player.move.z != 0)
 	{// 水平移動
 		g_player.pos.x += g_player.move.x;
@@ -596,14 +592,13 @@ void PlayerPlamLoad(void)
 		fread(&g_playerPlam, sizeof(PlayerPlam), 1, pFile);
 		fclose(pFile);
 	}
-#ifdef _DEBUG
 	else
 	{
+		g_playerPlam.fSpeedforce = MOVE_FORCE;
+		g_playerPlam.fJumpforce = JUMP_FORCE;
 		g_playerPlam.fInertia = POSMOVE_FACTOR;
 		g_playerPlam.fMaxSpeed = MAX_SPEED;
-		g_playerPlam.fSpeedforce = MOVE_PLAYER;
 	}
-#endif
 }
 
 //=========================================================================================

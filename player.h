@@ -44,19 +44,16 @@
 //==============================================================
 // プレイヤー操作
 // キーボード
-#define PLAYER_MOVE_UP_KEY		DIK_W		// 前方に動かす
-#define PLAYER_MOVE_DW_KEY		DIK_S		// 後方に動かす
-#define PLAYER_MOVE_R_KEY		DIK_D		// 右に動かす
-#define PLAYER_MOVE_L_KEY		DIK_A		// 左に動かす
-#define PLAYER_JUMP_KEY			DIK_SPACE	// ジャンプ
+#define PLAYER_KEY_MOVE_UP		DIK_W		// 上昇
+#define PLAYER_KEY_MOVE_R		DIK_D		// 右に動かす
+#define PLAYER_KEY_MOVE_L		DIK_A		// 左に動かす
+#define PLAYER_KEY_SHOT			DIK_S		// アイテム投下
 
 // コントローラー
-#define PLAYER_MOVE_UP_PAD					// 前方に動かす
-#define PLAYER_MOVE_DW_PAD					// 後方に動かす
-#define PLAYER_MOVE_R_PAD					// 右に動かす
-#define PLAYER_MOVE_L_PAD					// 左に動かす
-#define PLAYER_JUMP_PAD						// ジャンプ
-
+#define PLAYER_PAD_MOVE_UP					// 上昇
+#define PLAYER_PAD_MOVE_R					// 右に動かす
+#define PLAYER_PAD_MOVE_L					// 左に動かす
+#define PLAYER_PAD_SHOT			JOYKEY_A	// アイテム投下
 
 //==============================================================
 // プレイヤー状態列挙

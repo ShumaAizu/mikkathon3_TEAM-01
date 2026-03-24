@@ -37,8 +37,9 @@ void PlayerState(void);			// プレイヤー状態管理
 void PlayerContoroll(void);		// プレイヤー操作（共通
 void Keyboard(void);			// キーボード
 void Joypad(void);				// コントローラー
-void Collision(void);			// 当たり判定
 void PlayerMove(void);			// 移動
+void ItemDrop(void);			// アイテムを投下
+void Collision(void);			// 当たり判定
 void PlayerPlamLoad(void);		// プレイヤーパラメータ読み込み
 void PlayerPlamSave(void);		// プレイヤーパラメータ保存
 
@@ -210,6 +211,10 @@ void UpdatePlayer(void)
 		PlayerMove();
 
 		//**************************************************************
+		// 移動
+		ItemDrop();
+
+		//**************************************************************
 		// 判定
 		Collision();
 
@@ -299,15 +304,15 @@ void Keyboard(void)
 	// 移動
 	do
 	{
-		if (GetKeyboardPress(PLAYER_MOVE_UP_KEY))
+		if (GetKeyboardPress(PLAYER_KEY_MOVE_UP))
 		{// 左の入力のみ
 			g_player.move.y += g_playerPlam.fJumpforce / g_player.fWeight;
 		}
-		if (GetKeyboardPress(PLAYER_MOVE_L_KEY))
+		if (GetKeyboardPress(PLAYER_KEY_MOVE_L))
 		{// 左の入力のみ
 			g_player.move.z += g_playerPlam.fSpeedforce;
 		}
-		if (GetKeyboardPress(PLAYER_MOVE_R_KEY))
+		if (GetKeyboardPress(PLAYER_KEY_MOVE_R))
 		{// 右の入力のみ
 			g_player.move.z -= g_playerPlam.fSpeedforce;
 		}
@@ -412,6 +417,16 @@ void PlayerMove(void)
 	// 強制スクロール
 	if (g_player.move.x <= g_nFocScroll / g_player.fWeight)
 		g_player.move.x += MOVE_FORCE;
+}
+
+//==============================================================
+// アイテムを投下
+void ItemDrop(void)
+{
+	if (GetKeyboardTrigger(PLAYER_KEY_SHOT) || GetJoypadTrigger(PLAYER_PAD_SHOT))
+	{
+
+	}
 }
 
 //==============================================================

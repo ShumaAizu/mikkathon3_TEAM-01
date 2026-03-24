@@ -163,6 +163,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="title.cpp" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="modeldata.h" />
     <ClInclude Include="pause.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="title.h" />
   </ItemGroup>

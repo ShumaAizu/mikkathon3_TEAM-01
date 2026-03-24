@@ -35,6 +35,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
+#define vec3					D3DXVECTOR3																		// ベクター3
 #define DIRECTINPUT_VERSION		(0x0800)																		// ビルド時の警告対処用マクロ
 #define SCREEN_WIDTH			(1280.0f)																		// ウインドウの幅
 #define SCREEN_HEIGHT			(720.0f)																		// ウインドウの高さ
@@ -44,6 +45,7 @@
 #define FVF_VERTEX_3D_MULTI		(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEX2)		// マルチテクスチャ頂点フォーマット(3D)
 #define SQRTF(X, Y)				(sqrtf(X * X + Y * Y))															// 対角線の長さ算出
 #define INIT_D3DXVEC3			(D3DXVECTOR3(0.0f, 0.0f, 0.0f))													// D3DXVECTOR3型初期化
+#define vec3_ZORO				(D3DXVECTOR3(0.0f, 0.0f, 0.0f))	
 #define RANDAM_VEC3(X, Y, Z)	(D3DXVECTOR3((float)(rand() % X), (float)(rand() % Y), (float)(rand() % Z)))	// ランダムVECTOR3
 #define VEC3TOROT(vec3)			(vec3 * D3DX_PI)
 #define BITMASK(flag)			(1U << (flag))																	// ビット演算の時に使う

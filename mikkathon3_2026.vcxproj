@@ -158,6 +158,7 @@
     <ClCompile Include="loadscript.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="modeldata.cpp" />
+    <ClCompile Include="pause.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -175,6 +176,7 @@
     <ClInclude Include="loadscript.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="modeldata.h" />
+    <ClInclude Include="pause.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="title.h" />

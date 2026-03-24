@@ -65,7 +65,7 @@ void UpdateResult(void)
 {
 	PrintDebugProc("RESULT\n");
 
-	if (GetKeyboardAny() == true)
+	if (GetKeyboardTrigger(DIK_RETURN))
 	{
 		SetFade(MODE_TITLE);
 	}

@@ -87,6 +87,9 @@
     <ClCompile Include="title.cpp">
       <Filter>ソース ファイル\title</Filter>
     </ClCompile>
+    <ClCompile Include="pause.cpp">
+      <Filter>ソース ファイル\main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debugproc.h">
@@ -124,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="title.h">
       <Filter>ヘッダー ファイル\title</Filter>
+    </ClInclude>
+    <ClInclude Include="pause.h">
+      <Filter>ヘッダー ファイル\main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

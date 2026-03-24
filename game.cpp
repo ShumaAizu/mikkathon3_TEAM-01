@@ -25,6 +25,8 @@
 #include "trap.h"
 #include "skybox.h"
 
+#include "time.h"
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
@@ -71,6 +73,9 @@ void InitGame(void)
 	// 空の初期化
 	InitSkyBox();
 
+	// タイムの初期化
+	InitTime();
+
 	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
 
 	LoadObject("data\\SCRIPTS\\model.txt");
@@ -104,6 +109,9 @@ void UninitGame(void)
 
 	// 空の終了
 	UninitSkyBox();
+
+	// タイムの終了
+	UninitTime();
 }
 
 //=============================================================================
@@ -149,6 +157,9 @@ void UpdateGame(void)
 
 		// 空の更新
 		UpdateSkyBox();
+
+		// タイムの更新
+		UpdateTime();
 	}
 
 	if (g_nextgameFlag == GAMEFLAG_CLEAR || g_nextgameFlag == GAMEFLAG_GAMEOVER)
@@ -201,6 +212,9 @@ void DrawGame(void)
 
 	// 空の描画
 	DrawSkyBox();
+
+	// タイムの描画
+	DrawTime();
 }
 
 //=============================================================================

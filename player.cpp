@@ -9,8 +9,6 @@
 #include "player.h"
 #include "debugproc.h"
 
-#include "field.h"
-
 //**************************************************************
 // 構造体の定義
 
@@ -55,9 +53,9 @@ void InitPlayer(void)
 	// プレイヤー情報
 	g_player.pos = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	g_player.posOld = g_player.pos;
-	g_player.rot = VECTOR3_ZERO;
-	g_player.move = VECTOR3_ZERO;
-	g_player.spin = VECTOR3_ZERO;
+	g_player.rot = vec3_ZORO;
+	g_player.move = vec3_ZORO;
+	g_player.spin = vec3_ZORO;
 	g_player.nShadow = -1;
 	g_player.state = PLAYERSTATE_NONE;
 	g_player.vtxMin = D3DXVECTOR3(0xffff, 0xffff, 0xffff);
@@ -222,8 +220,8 @@ void UpdatePlayer(void)
 		if (GetKeyboardRepeat(DIK_4))
 			g_playerPlam.fMaxSpeed -= 0.01f;;
 
-		PrintDebugProc(DEBUG_LEFT, "pos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
-		PrintDebugProc(DEBUG_LEFT, "move:[%f, %f, %f]\n", g_player.move.x, g_player.move.y, g_player.move.z);
+		//PrintDebugProc(DEBUG_LEFT, "pos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
+		//PrintDebugProc(DEBUG_LEFT, "move:[%f, %f, %f]\n", g_player.move.x, g_player.move.y, g_player.move.z);
 
 #endif
 	}
@@ -239,9 +237,9 @@ void PlayerState(void)
 	{
 		g_player.pos = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 		g_player.posOld = g_player.pos;
-		g_player.rot = VECTOR3_ZERO;
-		g_player.move = VECTOR3_ZERO;
-		g_player.spin = VECTOR3_ZERO;
+		g_player.rot = vec3_ZORO;
+		g_player.move = vec3_ZORO;
+		g_player.spin = vec3_ZORO;
 	}
 
 	//**************************************************************
@@ -324,8 +322,8 @@ void Keyboard(void)
 	} while (0);
 
 	//**************************************************************
-	// ジャンプ
-	if (GetKeyboardTrigger(PLAYER_JUMP_KEY))
+	// 上昇
+	if (GetKeyboardTrigger(PLAYER_MOVE_UP_KEY))
 	{
 			g_player.move.y = PLAYER_JUMPFORCE;
 	}
@@ -350,7 +348,7 @@ void Joypad(void)
 	// 変数宣言
 	D3DXVECTOR3 ref = GetCamera()->rot;
 	D3DXVECTOR3 fLeftStick;
-	GetJoypadLeftStick(&fLeftStick);
+	GetJoypadStickLeft(&fLeftStick.x,&fLeftStick.y);
 
 	//**************************************************************
 	// 移動

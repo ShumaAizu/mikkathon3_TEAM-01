@@ -90,6 +90,9 @@
     <ClCompile Include="pause.cpp">
       <Filter>ソース ファイル\main</Filter>
     </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>ソース ファイル\object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debugproc.h">
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="pause.h">
       <Filter>ヘッダー ファイル\main</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>ヘッダー ファイル\object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

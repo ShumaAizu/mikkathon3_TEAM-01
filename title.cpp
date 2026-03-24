@@ -53,7 +53,7 @@ void UpdateTitle(void)
 {
 	PrintDebugProc("TITLE\n");
 
-	if (GetKeyboardAny() == true)
+	if (GetKeyboardTrigger(DIK_RETURN))
 	{
 		SetFade(MODE_GAME);
 	}

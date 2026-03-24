@@ -15,7 +15,7 @@
 #include "fade.h"
 //#include "effect.h"
 //#include "particle.h"
-//#include "pause.h"
+#include "pause.h"
 
 //*****************************************************************************
 // グローバル変数
@@ -40,7 +40,7 @@ void InitGame(void)
 	g_bPause = false;
 
 	// ポーズメニューの初期化
-	//InitPause();
+	InitPause();
 }
 
 //========================================
@@ -50,7 +50,7 @@ void UninitGame(void)
 {
 
 	// ポーズメニューの終了処理
-	//UninitPause();
+	UninitPause();
 }
 
 //========================================
@@ -59,11 +59,6 @@ void UninitGame(void)
 void UpdateGame(void)
 {
 	PrintDebugProc("GAME\n");
-
-	if (GetKeyboardAny() == true)
-	{
-		SetFade(MODE_RESULT);
-	}
 
 	if ((GetKeyboardTrigger(DIK_P) == true || GetJoypadTrigger(JOYKEY_START) == true) && GetFade() != FADE_IN && g_gameFlag == GAMEFLAG_NORMAL)
 	{ // ポーズキーが押された
@@ -77,7 +72,7 @@ void UpdateGame(void)
 	if (g_bPause == true)
 	{ // ポーズ中なら
 		// ポーズの更新処理
-		//UpdatePause();
+		UpdatePause();
 	}
 	else if(GetFade() != FADE_OUT)
 	{
@@ -112,9 +107,8 @@ void DrawGame(void)
 
 	if (g_bPause == true)
 	{ // ポーズ中なら
-
 		// ポーズメニューの描画処理
-		//DrawPause();
+		DrawPause();
 	}
 
 }

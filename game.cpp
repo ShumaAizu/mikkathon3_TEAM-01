@@ -49,6 +49,9 @@ void InitGame(void)
 	// ポーズメニューの初期化
 	InitPause();
 
+	// 影の初期化
+	InitShadow();
+
 	// プレイヤーの初期化
 	InitPlayer();
 
@@ -63,9 +66,6 @@ void InitGame(void)
 
 	// 落下地点目印の初期化
 	InitFallPoint();
-
-	// 影の初期化
-	InitShadow();
 
 	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
 

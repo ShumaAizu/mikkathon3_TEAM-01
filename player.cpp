@@ -8,6 +8,7 @@
 // インクルード
 #include "player.h"
 #include "debugproc.h"
+#include "shadow.h"
 
 //**************************************************************
 // 構造体の定義
@@ -63,7 +64,6 @@ void InitPlayer(void)
 	g_player.rot = vec3_ZORO;
 	g_player.move = vec3_ZORO;
 	g_player.spin = vec3_ZORO;
-	g_player.nShadow = -1;
 	g_player.fWeight = 10.0f;
 	g_player.state = PLAYERSTATE_NONE;
 	g_player.vtxMin = D3DXVECTOR3(0xffff, 0xffff, 0xffff);
@@ -139,6 +139,9 @@ void InitPlayer(void)
 		// アンロック
 		g_pMeshPlayer->UnlockVertexBuffer();
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+		g_player.nShadow = SetShadow((g_player.vtxMax.x - g_player.vtxMin.x) * 0.3f);
+
 	}
 }
 
@@ -172,6 +175,14 @@ void UninitPlayer(void)
 	{
 		g_pMatBuffPlayer->Release();
 		g_pMatBuffPlayer = NULL;
+	}
+
+	//**************************************************************
+	// 影インデックスの解放
+	if (g_player.nShadow != -1)
+	{
+		ReleaseShadow(g_player.nShadow);
+		g_player.nShadow = -1;
 	}
 }
 
@@ -212,7 +223,7 @@ void UpdatePlayer(void)
 		{
 			g_player.fWeight -= 1.0f;
 		}
-		// PrintDebugProc("\nplayer weight : %f", g_player.fWeight);
+		PrintDebugProc("\nplayer weight : %f", g_player.fWeight);
 
 		//**************************************************************
 		// プレイヤーパラメータ情報
@@ -384,6 +395,10 @@ void PlayerMove(void)
 		g_player.rot += g_player.spin;
 	}
 
+	//**************************************************************
+	// 影の追従
+	SetPotisionShadow(g_player.nShadow, g_player.pos, 1.0f);
+	
 	//**************************************************************
 	// 慣性
 	g_player.move += D3DXVECTOR3(-g_player.move.x * g_playerPlam.fInertia, 0.0f, -g_player.move.z * g_playerPlam.fInertia);

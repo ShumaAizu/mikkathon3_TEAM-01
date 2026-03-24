@@ -47,7 +47,7 @@ void InitShadow(void)
 		g_aShadow[nCntShadow].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aShadow[nCntShadow].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aShadow[nCntShadow].size = D3DXVECTOR3(SHADOW_SIZE, 0.0f, SHADOW_SIZE);
-		g_aShadow[nCntShadow].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		g_aShadow[nCntShadow].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.8f);
 		g_aShadow[nCntShadow].bUse = false;
 	}
 

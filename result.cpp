@@ -6,6 +6,7 @@
 //=============================================================================
 
 #include "main.h"
+#include "debugproc.h"
 #include "result.h"
 #include "loadscript.h"
 #include "input.h"
@@ -62,9 +63,11 @@ void DrawResult(void)
 //====================================
 void UpdateResult(void)
 {
-	if ((GetKeyboardTrigger(DIK_RETURN) == true || GetJoypadTrigger(JOYKEY_A) == true) && g_ResultState == RESULTSTATE_RESULT)
+	PrintDebugProc("RESULT\n");
+
+	if (GetKeyboardAny() == true)
 	{
-		SetFade(MODE_TITLE, COLOR_WHITE, DEFAULT_FADESPEED, DEFAULT_FADESPEED);
+		SetFade(MODE_TITLE);
 	}
 }
 

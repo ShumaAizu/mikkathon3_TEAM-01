@@ -9,9 +9,9 @@
 #include "input.h"
 #include "debugproc.h"
 //#include "sound.h"
-//#include "title.h"
-//#include "game.h"
-//#include "result.h"
+#include "title.h"
+#include "game.h"
+#include "result.h"
 #include "fade.h"
 //#include "fog.h"
 //#include "loadscript.h"
@@ -401,13 +401,13 @@ void Uninit(void)
 	UninitLight();
 
 	// タイトル画面の終了処理
-	//UninitTitle();
+	UninitTitle();
 
 	// ゲーム画面の終了処理
-	//UninitGame();
+	UninitGame();
 
 	// リザルト画面の終了処理
-	//UninitResult();
+	UninitResult();
 
 	// フェードの終了処理
 	UninitFade();
@@ -476,17 +476,17 @@ void Update(void)
 	{
 		// タイトルモード
 	case MODE_TITLE:
-		//UpdateTitle();
+		UpdateTitle();
 		break;
 
 		// ゲームモード
 	case MODE_GAME:
-		//UpdateGame();
+		UpdateGame();
 		break;
 
 		// リザルトモード
 	case MODE_RESULT:
-		//UpdateResult();
+		UpdateResult();
 		break;
 	}
 
@@ -526,17 +526,17 @@ void Draw(void)
 			{
 				// タイトルモード
 			case MODE_TITLE:
-				//DrawTitle();
+				DrawTitle();
 				break;
 
 				// ゲームモード
 			case MODE_GAME:
-				//DrawGame();
+				DrawGame();
 				break;
 
 				// リザルトモード
 			case MODE_RESULT:
-				//DrawResult();
+				DrawResult();
 				break;
 			}
 
@@ -581,17 +581,17 @@ void SetMode(MODE mode)
 	{
 		// タイトルモード
 	case MODE_TITLE:
-		//UninitTitle();
+		UninitTitle();
 		break;
 
 		// ゲームモード
 	case MODE_GAME:
-		//UninitGame();
+		UninitGame();
 		break;
 
 		// リザルトモード
 	case MODE_RESULT:
-		//UninitResult();
+		UninitResult();
 		break;
 	}
 
@@ -600,18 +600,17 @@ void SetMode(MODE mode)
 	{
 		// タイトルモード
 	case MODE_TITLE:
-		//InitTitle();
+		InitTitle();
 		break;
 
 		// ゲームモード
 	case MODE_GAME:
-		// gameBGM再生
-		//InitGame();
+		InitGame();
 		break;
 
 		// リザルトモード
 	case MODE_RESULT:
-		//InitResult();
+		InitResult();
 		break;
 	}
 

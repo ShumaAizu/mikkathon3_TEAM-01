@@ -15,7 +15,6 @@
 // マクロ定義
 //*****************************************************************************
 #define MAX_TRAPTEX				(16)			// 読み込むテクスチャの最大数
-#define TRAP_FLOATINGSPEED		(0.04f)			// ぷかぷか速度
 
 //*****************************************************************************
 // トラップの種類
@@ -40,7 +39,6 @@ typedef struct
 	TRAPTYPE traptype;							// トラップの種類
 	Object_Normal NormalObjectData;				// 通常オブジェクトのデータ
 	int nCollisionIdx;							// 当たり判定のインデックス
-	float fAngle;								// ぷかぷかで使う角度
 	bool bUse;									// 使用状態
 }Trap;
 

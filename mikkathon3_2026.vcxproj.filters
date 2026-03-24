@@ -31,6 +31,24 @@
     <Filter Include="ヘッダー ファイル\object">
       <UniqueIdentifier>{42ade68b-9cf6-4407-81a0-f7d767ea1215}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\game">
+      <UniqueIdentifier>{d81f899e-5626-49ae-8218-1b69855e8692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\game">
+      <UniqueIdentifier>{881e9286-513e-4964-ae8d-e01bc9eb8e4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\result">
+      <UniqueIdentifier>{c4c5bf52-1971-4374-8250-bb23cf6f9dd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\result">
+      <UniqueIdentifier>{f4652e16-580e-44f6-9cec-848635044f85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\title">
+      <UniqueIdentifier>{eb5fdbb1-e4ba-4620-a6fd-2362dfb9a565}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\title">
+      <UniqueIdentifier>{75c99ac4-9603-4d11-ab2f-c73787a31f19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -60,6 +78,15 @@
     <ClCompile Include="light.cpp">
       <Filter>ソース ファイル\object</Filter>
     </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>ソース ファイル\game</Filter>
+    </ClCompile>
+    <ClCompile Include="result.cpp">
+      <Filter>ソース ファイル\result</Filter>
+    </ClCompile>
+    <ClCompile Include="title.cpp">
+      <Filter>ソース ファイル\title</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debugproc.h">
@@ -88,6 +115,15 @@
     </ClInclude>
     <ClInclude Include="loadscript.h">
       <Filter>ヘッダー ファイル\object</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>ヘッダー ファイル\game</Filter>
+    </ClInclude>
+    <ClInclude Include="result.h">
+      <Filter>ヘッダー ファイル\result</Filter>
+    </ClInclude>
+    <ClInclude Include="title.h">
+      <Filter>ヘッダー ファイル\title</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

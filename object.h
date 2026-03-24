@@ -69,7 +69,6 @@ typedef struct Object
 	EVENTOBJECTTYPE ObjectType;	// オブジェクトの種類
 	float fAlpha;				// アルファ値
 	int nCollisionIdx;			// 当たり判定のインデックス
-	bool isEvent;				// イベント中か
 	bool bUse;					// 使用状態
 }Object;
 

@@ -21,6 +21,7 @@
 #include "object.h"
 #include "field.h"
 #include "fallpoint.h"
+#include "trap.h"
 
 //*****************************************************************************
 // グローバル変数
@@ -56,6 +57,9 @@ void InitGame(void)
 	// フィールドの初期化
 	InitField();
 
+	// トラップの初期化
+	InitTrap();
+
 	// 落下地点目印の初期化
 	InitFallPoint();
 
@@ -80,6 +84,9 @@ void UninitGame(void)
 
 	// フィールドの終了
 	UninitField();
+
+	// トラップの終了
+	UninitTrap();
 
 	// 落下地点目印の終了
 	UninitFallPoint();
@@ -116,6 +123,9 @@ void UpdateGame(void)
 
 		// フィールドの更新
 		UpdateField();
+
+		// トラップの更新
+		UpdateTrap();
 
 		// 落下地点目印の更新
 		UpdateFallPoint();
@@ -159,6 +169,9 @@ void DrawGame(void)
 
 	// フィールドの描画
 	DrawField();
+
+	// トラップの描画
+	DrawTrap();
 
 	// 落下地点目印の描画
 	DrawFallPoint();

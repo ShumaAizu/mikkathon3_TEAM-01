@@ -171,6 +171,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="title.cpp" />
+    <ClCompile Include="trap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -192,6 +193,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="title.h" />
+    <ClInclude Include="trap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

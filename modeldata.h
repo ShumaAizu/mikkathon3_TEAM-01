@@ -23,6 +23,7 @@
 typedef enum MODELTYPE
 {
 	MODELTYPE_000 = 0,		// [0]
+	MODELTYPE_001 = 0,		// [1]
 	MODELTYPE_MAX
 }MODELTYPE;
 

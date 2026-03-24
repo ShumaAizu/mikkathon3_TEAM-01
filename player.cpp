@@ -31,8 +31,6 @@ void Keyboard(void);			// キーボード
 void Joypad(void);				// コントローラー
 void Collision(void);			// 当たり判定
 void PlayerMove(void);			// 移動
-void PlayerPlamLoad(void);		// プレイヤーパラメータ読み込み
-void PlayerPlamSave(void);		// プレイヤーパラメータ保存
 
 //=========================================================================================
 // モデル初期化処理
@@ -231,20 +229,20 @@ void UpdatePlayer(void)
 // プレイヤーの状態管理
 void PlayerState(void)
 {
-	//**************************************************************
-	// 死んでいたら
-	if (g_player.state == PLAYERSTATE_DEAD)
-	{
-		g_player.pos = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-		g_player.posOld = g_player.pos;
-		g_player.rot = vec3_ZORO;
-		g_player.move = vec3_ZORO;
-		g_player.spin = vec3_ZORO;
-	}
+	////**************************************************************
+	//// 死んでいたら
+	//if (g_player.state == PLAYERSTATE_DEAD)
+	//{
+	//	g_player.pos = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	//	g_player.posOld = g_player.pos;
+	//	g_player.rot = vec3_ZORO;
+	//	g_player.move = vec3_ZORO;
+	//	g_player.spin = vec3_ZORO;
+	//}
 
-	//**************************************************************
-	// プレイヤー状態を初期化
-	g_player.state = PLAYERSTATE_WAIT;
+	////**************************************************************
+	//// プレイヤー状態を初期化
+	//g_player.state = PLAYERSTATE_WAIT;
 }
 
 //==============================================================
@@ -289,25 +287,6 @@ void Keyboard(void)
 			}
 			break;
 		}
-		if (GetKeyboardPress(PLAYER_MOVE_DW_KEY))
-		{// 後
-			if (GetKeyboardPress(PLAYER_MOVE_L_KEY))
-			{// 左後ろ
-				g_player.move.z += sinf(-D3DX_PI * 0.25f - ref.y) * g_playerPlam.fSpeedforce;
-				g_player.move.x += cosf(-D3DX_PI * 0.25f - ref.y) * g_playerPlam.fSpeedforce;
-			}
-			else if (GetKeyboardPress(PLAYER_MOVE_R_KEY))
-			{// 右後ろ
-				g_player.move.z += sinf(D3DX_PI * 0.25f - ref.y) * g_playerPlam.fSpeedforce;
-				g_player.move.x += cosf(D3DX_PI * 0.25f - ref.y) * g_playerPlam.fSpeedforce;
-			}
-			else
-			{// 真後ろ
-				g_player.move.z += sinf(-ref.y) * g_playerPlam.fSpeedforce;
-				g_player.move.x += cosf(-ref.y) * g_playerPlam.fSpeedforce;
-			}
-			break;
-		}
 
 		if (GetKeyboardPress(PLAYER_MOVE_L_KEY))
 		{// 左の入力のみ
@@ -326,17 +305,6 @@ void Keyboard(void)
 	if (GetKeyboardTrigger(PLAYER_MOVE_UP_KEY))
 	{
 			g_player.move.y = PLAYER_JUMPFORCE;
-	}
-
-	//**************************************************************
-	// 回転
-	if (GetKeyboardRepeat(DIK_LSHIFT))
-	{// 反時計回り
-		g_player.rot.y += REV_PLAYER;
-	}
-	if (GetKeyboardRepeat(DIK_RSHIFT))
-	{// 時計回り
-		g_player.rot.y -= REV_PLAYER;
 	}
 }
 
@@ -418,18 +386,18 @@ void PlayerMove(void)
 	{// 水平移動
 		g_player.pos.x += g_player.move.x;
 		g_player.pos.z += g_player.move.z;
-		g_player.state = PLAYERSTATE_RUN;
+		//g_player.state = PLAYERSTATE_RUN;
 	}
 	if (g_player.move.y != 0)
 	{// 垂直移動
 		g_player.pos.y += g_player.move.y;
 		if (0 < g_player.move.y)
 		{
-			g_player.state = PLAYERSTATE_JUMP;
+			//g_player.state = PLAYERSTATE_JUMP;
 		}
 		else
 		{
-			g_player.state = PLAYERSTATE_JUMP;
+			//g_player.state = PLAYERSTATE_JUMP;
 		}
 	}
 
@@ -459,17 +427,6 @@ void Collision(void)
 {
 	//**************************************************************
 	// 変数宣言
-	Field* pField = GetField();
-
-	//CollisionBlock(&g_player.pos, &g_player.posOld, &g_player.move, g_player.vtxMin, g_player.vtxMax);
-	//CollisionWall(&g_player.pos, &g_player.posOld, &g_player.move);
-
-	// 地面との当たり判定
-	int nFieldCollision = CollisionField(&g_player.pos, &g_player.posOld, &g_player.move);
-	if (pField[nFieldCollision].bDead && RETURN_NOCOLLISION < nFieldCollision && nFieldCollision < MAX_FIELD)
-	{// あたった地面に死亡判定があったら
-		g_player.state = PLAYERSTATE_DEAD;
-	}
 }
 
 //=========================================================================================
@@ -526,54 +483,6 @@ void DrawPlayer(void)
 	}
 }
 
-void DrawPlayerPreview(void)
-{
-	//**************************************************************
-	// 変数宣言
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans,mtxWorld;			// マトリックス計算用
-	D3DMATERIAL9 matDef;							// 現在のマテリアル保存用
-	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
-
-	SetUiCameraCenter(vec3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.1f, 0.0f), vec2(SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.2f));
-
-	//**************************************************************
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&mtxWorld);
-
-	// 向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, g_player.rot.y, g_player.rot.x, g_player.rot.z);
-	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
-
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &mtxWorld);
-
-	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-	// 現在のマテリアルを取得
-	pDevice->GetMaterial(&matDef);
-
-	// マテリアルデータへのポインタを取得
-	pMat = (D3DXMATERIAL*)g_pMatBuffPlayer->GetBufferPointer();
-
-	for (int nCntMat = 0; nCntMat < (int)g_dwNumMatPlayer; nCntMat++)
-	{
-		// マテリアルの設定
-		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
-
-		// テクスチャの設定
-		pDevice->SetTexture(0, g_apTexturePlayer[nCntMat]);
-
-		// モデル(パーツ)の描画
-		g_pMeshPlayer->DrawSubset(nCntMat);
-	}
-
-	// pDevice->GetRenderState();
-
-	// 保存していたマテリアルに戻す
-	pDevice->SetMaterial(&matDef);
-	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-}
-
 //=========================================================================================
 // プレイヤー情報取得
 //=========================================================================================
@@ -588,41 +497,4 @@ Player* GetPlayer(void)
 PlayerPlam* GetPlyerPlam(void) 
 {
 	return &g_playerPlam;
-}
-
-//=========================================================================================
-// プレイヤーパラメータ読み込み		
-void PlayerPlamLoad(void)
-{
-	FILE* pFile;
-
-	pFile = fopen(PLAYER_PARAMETERS, "rb");
-	if(pFile != NULL)
-	{// ファイルが開けたら
-		fread(&g_playerPlam, sizeof(PlayerPlam), 1, pFile);
-		fclose(pFile);
-	}
-#ifdef _DEBUG
-	else
-	{
-		g_playerPlam.fInertia = POSMOVE_FACTOR;
-		g_playerPlam.fMaxSpeed = MAX_SPEED;
-		g_playerPlam.fSpeedforce = MOVE_PLAYER;
-	}
-#endif
-}
-								
-//=========================================================================================
-// プレイヤーパラメータ保存
-void PlayerPlamSave(void)
-{
-	FILE* pFile;
-
-	pFile = fopen(PLAYER_PARAMETERS, "wb");
-	if (pFile != NULL)
-	{// ファイルが開けたら
-		fwrite(&g_playerPlam, sizeof(PlayerPlam), 1,pFile);
-		fclose(pFile);
-	}
-
 }

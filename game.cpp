@@ -16,6 +16,7 @@
 //#include "effect.h"
 //#include "particle.h"
 #include "pause.h"
+#include "player.h"
 
 //*****************************************************************************
 // グローバル変数
@@ -41,6 +42,9 @@ void InitGame(void)
 
 	// ポーズメニューの初期化
 	InitPause();
+
+	// プレイヤーの初期化
+	InitPlayer();
 }
 
 //========================================
@@ -48,9 +52,11 @@ void InitGame(void)
 //========================================
 void UninitGame(void)
 {
-
 	// ポーズメニューの終了処理
 	UninitPause();
+
+	// プレイヤーの終了
+	UninitPlayer();
 }
 
 //========================================
@@ -76,7 +82,8 @@ void UpdateGame(void)
 	}
 	else if(GetFade() != FADE_OUT)
 	{
-
+		// プレイヤー更新
+		UpdatePlayer();
 	}
 
 	if (g_nextgameFlag == GAMEFLAG_CLEAR || g_nextgameFlag == GAMEFLAG_GAMEOVER)
@@ -103,14 +110,16 @@ void UpdateGame(void)
 //========================================
 void DrawGame(void)
 {
-
-
 	if (g_bPause == true)
 	{ // ポーズ中なら
 		// ポーズメニューの描画処理
 		DrawPause();
 	}
 
+	// プレイヤーの描画
+	DrawPlayer();
+
+	DrawPlayerPreview();
 }
 
 //========================================

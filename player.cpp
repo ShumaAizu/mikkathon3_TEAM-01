@@ -67,7 +67,7 @@ void InitPlayer(void)
 
 	//**************************************************************
 	// X ファイル読み込み
-	if (SUCCEEDED(D3DXLoadMeshFromX("data\\MODEL\\car000.x", D3DXMESH_SYSTEMMEM, pDevice,
+	if (SUCCEEDED(D3DXLoadMeshFromX("data\\MODEL\\balloon.x", D3DXMESH_SYSTEMMEM, pDevice,
 		NULL, &g_pMatBuffPlayer, NULL, &g_dwNumMatPlayer, &g_pMeshPlayer)))
 	{
 		g_player.bUse = true;//	読み込めた
@@ -188,7 +188,7 @@ void UpdatePlayer(void)
 
 		//**************************************************************
 		// 移動
-		PlayerMove();
+		// PlayerMove();
 
 		//**************************************************************
 		// 判定
@@ -220,8 +220,8 @@ void UpdatePlayer(void)
 		if (GetKeyboardRepeat(DIK_4))
 			g_playerPlam.fMaxSpeed -= 0.01f;;
 
-		//PrintDebugProc(DEBUG_LEFT, "pos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
-		//PrintDebugProc(DEBUG_LEFT, "move:[%f, %f, %f]\n", g_player.move.x, g_player.move.y, g_player.move.z);
+		PrintDebugProc("pos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
+		// PrintDebugProc(DEBUG_LEFT, "move:[%f, %f, %f]\n", g_player.move.x, g_player.move.y, g_player.move.z);
 
 #endif
 	}
@@ -250,7 +250,7 @@ void PlayerState(void)
 //==============================================================
 // プレイヤーの操作
 void PlayerContoroll(void)
-{	
+{
 	// キーボード操作
 	Keyboard();
 
@@ -322,10 +322,10 @@ void Keyboard(void)
 	} while (0);
 
 	//**************************************************************
-	// 上昇
-	if (GetKeyboardTrigger(PLAYER_MOVE_UP_KEY))
+	// ジャンプ
+	if (GetKeyboardTrigger(PLAYER_JUMP_KEY))
 	{
-			g_player.move.y = PLAYER_JUMPFORCE;
+		g_player.move.y = PLAYER_JUMPFORCE;
 	}
 
 	//**************************************************************
@@ -348,13 +348,13 @@ void Joypad(void)
 	// 変数宣言
 	D3DXVECTOR3 ref = GetCamera()->rot;
 	D3DXVECTOR3 fLeftStick;
-	GetJoypadStickLeft(&fLeftStick.x,&fLeftStick.y);
+	GetJoypadStickLeft(&fLeftStick.x, &fLeftStick.y);
 
 	//**************************************************************
 	// 移動
 	if (fLeftStick.x != 0 || fLeftStick.y != 0)
 	{
-		g_player.move.x += (sinf( ref.y) * fLeftStick.x + cosf( ref.y) * fLeftStick.y) * g_playerPlam.fSpeedforce;
+		g_player.move.x += (sinf(ref.y) * fLeftStick.x + cosf(ref.y) * fLeftStick.y) * g_playerPlam.fSpeedforce;
 		g_player.move.z += (cosf(-ref.y) * fLeftStick.x + sinf(-ref.y) * fLeftStick.y) * g_playerPlam.fSpeedforce;
 	}
 }
@@ -459,16 +459,12 @@ void Collision(void)
 {
 	//**************************************************************
 	// 変数宣言
-	Field* pField = GetField();
 
-	//CollisionBlock(&g_player.pos, &g_player.posOld, &g_player.move, g_player.vtxMin, g_player.vtxMax);
-	//CollisionWall(&g_player.pos, &g_player.posOld, &g_player.move);
-
-	// 地面との当たり判定
-	int nFieldCollision = CollisionField(&g_player.pos, &g_player.posOld, &g_player.move);
-	if (pField[nFieldCollision].bDead && RETURN_NOCOLLISION < nFieldCollision && nFieldCollision < MAX_FIELD)
-	{// あたった地面に死亡判定があったら
-		g_player.state = PLAYERSTATE_DEAD;
+	if (g_player.pos.y < 0.0f)
+	{
+		g_player.pos.y = 0.0f;
+		if (g_player.move.y < 0.0f)
+			g_player.move.y = 0.0f;
 	}
 }
 
@@ -531,11 +527,9 @@ void DrawPlayerPreview(void)
 	//**************************************************************
 	// 変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans,mtxWorld;			// マトリックス計算用
+	D3DXMATRIX mtxRot, mtxTrans, mtxWorld;			// マトリックス計算用
 	D3DMATERIAL9 matDef;							// 現在のマテリアル保存用
 	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
-
-	SetUiCameraCenter(vec3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.1f, 0.0f), vec2(SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.2f));
 
 	//**************************************************************
 	// ワールドマトリックスの初期化
@@ -585,7 +579,7 @@ Player* GetPlayer(void)
 //=========================================================================================
 // プレイヤーパラメータ情報取得
 //=========================================================================================
-PlayerPlam* GetPlyerPlam(void) 
+PlayerPlam* GetPlyerPlam(void)
 {
 	return &g_playerPlam;
 }
@@ -597,7 +591,7 @@ void PlayerPlamLoad(void)
 	FILE* pFile;
 
 	pFile = fopen(PLAYER_PARAMETERS, "rb");
-	if(pFile != NULL)
+	if (pFile != NULL)
 	{// ファイルが開けたら
 		fread(&g_playerPlam, sizeof(PlayerPlam), 1, pFile);
 		fclose(pFile);
@@ -611,7 +605,7 @@ void PlayerPlamLoad(void)
 	}
 #endif
 }
-								
+
 //=========================================================================================
 // プレイヤーパラメータ保存
 void PlayerPlamSave(void)
@@ -621,8 +615,7 @@ void PlayerPlamSave(void)
 	pFile = fopen(PLAYER_PARAMETERS, "wb");
 	if (pFile != NULL)
 	{// ファイルが開けたら
-		fwrite(&g_playerPlam, sizeof(PlayerPlam), 1,pFile);
+		fwrite(&g_playerPlam, sizeof(PlayerPlam), 1, pFile);
 		fclose(pFile);
 	}
-
 }

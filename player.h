@@ -9,6 +9,7 @@
 
 //==============================================================
 // ヘッダーインクルード
+#include "main.h"
 #include "input.h"
 #include "camera.h"
 
@@ -22,6 +23,7 @@
 
 //==============================================================
 // プレイヤーパラメータ
+#define PLAYER_PARAMETERS	"data\\INFO\\status\\playerplam.bin"
 #define MOVE_PLAYER			(0.1f)			// 移動速度
 #define MAX_SPEED			(5.0f)			// 最大速度
 #define PLAYER_JUMPFORCE	(3.5f)			// ジャンプ力
@@ -36,16 +38,18 @@
 //==============================================================
 // プレイヤー操作
 // キーボード
-#define PLAYER_MOVE_UP_KEY		DIK_W		// 上方に動かす
-#define PLAYER_SHOT_KEY			DIK_S		// 荷物の発射
+#define PLAYER_MOVE_UP_KEY		DIK_W		// 前方に動かす
+#define PLAYER_MOVE_DW_KEY		DIK_S		// 後方に動かす
 #define PLAYER_MOVE_R_KEY		DIK_D		// 右に動かす
 #define PLAYER_MOVE_L_KEY		DIK_A		// 左に動かす
+#define PLAYER_JUMP_KEY			DIK_SPACE	// ジャンプ
 
 // コントローラー
 #define PLAYER_MOVE_UP_PAD					// 前方に動かす
 #define PLAYER_MOVE_DW_PAD					// 後方に動かす
 #define PLAYER_MOVE_R_PAD					// 右に動かす
 #define PLAYER_MOVE_L_PAD					// 左に動かす
+#define PLAYER_JUMP_PAD						// ジャンプ
 
 
 //==============================================================
@@ -54,6 +58,11 @@
 typedef enum
 {
 	PLAYERSTATE_NONE = 0,
+	PLAYERSTATE_WAIT,
+	PLAYERSTATE_RUN,
+	PLAYERSTATE_SPIN,
+	PLAYERSTATE_JUMP,
+	PLAYERSTATE_DEAD,
 	PLAYERSTATE_MAX
 }PLAYERSTATE;
 
@@ -80,8 +89,8 @@ typedef struct
 typedef struct
 {
 	float fSpeedforce,
-	fInertia,
-	fMaxSpeed;
+		fInertia,
+		fMaxSpeed;
 }PlayerPlam;
 
 //=========================================================================================

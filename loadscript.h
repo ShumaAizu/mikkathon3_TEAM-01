@@ -9,7 +9,7 @@
 #define _LOADSCRIPT_H_
 
 #include "main.h"
-//#include "collision.h"
+#include "collision.h"
 
 //*****************************************************************************
 // É}ÉNÉçíËã`
@@ -22,7 +22,8 @@ HRESULT LoadScript(const char* pScriptFileName);
 HRESULT LoadModelDataScript(const char* pModelDataFileName);
 HRESULT LoadParentModelDataScript(const char* pParentModelDataFileName);
 HRESULT LoadMotionInfo(const char* pMotionFileName);
-//ColliderInfo LoadCollider(FILE* pFile);
+HRESULT LoadObject(const char* pObjectFileName);
+ColliderInfo LoadCollider(FILE* pFile);
 void LoadEnableString(char* aStrCpy, char* pStart);
 
 #endif	_LOADSCRIPT_H_

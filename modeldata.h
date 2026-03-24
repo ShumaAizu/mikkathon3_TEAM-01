@@ -9,7 +9,7 @@
 #define	_MODELDATA_H_
 #include "main.h"
 
-//#include "motion.h"
+#include "motion.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -34,6 +34,15 @@ typedef enum PARENTMODELTYPE
 	PARENTMODELTYPE_000 = 0,	// [0]
 	PARENTMODELTYPE_MAX
 }PARENTMODELTYPE;
+
+//*****************************************************************************
+// オフセットデータの構造体定義
+//*****************************************************************************
+typedef struct OffSetData
+{
+	D3DXVECTOR3 pos[MAX_PARTS];						// 位置
+	D3DXVECTOR3 rot[MAX_PARTS];						// 向き
+}OffSetData;
 
 //*****************************************************************************
 // モデルデータの構造体定義

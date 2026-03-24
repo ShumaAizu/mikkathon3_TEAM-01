@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="collision.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="game.cpp" />
@@ -158,6 +159,8 @@
     <ClCompile Include="loadscript.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="modeldata.cpp" />
+    <ClCompile Include="motion.cpp" />
+    <ClCompile Include="object.cpp" />
     <ClCompile Include="pause.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -169,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="collision.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="game.h" />
@@ -177,6 +181,8 @@
     <ClInclude Include="loadscript.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="modeldata.h" />
+    <ClInclude Include="motion.h" />
+    <ClInclude Include="object.h" />
     <ClInclude Include="pause.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="player.h" />

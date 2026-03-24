@@ -60,6 +60,7 @@ void InitCamera(void)
 		pCamera->rot = pCameraInfo->rot;
 		pCamera->fSpeed = INIT_CAMERASPEED;
 		pCamera->fRadiusVertical = INIT_RADIUS;
+		pCamera->fRadiusHorizonttal = INIT_RADIUS;
 
 		pCamera->viewport = DEFAULT_VEIWPORT;		// ビューポート設定
 

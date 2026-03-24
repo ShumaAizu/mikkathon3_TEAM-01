@@ -18,6 +18,8 @@
 #include "pause.h"
 #include "player.h"
 
+#include "object.h"
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
@@ -45,6 +47,13 @@ void InitGame(void)
 
 	// プレイヤーの初期化
 	InitPlayer();
+
+	// オブジェクトの初期化
+	InitObject();
+
+	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
+
+	LoadObject("data\\SCRIPTS\\model.txt");
 }
 
 //========================================
@@ -57,6 +66,9 @@ void UninitGame(void)
 
 	// プレイヤーの終了
 	UninitPlayer();
+
+	// オブジェクトの終了
+	UninitObject();
 }
 
 //========================================
@@ -84,6 +96,9 @@ void UpdateGame(void)
 	{
 		// プレイヤー更新
 		UpdatePlayer();
+
+		// オブジェクトの更新
+		UpdateObject();
 	}
 
 	if (g_nextgameFlag == GAMEFLAG_CLEAR || g_nextgameFlag == GAMEFLAG_GAMEOVER)
@@ -120,6 +135,9 @@ void DrawGame(void)
 	DrawPlayer();
 
 	DrawPlayerPreview();
+
+	// オブジェクトの描画
+	DrawObject();
 }
 
 //========================================

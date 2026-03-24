@@ -6,6 +6,7 @@
 //=============================================================================
 
 #include "game.h"
+#include "debugproc.h"
 #include "loadscript.h"
 #include "camera.h"
 #include "light.h"
@@ -57,6 +58,13 @@ void UninitGame(void)
 //========================================
 void UpdateGame(void)
 {
+	PrintDebugProc("GAME\n");
+
+	if (GetKeyboardAny() == true)
+	{
+		SetFade(MODE_RESULT);
+	}
+
 	if ((GetKeyboardTrigger(DIK_P) == true || GetJoypadTrigger(JOYKEY_START) == true) && GetFade() != FADE_IN && g_gameFlag == GAMEFLAG_NORMAL)
 	{ // ポーズキーが押された
 		g_bPause = g_bPause ? false : true;		// ポーズ状態を切り替える
@@ -75,13 +83,6 @@ void UpdateGame(void)
 	{
 
 	}
-
-#ifdef _DEBUG
-	if (GetKeyboardTrigger(DIK_RETURN) == true)
-	{
-		//SetFade(MODE_RESULT, COLOR_WHITE, DEFAULT_FADESPEED, DEFAULT_FADESPEED);
-	}
-#endif
 
 	if (g_nextgameFlag == GAMEFLAG_CLEAR || g_nextgameFlag == GAMEFLAG_GAMEOVER)
 	{ // 次の状態がクリアかゲームオーバーになったら

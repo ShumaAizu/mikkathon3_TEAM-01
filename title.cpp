@@ -7,6 +7,7 @@
 
 #include "main.h"
 #include "title.h"
+#include "debugproc.h"
 #include "input.h"
 #include "fade.h"
 #include "loadscript.h"
@@ -50,7 +51,12 @@ void DrawTitle(void)
 //====================================
 void UpdateTitle(void)
 {
+	PrintDebugProc("TITLE\n");
 
+	if (GetKeyboardAny() == true)
+	{
+		SetFade(MODE_GAME);
+	}
 }
 
 //========================================

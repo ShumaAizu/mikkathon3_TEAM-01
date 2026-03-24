@@ -23,6 +23,7 @@
 #include "fallpoint.h"
 #include "shadow.h"
 #include "trap.h"
+#include "skybox.h"
 
 //*****************************************************************************
 // グローバル変数
@@ -67,6 +68,9 @@ void InitGame(void)
 	// 落下地点目印の初期化
 	InitFallPoint();
 
+	// 空の初期化
+	InitSkyBox();
+
 	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
 
 	LoadObject("data\\SCRIPTS\\model.txt");
@@ -97,6 +101,9 @@ void UninitGame(void)
 
 	// 影の終了
 	UninitShadow();
+
+	// 空の終了
+	UninitSkyBox();
 }
 
 //=============================================================================
@@ -139,6 +146,9 @@ void UpdateGame(void)
 
 		// 影の更新
 		UpdateShadow();
+
+		// 空の更新
+		UpdateSkyBox();
 	}
 
 	if (g_nextgameFlag == GAMEFLAG_CLEAR || g_nextgameFlag == GAMEFLAG_GAMEOVER)
@@ -188,6 +198,9 @@ void DrawGame(void)
 
 	// 影の描画
 	DrawShadow();
+
+	// 空の描画
+	DrawSkyBox();
 }
 
 //=============================================================================

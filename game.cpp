@@ -21,6 +21,7 @@
 #include "object.h"
 #include "field.h"
 #include "fallpoint.h"
+#include "shadow.h"
 #include "trap.h"
 
 //*****************************************************************************
@@ -63,6 +64,9 @@ void InitGame(void)
 	// 落下地点目印の初期化
 	InitFallPoint();
 
+	// 影の初期化
+	InitShadow();
+
 	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
 
 	LoadObject("data\\SCRIPTS\\model.txt");
@@ -90,6 +94,9 @@ void UninitGame(void)
 
 	// 落下地点目印の終了
 	UninitFallPoint();
+
+	// 影の終了
+	UninitShadow();
 }
 
 //=============================================================================
@@ -129,6 +136,9 @@ void UpdateGame(void)
 
 		// 落下地点目印の更新
 		UpdateFallPoint();
+
+		// 影の更新
+		UpdateShadow();
 	}
 
 	if (g_nextgameFlag == GAMEFLAG_CLEAR || g_nextgameFlag == GAMEFLAG_GAMEOVER)
@@ -175,6 +185,9 @@ void DrawGame(void)
 
 	// 落下地点目印の描画
 	DrawFallPoint();
+
+	// 影の描画
+	DrawShadow();
 }
 
 //=============================================================================

@@ -212,7 +212,7 @@ void UpdatePlayer(void)
 		{
 			g_player.fWeight -= 1.0f;
 		}
-		PrintDebugProc("\nplayer weight : %f", g_player.fWeight);
+		// PrintDebugProc("\nplayer weight : %f", g_player.fWeight);
 
 		//**************************************************************
 		// プレイヤーパラメータ情報

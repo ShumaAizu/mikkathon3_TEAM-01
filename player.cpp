@@ -23,6 +23,13 @@ Player				g_player;								// プレイヤーの情報
 
 PlayerPlam			g_playerPlam;
 
+#define GRAVITY_FOC			(1.0f)			// 重さによる重力への影響係数
+float g_fFocGravity = GRAVITY_FOC;
+#define MOVE_FOC			(1.0f)			// 重さによる左右移動への影響係数
+float g_fFocMove = MOVE_FOC;
+#define SCROLL_FOC			(30)			// スクロール速度の係数
+int g_nFocScroll = SCROLL_FOC;
+
 //**************************************************************
 // プロトタイプ宣言
 void PlayerState(void);			// プレイヤー状態管理
@@ -51,12 +58,13 @@ void InitPlayer(void)
 	//**************************************************************
 	// 各値の初期化
 	// プレイヤー情報
-	g_player.pos = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	g_player.pos = D3DXVECTOR3(0.0f, 150.0f, 0.0f);
 	g_player.posOld = g_player.pos;
 	g_player.rot = vec3_ZORO;
 	g_player.move = vec3_ZORO;
 	g_player.spin = vec3_ZORO;
 	g_player.nShadow = -1;
+	g_player.fWeight = 10.0f;
 	g_player.state = PLAYERSTATE_NONE;
 	g_player.vtxMin = D3DXVECTOR3(0xffff, 0xffff, 0xffff);
 	g_player.vtxMax = D3DXVECTOR3(-0xffff, -0xffff, -0xffff);
@@ -195,32 +203,43 @@ void UpdatePlayer(void)
 		Collision();
 
 #if _DEBUG
+		// 重さ変更
+		if (GetKeyboardRepeat(DIK_UP))
+		{
+			g_player.fWeight += 1.0f;
+		}
+		if (GetKeyboardRepeat(DIK_DOWN))
+		{
+			g_player.fWeight -= 1.0f;
+		}
+		PrintDebugProc("\nplayer weight : %f", g_player.fWeight);
+
 		//**************************************************************
 		// プレイヤーパラメータ情報
-		if (GetKeyboardTrigger(DIK_F9) && GetKeyboardPress(DIK_LCONTROL))
+		if (GetKeyboardTrigger(DIK_F9) && GetKeyboardPress(DIK_LCONTROL) && 0)
 		{// 保存
 			PlayerPlamSave();
 		}
 
-		// 慣性力
-		if (GetKeyboardRepeat(DIK_9))
-			g_playerPlam.fInertia += 0.01f;
-		if (GetKeyboardRepeat(DIK_8))
-			g_playerPlam.fInertia -= 0.01f;
+		//// 慣性力
+		//if (GetKeyboardRepeat(DIK_9))
+		//	g_playerPlam.fInertia += 0.01f;
+		//if (GetKeyboardRepeat(DIK_8))
+		//	g_playerPlam.fInertia -= 0.01f;
 
-		// 加速力
-		if (GetKeyboardRepeat(DIK_7))
-			g_playerPlam.fSpeedforce += 0.01f;
-		if (GetKeyboardRepeat(DIK_6))
-			g_playerPlam.fSpeedforce -= 0.01f;
+		//// 加速力
+		//if (GetKeyboardRepeat(DIK_7))
+		//	g_playerPlam.fSpeedforce += 0.01f;
+		//if (GetKeyboardRepeat(DIK_6))
+		//	g_playerPlam.fSpeedforce -= 0.01f;
 
-		// 最高速
-		if (GetKeyboardRepeat(DIK_5))
-			g_playerPlam.fMaxSpeed += 0.01f;
-		if (GetKeyboardRepeat(DIK_4))
-			g_playerPlam.fMaxSpeed -= 0.01f;;
+		//// 最高速
+		//if (GetKeyboardRepeat(DIK_5))
+		//	g_playerPlam.fMaxSpeed += 0.01f;
+		//if (GetKeyboardRepeat(DIK_4))
+		//	g_playerPlam.fMaxSpeed -= 0.01f;;
 
-		PrintDebugProc("\npos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
+		// PrintDebugProc("\npos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
 		// PrintDebugProc(DEBUG_LEFT, "move:[%f, %f, %f]\n", g_player.move.x, g_player.move.y, g_player.move.z);
 
 #endif
@@ -264,73 +283,24 @@ void Keyboard(void)
 {
 	//**************************************************************
 	// 変数宣言
-	D3DXVECTOR3 ref = GetCamera()->rot;			// カメラの向き
 
 	//**************************************************************
 	// 移動
 	do
 	{
 		if (GetKeyboardPress(PLAYER_MOVE_UP_KEY))
-		{// 前
-			if (GetKeyboardPress(PLAYER_MOVE_L_KEY))
-			{// 左前
-				g_player.move.z += sinf(-D3DX_PI * 0.75f - ref.y) * g_playerPlam.fSpeedforce;
-				g_player.move.x += cosf(-D3DX_PI * 0.75f - ref.y) * g_playerPlam.fSpeedforce;
-			}
-			else if (GetKeyboardPress(PLAYER_MOVE_R_KEY))
-			{// 右前
-				g_player.move.z += sinf(D3DX_PI * 0.75f - ref.y) * g_playerPlam.fSpeedforce;
-				g_player.move.x += cosf(D3DX_PI * 0.75f - ref.y) * g_playerPlam.fSpeedforce;
-			}
-			else
-			{// 真ん前
-				g_player.move.z += -sinf(-ref.y) * g_playerPlam.fSpeedforce;
-				g_player.move.x += -cosf(-ref.y) * g_playerPlam.fSpeedforce;
-			}
-			break;
+		{// 左の入力のみ
+			g_player.move.y += g_playerPlam.fJumpforce / g_player.fWeight;
 		}
-		if (GetKeyboardPress(PLAYER_MOVE_DW_KEY))
-		{// 後
-			if (GetKeyboardPress(PLAYER_MOVE_L_KEY))
-			{// 左後ろ
-				g_player.move.z += sinf(-D3DX_PI * 0.25f - ref.y) * g_playerPlam.fSpeedforce;
-				g_player.move.x += cosf(-D3DX_PI * 0.25f - ref.y) * g_playerPlam.fSpeedforce;
-			}
-			else if (GetKeyboardPress(PLAYER_MOVE_R_KEY))
-			{// 右後ろ
-				g_player.move.z += sinf(D3DX_PI * 0.25f - ref.y) * g_playerPlam.fSpeedforce;
-				g_player.move.x += cosf(D3DX_PI * 0.25f - ref.y) * g_playerPlam.fSpeedforce;
-			}
-			else
-			{// 真後ろ
-				g_player.move.z += sinf(-ref.y) * g_playerPlam.fSpeedforce;
-				g_player.move.x += cosf(-ref.y) * g_playerPlam.fSpeedforce;
-			}
-			break;
-		}
-
 		if (GetKeyboardPress(PLAYER_MOVE_L_KEY))
 		{// 左の入力のみ
-			g_player.move.z += -sinf(D3DX_PI * 0.5f - ref.y) * g_playerPlam.fSpeedforce;
-			g_player.move.x += -cosf(D3DX_PI * 0.5f - ref.y) * g_playerPlam.fSpeedforce;
+			g_player.move.z += g_playerPlam.fSpeedforce;
 		}
 		if (GetKeyboardPress(PLAYER_MOVE_R_KEY))
 		{// 右の入力のみ
-			g_player.move.z += sinf(D3DX_PI * 0.5f - ref.y) * g_playerPlam.fSpeedforce;
-			g_player.move.x += cosf(D3DX_PI * 0.5f - ref.y) * g_playerPlam.fSpeedforce;
+			g_player.move.z -= g_playerPlam.fSpeedforce;
 		}
 	} while (0);
-
-	//**************************************************************
-	// 回転
-	if (GetKeyboardRepeat(DIK_LSHIFT))
-	{// 反時計回り
-		g_player.rot.y += REV_PLAYER;
-	}
-	if (GetKeyboardRepeat(DIK_RSHIFT))
-	{// 時計回り
-		g_player.rot.y -= REV_PLAYER;
-	}
 }
 
 //==============================================================
@@ -342,14 +312,14 @@ void Joypad(void)
 	D3DXVECTOR3 ref = GetCamera()->rot;
 	D3DXVECTOR3 leftStick = vec3_ZORO;
 	GetJoypadStickLeft(&leftStick.x, &leftStick.y);
-	PrintDebugProc("\nLeftStick \nX: %f\nY: %f", leftStick.x, leftStick.y);
 
 	//**************************************************************
 	// 移動
 	if (leftStick.x != 0)
-		g_player.move.x += leftStick.x * g_playerPlam.fSpeedforce;
+		g_player.move.z -= leftStick.x * g_playerPlam.fSpeedforce;
+
 	if(0 < leftStick.y)
-		g_player.move.y += leftStick.y * g_playerPlam.fJumpforce;
+		g_player.move.y += leftStick.y * g_playerPlam.fJumpforce / g_player.fWeight;
 
 }
 
@@ -364,7 +334,7 @@ void PlayerMove(void)
 
 	//**************************************************************
 	// 移動に合わせて向きを変える
-	if (g_player.move.x != 0 || g_player.move.z != 0)
+	if ((g_player.move.x != 0 || g_player.move.z != 0) && 0)
 	{// 動いていれば
 		if (D3DX_PI < fRotMove)
 		{//	逆回転補正
@@ -388,32 +358,11 @@ void PlayerMove(void)
 		g_player.rot.y = -D3DX_PI;
 
 	//**************************************************************
-	// 速度制限
-	if (fabs(g_player.move.x * g_player.move.x + g_player.move.z * g_player.move.z) < 0.01f)
-	{// 移動速度、低速停止( 0.01より遅かったら
-		g_player.move.x = 0;
-		g_player.move.z = 0;
-	}
-
-	if (g_playerPlam.fMaxSpeed < fabs(g_player.move.x * g_player.move.x + g_player.move.z * g_player.move.z))
-	{// 移動速度、最大速度
-		//g_player.move.z = -sinf(-g_player.rot.y) * MAX_SPEED;
-		//g_player.move.x = -cosf(-g_player.rot.y) * MAX_SPEED;
-	}
-
-	// 回転速度制限
-	if (0.1f < g_player.spin.y || g_player.spin.y < 0.1f)
-	{
-		//g_player.spin.y *= 0.5f;
-	}
-
-	//**************************************************************
 	// 移動・回転
-	PrintDebugProc("\nPlayerMove\nX:%f\nY%f", g_player.move.x, g_player.move.y);
 	if (g_player.move.x != 0 || g_player.move.z != 0)
 	{// 水平移動
-		g_player.pos.x += g_player.move.x;
-		g_player.pos.z += g_player.move.z;
+		g_player.pos.x += g_player.move.x / g_player.fWeight * g_fFocMove;
+		g_player.pos.z += g_player.move.z / g_player.fWeight * g_fFocMove;
 		g_player.state = PLAYERSTATE_RUN;
 	}
 	if (g_player.move.y != 0)
@@ -435,10 +384,6 @@ void PlayerMove(void)
 		g_player.rot += g_player.spin;
 	}
 
-	////**************************************************************
-	//// 影を追従
-	//SetPotisionShadow(g_player.nShadow, g_player.pos);
-
 	//**************************************************************
 	// 慣性
 	g_player.move += D3DXVECTOR3(-g_player.move.x * g_playerPlam.fInertia, 0.0f, -g_player.move.z * g_playerPlam.fInertia);
@@ -446,7 +391,12 @@ void PlayerMove(void)
 
 	//**************************************************************
 	// 重力
-	g_player.move.y -= 0.1f/*GRAVITY*/;
+	g_player.move.y -= GRAVITY * g_player.fWeight * 0.01f;
+
+	//**************************************************************
+	// 強制スクロール
+	if (g_player.move.x <= g_nFocScroll / g_player.fWeight)
+		g_player.move.x += MOVE_FORCE;
 }
 
 //==============================================================
@@ -456,11 +406,20 @@ void Collision(void)
 	//**************************************************************
 	// 変数宣言
 
-	if (g_player.pos.y < 0.0f)
+	// 地面
+	if (g_player.pos.y <= 0.0f)
 	{
 		g_player.pos.y = 0.0f;
+
+		g_player.move.x = 0.0f;
+		g_player.move.z = 0.0f;
 		if (g_player.move.y < 0.0f)
 			g_player.move.y = 0.0f;
+	}
+
+	if (WORLD_END < g_player.pos.x)
+	{
+		g_player.pos.x = -WORLD_END;
 	}
 }
 
@@ -518,50 +477,12 @@ void DrawPlayer(void)
 	}
 }
 
-void DrawPlayerPreview(void)
+//=========================================================================================
+// プレイヤーの重さを追加
+//=========================================================================================
+void AddPlayerWeight(float fWeight)
 {
-	//**************************************************************
-	// 変数宣言
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans, mtxWorld;			// マトリックス計算用
-	D3DMATERIAL9 matDef;							// 現在のマテリアル保存用
-	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
-
-	//**************************************************************
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&mtxWorld);
-
-	// 向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, g_player.rot.y, g_player.rot.x, g_player.rot.z);
-	D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
-
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &mtxWorld);
-
-	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-	// 現在のマテリアルを取得
-	pDevice->GetMaterial(&matDef);
-
-	// マテリアルデータへのポインタを取得
-	pMat = (D3DXMATERIAL*)g_pMatBuffPlayer->GetBufferPointer();
-
-	for (int nCntMat = 0; nCntMat < (int)g_dwNumMatPlayer; nCntMat++)
-	{
-		// マテリアルの設定
-		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
-
-		// テクスチャの設定
-		pDevice->SetTexture(0, g_apTexturePlayer[nCntMat]);
-
-		// モデル(パーツ)の描画
-		g_pMeshPlayer->DrawSubset(nCntMat);
-	}
-
-	// pDevice->GetRenderState();
-
-	// 保存していたマテリアルに戻す
-	pDevice->SetMaterial(&matDef);
-	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	g_player.fWeight += fWeight;
 }
 
 //=========================================================================================

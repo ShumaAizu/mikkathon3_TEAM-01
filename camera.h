@@ -16,8 +16,8 @@
 //=========================================================================================
 #define CAMERA_V_DEFPOS			vec3(0.0f, 350.0f, 500.0f)	// 視点のデフォ位置
 #define CAMERA_R_DEFPOS			vec3(0.0f, 0.0f, 0.0f)		// 注視点のデフォ位置
-#define CAMERA_ROT				vec3(1.8f, 0.0f, 0.0f)		// カメラのデフォ向き
-#define CAMERA_DISTANS			(55.0f)						// カメラと注視点の距離
+#define CAMERA_ROT				vec3(0.6f, 2.52f, 0.0f)		// カメラのデフォ向き
+#define CAMERA_DISTANS			(300.0f)					// カメラと注視点の距離
 #define VIEW_MINDEPTH			(5.0f)						// 最小描画距離
 #define VIEW_MAXDEPTH			(10000.0f)					// 最大描画距離
 #define VIEW_RADIAN				(45.0f)						// 視野角
@@ -39,7 +39,7 @@
 typedef enum
 {
 	CAMERATYPE_PLAYER = 0,				// プレイヤー追従
-	//CAMERATYPE_MINIMAP,					// ミニマップ
+	CAMERATYPE_MINIMAP,					// ミニマップ
 	//CAMERATYPE_3DUI,					// UIに3Dモデルを表示したいときのカメラ
 	MAX_CAMERA
 }CameraType;

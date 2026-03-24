@@ -7,8 +7,8 @@
 //**************************************************************
 // インクルード
 #include "camera.h"
+#include "debugproc.h"
 #include "input.h"
-
 #include "player.h"
 
 //**************************************************************
@@ -38,8 +38,8 @@ void InitCamera(void)
 		pCamera->posV = CAMERA_V_DEFPOS;										// 視点
 		pCamera->posR = CAMERA_R_DEFPOS;										// 注視点
 		pCamera->posRDest = CAMERA_R_DEFPOS;									// 目的の注視点
-		pCamera->rot = D3DXVECTOR3(D3DX_PI * 0.2f, D3DX_PI * 0.5f, 0.0f);		// カメラの角度
-		pCamera->rotDest = D3DXVECTOR3(D3DX_PI * 0.2f, D3DX_PI * 0.5f, 0.0f);	// カメラの角度
+		pCamera->rot = CAMERA_ROT;		// カメラの角度
+		pCamera->rotDest = CAMERA_ROT;	// カメラの角度
 		pCamera->vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);							// 上方向ベクトル
 		pCamera->fDist = CAMERA_DISTANS;										// 視点と注視点の距離
 		pCamera->fViewMin = VIEW_MINDEPTH;										// 最短描画距離
@@ -47,11 +47,21 @@ void InitCamera(void)
 		pCamera->fViewRadian = VIEW_RADIAN;										// 視野角
 		pCamera->viewport.X = 0.0f;												// 画面左上 X 座標
 		pCamera->viewport.Y = 0.0f;												// 画面左上 Y 座標
-		pCamera->viewport.Width = SCREEN_WIDTH;									// 表示画面の横幅
-		pCamera->viewport.Height = SCREEN_HEIGHT;								// 表示画面の高さ
+		if (nCntCamera == CAMERATYPE_PLAYER)
+		{
+			pCamera->viewport.Width = SCREEN_WIDTH;								// 表示画面の横幅
+			pCamera->viewport.Height = SCREEN_HEIGHT;							// 表示画面の高さ
+		}
+		else if (nCntCamera == CAMERATYPE_MINIMAP)
+		{
+			pCamera->viewport.Width = SCREEN_WIDTH;								// 表示画面の横幅
+			pCamera->viewport.Height = (float)SCREEN_HEIGHT / 6;				// 表示画面の高さ
+		}
 		pCamera->viewport.MinZ = 0.0f;
 		pCamera->viewport.MaxZ = 1.0f;
 		pCamera->bUse = true;
+		pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
+
 	}
 }
 
@@ -79,12 +89,13 @@ void UpdateCamera(MODE mode)
 	{
 		// 移動
 		CameraMove(pCamera);
-	}
+
 		// 回転
 		CameraRotation(pCamera);
+	}
 
 	pCamera->posV.x = pCamera->posR.x - cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
-	pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
+	//pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
 	pCamera->posV.z = pCamera->posR.z - sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
 
 	if (GetKeyboardTrigger(DIK_F1))
@@ -104,7 +115,7 @@ void CameraFollow(P_CAMERA pCamera)
 	// プレイヤーに追従
 	pCamera->posRDest.x = pPlayer->pos.x;
 	pCamera->posRDest.y = pPlayer->pos.y;
-	pCamera->posRDest.z = pPlayer->pos.z;
+	// pCamera->posRDest.z = pPlayer->pos.z;
 
 	//**************************************************************
 	// カメラの位置を補正

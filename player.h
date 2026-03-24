@@ -20,12 +20,18 @@
 // モデルデータ
 #define MAX_PLAYER			(1)				// 最大モデル数
 #define MAX_TEX_PLAYER		(8)				// プレイヤーモデルの最大テクスチャ
+#define WORLD_END			(3000.0f)		// 世界の端っこ
 
 //==============================================================
 // プレイヤーパラメータ
 #define PLAYER_PARAMETERS	"data\\INFO\\status\\playerplam.bin"
-#define MOVE_FORCE			(0.1f)			// 移動速度
-#define JUMP_FORCE			(0.3f)			// 上昇速度
+#define PLAYER_WEIGHT		(10.0f)			// 気球の重さ
+#define GRAVITY				(0.008f)		// 重力
+#define MOVE_FORCE			(0.5f)			// 移動速度
+#define JUMP_FORCE			(0.015f)		// 上昇速度
+#define GRAVITY_FOC			(1.0f)			// 重さによる重力への影響係数
+#define MOVE_FOC			(1.0f)			// 重さによる左右移動への影響係数
+#define SCROLL_FOC			(30)			// スクロール速度の係数
 #define MAX_SPEED			(5.0f)			// 最大速度
 #define REV_PLAYER			(0.1f)			// 回転速度
 #define BULLET_SIZE			(3.0f)			// 弾の大きさ
@@ -77,6 +83,7 @@ typedef struct
 	D3DXVECTOR3 move;					// 移動速度
 	D3DXVECTOR3 spin;					// 回転速度
 	int			nShadow;				// 影番号
+	float		fWeight;				// 重さ
 	PLAYERSTATE state;					// 状態
 	D3DXVECTOR3 vtxMin;					// 頂点の最小座標
 	D3DXVECTOR3 vtxMax;					// 頂点の最大座標
@@ -101,7 +108,7 @@ void InitPlayer(void);
 void UninitPlayer(void);
 void UpdatePlayer(void);
 void DrawPlayer(void);
-void DrawPlayerPreview(void);
+void AddPlayerWeight(float fWeight);	// プレイヤーの重さを追加
 Player* GetPlayer(void);				// プレイヤー情報取得
 PlayerPlam* GetPlyerPlam(void);			// プレイヤーパラメータ情報取得
 

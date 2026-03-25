@@ -14,7 +14,6 @@
 #include "result.h"
 #include "fade.h"
 #include "fog.h"
-//#include "loadscript.h"
 #include "camera.h"
 #include "light.h"
 
@@ -22,6 +21,7 @@
 #include "wall.h"
 #include "skybox.h"
 
+#include "loadscript.h"
 #include "modeldata.h"
 #include "texture.h"
 //#include "effect.h"
@@ -376,7 +376,10 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// 空の初期化
 	InitSkyBox();
-	
+
+	// モデルデータの読み込み
+	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
+
 	// エフェクトの初期化処理
 	//InitEffect();
 

@@ -100,7 +100,7 @@ void GameModeCamera(void)
 {
 	//**************************************************************
 	// 変数宣言
-	P_CAMERA pCamera = GetCamera();
+	P_CAMERA pCamera = GetCamera(CAMERATYPE_PLAYER);
 
 	// カメラを動かすモード
 	if (g_bCameraMove)
@@ -339,9 +339,9 @@ void SetUICamera(vec3 viewTopLeft, D3DXVECTOR2 size)
 //=========================================================================================
 // カメラの情報を取得
 //=========================================================================================
-P_CAMERA GetCamera(void)
+P_CAMERA GetCamera(CAMERATYPE type)
 {
-	return &g_aCamera[0];
+	return &g_aCamera[type];
 }
 
 //=========================================================================================
@@ -373,9 +373,9 @@ bool IsEnableCameraEdit(void)
 //=========================================================================================
 // カメラの位置を強制移動
 //=========================================================================================
-void SetPositionCamera(vec3 pos)
+void SetPositionCamera(vec3 pos, CAMERATYPE type)
 {
-	P_CAMERA pCamera = GetCamera();
+	P_CAMERA pCamera = GetCamera(type);
 
 	pCamera->posR = pos;
 

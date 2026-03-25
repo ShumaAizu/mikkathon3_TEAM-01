@@ -33,6 +33,12 @@ typedef enum
 	TITLEPOLYGON_ENDLESS,		// エンドレスモード
 	TITLEPOLYGON_MAX
 }TITLEPOLYGON;
+typedef enum
+{
+	TITLEMODEL_BALLOON = 0,		// 気球
+	TITLEMODEL_PRESENT,			// プレゼントボックス
+	TITLEMODEL_MAX
+}TITLEMODEL;
 
 //*****************************************************************************
 // タイトルのテクスチャ
@@ -58,6 +64,21 @@ typedef struct Title
 	bool	bDraw;		// 描画しているか
 }Title;
 typedef Title* P_TITLE;
+
+//==============================================================
+// モデル情報構造体
+//==============================================================
+typedef struct TitleModel
+{
+	vec3		pos;		// 位置
+	vec3		move;		// 速度
+	vec3		rot;		// 向き
+	vec3		spin;		// 回転
+	D3DXMATRIX	mtxWorldr;	// ワールドマトリックス
+	ModelData*	pModel;		// モデル情報
+	bool		bDraw;		// 描画しているか
+}TitleModel;
+typedef TitleModel* P_TITLEMODLE;
 
 //*****************************************************************************
 // プロトタイプ宣言

@@ -25,6 +25,8 @@
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTitle;			// 頂点バッファへのポインタ
 TITLESTATE g_titleState = TITLESTATE_WAIT;			// タイトルの状態
 int g_nCounterTitleState = 0;						// 状態管理カウンター
+TitleModel g_titleModel[TITLEMODEL_MAX] = {};		// タイトル表示用モデル
+
 LOADTEXTURE_INFO g_aTitleTex[TITLETEXTURE_MAX] =	// 使うテクスチャの情報
 {
 	{"data/TEXTURE/titlelogo000.png",false,-1},
@@ -49,6 +51,8 @@ void TitleOp(void);
 void TitleMenu(void);
 void TitleVtxPos(TITLEPOLYGON type, vec3 pos,vec3 size);
 void TitleVtxCol(TITLEPOLYGON type, D3DXCOLOR col);
+void DrawTitle2D(void);
+void DrawTitle3D(void);
 
 //=========================================================================================
 //	タイトルの初期化処理
@@ -61,6 +65,9 @@ void InitTitle(void)
 	// グローバル変数初期化
 	g_titleState = TITLESTATE_WAIT;
 	g_nCounterTitleState = 0;
+
+	g_titleModel[0].pModel = SetModelData(MODELTYPE_BALLOON);
+	g_titleModel[1].pModel = SetModelData(MODELTYPE_PRESENT);
 
 	// テクスチャの読み込み
 	P_LOADTEXTURE_INFO pTexInfo = &g_aTitleTex[0];
@@ -295,6 +302,15 @@ void TitleVtxCol(TITLEPOLYGON type, D3DXCOLOR col)
 //=========================================================================================
 void DrawTitle(void)
 {
+	DrawTitle2D();
+
+	DrawTitle3D();
+}
+
+//==============================================================
+// タイトル2D描画
+void DrawTitle2D(void)
+{
 	LPDIRECT3DDEVICE9 pDevice;				// デバイスへのポインタ
 
 	// デバイスの取得
@@ -316,6 +332,63 @@ void DrawTitle(void)
 
 			// ポリゴンの描画
 			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTex * 4, 2);
+		}
+	}
+
+}
+
+//==============================================================
+// タイトル3D描画
+void DrawTitle3D(void)
+{
+	//**************************************************************
+	// 変数宣言
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
+	D3DXMATRIX		mtxRot, mtxTrans;				// マトリックス計算用
+	D3DMATERIAL9	matDef;							// 現在のマテリアル保存用
+	D3DXMATERIAL*	pMat;							// マテリアルデータへのポインタ
+
+	for (int nCnt = 0; nCnt < 2; nCnt++)
+	{
+		if (g_titleModel[nCnt].pModel)
+		{
+			//**************************************************************
+			// ワールドマトリックスの初期化
+			D3DXMatrixIdentity(&g_titleModel[nCnt].mtxWorldr);
+
+			// 向きを反映
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, g_titleModel[nCnt].rot.y, g_titleModel[nCnt].rot.x, g_titleModel[nCnt].rot.z);
+			D3DXMatrixMultiply(&g_titleModel[nCnt].mtxWorldr, &g_titleModel[nCnt].mtxWorldr, &mtxRot);
+
+			// 位置を反映
+			D3DXMatrixTranslation(&mtxTrans, g_titleModel[nCnt].pos.x, g_titleModel[nCnt].pos.y, g_titleModel[nCnt].pos.z);
+			D3DXMatrixMultiply(&g_titleModel[nCnt].mtxWorldr, &g_titleModel[nCnt].mtxWorldr, &mtxTrans);
+
+			// ワールドマトリックスの設定
+			pDevice->SetTransform(D3DTS_WORLD, &g_titleModel[nCnt].mtxWorldr);
+
+			//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			// 現在のマテリアルを取得
+			pDevice->GetMaterial(&matDef);
+
+			// マテリアルデータへのポインタを取得
+			pMat = (D3DXMATERIAL*)g_titleModel[nCnt].pModel->pBuffMat->GetBufferPointer();
+
+			for (int nCntMat = 0; nCntMat < (int)g_titleModel[nCnt].pModel->dwNumMat; nCntMat++)
+			{
+				// マテリアルの設定
+				pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+				// テクスチャの設定
+				pDevice->SetTexture(0, g_titleModel[nCnt].pModel->apTexture[nCntMat]);
+
+				// モデル(パーツ)の描画
+				g_titleModel[nCnt].pModel->pMesh->DrawSubset(nCntMat);
+			}
+
+			// 保存していたマテリアルに戻す
+			pDevice->SetMaterial(&matDef);
+			//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		}
 	}
 }

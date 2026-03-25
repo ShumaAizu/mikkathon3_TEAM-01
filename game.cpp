@@ -94,9 +94,6 @@ void InitGame(void)
 	// 届けた数の初期化
 	InitDelivered();
 
-	// モデルデータの読み込み
-	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
-
 	// ステージ情報の読み込み
 	LoadObject("data\\SCRIPTS\\model.txt");
 

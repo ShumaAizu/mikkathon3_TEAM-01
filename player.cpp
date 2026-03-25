@@ -65,11 +65,6 @@ void InitPlayer(void)
 	//**************************************************************
 	// 変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
-	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
-	int nNumVtx;									// 頂点数
-	DWORD dwSizeFVF;								// 頂点データのサイズ
-	BYTE* pVtxBuff;									// 頂点情報のバッファ
-	D3DXVECTOR3 vtx;								// 一時的に頂点座標を格納する変数
 
 	//**************************************************************
 	// 各値の初期化
@@ -265,7 +260,6 @@ void Joypad(void)
 {
 	//**************************************************************
 	// 変数宣言
-	D3DXVECTOR3 ref = GetCamera()->rot;
 	D3DXVECTOR3 leftStick = vec3_ZORO;
 	GetJoypadStickLeft(&leftStick.x, &leftStick.y);
 	// PrintDebugProc("\nLeftStick\nx: %f\ny: %f", leftStick.x, leftStick.y);
@@ -291,7 +285,6 @@ void PlayerMove(void)
 	//**************************************************************
 	// 変数宣言	
 	float fRotMove = atan2f(-g_player.move.x, -g_player.move.z) - g_player.rot.y;	// 変化させる角度(目的値と現在値の差)
-	D3DXVECTOR3 ref = GetCamera()->rot;			// カメラの向き
 
 	//**************************************************************
 	// 速度の制限
@@ -449,7 +442,7 @@ void Collision(void)
 		if (GetSetCutIn())
 		{
 			g_player.pos.x = -WORLD_END;
-			SetPositionCamera(g_player.pos);
+			SetPositionCamera(g_player.pos,CAMERATYPE_PLAYER);
 		}
 		else
 		{

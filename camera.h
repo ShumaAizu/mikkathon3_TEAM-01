@@ -44,9 +44,10 @@ typedef enum
 {
 	CAMERATYPE_PLAYER = 0,				// プレイヤー追従
 	CAMERATYPE_MINIMAP,					// ミニマップ
+	CAMERATYPE_TITLE,					// タイトル用カメラ
 	//CAMERATYPE_3DUI,					// UIに3Dモデルを表示したいときのカメラ
 	MAX_CAMERA
-}CameraType;
+}CAMERATYPE;
 
 //==============================================================
 // カメラの構造体定義
@@ -69,7 +70,7 @@ typedef struct Camera
 	D3DXMATRIX	mtxView;				// ビューマトリックス
 	D3DVIEWPORT9 viewport;				// ビューポート
 
-	CameraType	type;					// カメラタイプ
+	CAMERATYPE	type;					// カメラタイプ
 	bool		bUse;					// 配列を使っているか
 }Camera;
 typedef Camera* P_CAMERA;
@@ -82,8 +83,8 @@ void UninitCamera(void);
 void UpdateCamera(void);
 void SetCamera(void);										// カメラを設置（mainのDrawの最初にする）
 void SetUICamera(vec3 viewTopLeft, D3DXVECTOR2 size);		// UI用などで画面上にモデルを描画したい場合
-P_CAMERA GetCamera(void);									// カメラ除法配列の先頭アドレスを取得
+P_CAMERA GetCamera(CAMERATYPE type = (CAMERATYPE)0);		// カメラ除法配列の先頭アドレスを取得
 bool IsEnableCameraEdit(void);
-void SetPositionCamera(vec3 pos);
+void SetPositionCamera(vec3 pos, CAMERATYPE type);
 
 #endif// !_CAMERA_H_#endif#endif

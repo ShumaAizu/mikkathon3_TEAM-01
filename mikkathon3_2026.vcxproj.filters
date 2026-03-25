@@ -144,6 +144,9 @@
     <ClCompile Include="resultdelivered.cpp">
       <Filter>ソース ファイル\result</Filter>
     </ClCompile>
+    <ClCompile Include="cutin.cpp">
+      <Filter>ソース ファイル\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debugproc.h">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="resultdelivered.h">
       <Filter>ヘッダー ファイル\result</Filter>
+    </ClInclude>
+    <ClInclude Include="cutin.h">
+      <Filter>ヘッダー ファイル\game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

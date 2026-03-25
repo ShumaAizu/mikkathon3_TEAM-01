@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
+    <ClCompile Include="cutin.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="delivered.cpp" />
     <ClCompile Include="fade.cpp" />
@@ -187,6 +188,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />
+    <ClInclude Include="cutin.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="delivered.h" />
     <ClInclude Include="fade.h" />

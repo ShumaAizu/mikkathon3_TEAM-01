@@ -13,6 +13,8 @@
 #include "shadow.h"
 #include "trap.h"
 
+#include "cutin.h"
+
 //**************************************************************
 // ç\ë¢ëÃÇÃíËã`
 
@@ -439,7 +441,14 @@ void Collision(void)
 
 	if (WORLD_END < g_player.pos.x)
 	{
-		g_player.pos.x = -WORLD_END;
+		if (GetSetCutIn())
+		{
+			g_player.pos.x = -WORLD_END;
+		}
+		else
+		{
+			SetCutIn();
+		}
 	}
 }
 

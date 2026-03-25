@@ -174,16 +174,6 @@ void SetItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, ITEMTYPE itemtype, MODELTYPE Mode
 			pItem->CollOffset = ITEM_COLLOFFSET;
 			pItem->fRadius = ITEM_RADIUS;
 			break;
-
-		case ITEMTYPE_001:
-			pItem->CollOffset = ITEM_COLLOFFSET;
-			pItem->fRadius = ITEM_RADIUS;
-			break;
-
-		case ITEMTYPE_002:
-			pItem->CollOffset = ITEM_COLLOFFSET;
-			pItem->fRadius = ITEM_RADIUS;
-			break;
 		}
 
 		// モデルデータ設定

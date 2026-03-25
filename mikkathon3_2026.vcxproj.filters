@@ -130,10 +130,13 @@
       <Filter>ソース ファイル\main</Filter>
     </ClCompile>
     <ClCompile Include="fog.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\main</Filter>
     </ClCompile>
     <ClCompile Include="texture.cpp">
       <Filter>ソース ファイル\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="delivered.cpp">
+      <Filter>ソース ファイル\game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,11 +218,14 @@
     <ClInclude Include="wall.h">
       <Filter>ヘッダー ファイル\object</Filter>
     </ClInclude>
-    <ClInclude Include="fog.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="texture.h">
       <Filter>ヘッダー ファイル\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="fog.h">
+      <Filter>ヘッダー ファイル\main</Filter>
+    </ClInclude>
+    <ClInclude Include="delivered.h">
+      <Filter>ヘッダー ファイル\game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

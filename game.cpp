@@ -29,6 +29,7 @@
 #include "skybox.h"
 
 #include "time.h"
+#include "delivered.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -91,6 +92,9 @@ void InitGame(void)
 	// タイムの初期化
 	InitTime();
 
+	// 届けた数の初期化
+	InitDelivered();
+
 	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
 
 	LoadObject("data\\SCRIPTS\\model.txt");
@@ -139,6 +143,9 @@ void UninitGame(void)
 
 	// タイムの終了
 	UninitTime();
+
+	// 届けた数の終了
+	UninitDelivered();
 }
 
 //=============================================================================
@@ -193,6 +200,9 @@ void UpdateGame(void)
 
 		// タイムの更新
 		UpdateTime();
+
+		// 届けた数の更新
+		UpdateDelivered();
 	}
 
 	if (g_nextgameFlag == GAMEFLAG_CLEAR || g_nextgameFlag == GAMEFLAG_GAMEOVER)
@@ -257,6 +267,9 @@ void DrawGame(void)
 
 	// タイムの描画
 	DrawTime();
+
+	// 届けた数の描画
+	DrawDelivered();
 
 	// 再設定
 	SetFogEnable(isFog);

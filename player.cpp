@@ -134,6 +134,10 @@ void UpdatePlayer(void)
 		if (GetKeyboardRepeat(DIK_DOWN))
 		{
 			g_player.fWeight -= 1.0f;
+			if (g_player.fWeight <= 0)
+			{
+				g_player.fWeight = 1.0f;
+			}
 		}
 		PrintDebugProc("\nplayer weight : %f", g_player.fWeight);
 

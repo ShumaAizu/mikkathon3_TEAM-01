@@ -22,6 +22,31 @@ typedef enum
 	TITLESTATE_MAX
 }TITLESTATE;
 
+//*****************************************************************************
+// タイトルの表示物
+//*****************************************************************************
+typedef enum
+{
+	TITLEPOLYGON_TITLE = 0,		// タイトル
+	TITLEPOLYGON_START,			// スタート
+	TITLEPOLYGON_3MIN,			// ３分モード
+	TITLEPOLYGON_ENDLESS,		// エンドレスモード
+	TITLEPOLYGON_MAX
+}TITLEPOLYGON;
+
+//*****************************************************************************
+// タイトルのテクスチャ
+//*****************************************************************************
+typedef enum
+{
+	TITLETEXTURE_TITLE = 0,		// タイトル
+	TITLETEXTURE_START_KEY,		// キーボードのスタート
+	TITLETEXTURE_START_JOY,		// コントローラーのスタート
+	TITLETEXTURE_3MIN,			// ３分モード
+	TITLETEXTURE_ENDLESS,		// エンドレスモード
+	TITLETEXTURE_MAX
+}TITLETEXTURE;
+
 //==============================================================
 // 2Dポリ情報構造体
 //==============================================================
@@ -30,6 +55,7 @@ typedef struct Title
 	vec3	pos;		// 位置
 	vec3	size;		// 大きさ
 	int		nTex;		// テクスチャ
+	bool	bDraw;		// 描画しているか
 }Title;
 typedef Title* P_TITLE;
 

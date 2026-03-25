@@ -26,6 +26,11 @@
 //*****************************************************************************
 FallItem g_afallitem[MAX_FALLITEM];		// アイテムの情報
 
+MODELTYPE g_ItemModelType[ITEMTYPE_MAX] =
+{
+	MODELTYPE_PRESENT,
+};
+
 //=============================================================================
 //	アイテムの初期化処理
 //=============================================================================
@@ -136,7 +141,7 @@ void UpdateFallItem(void)
 //=============================================================================
 //	アイテムの設定処理
 //=============================================================================
-void SetFallItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, ITEMTYPE itemtype, MODELTYPE ModelType)
+void SetFallItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, ITEMTYPE itemtype)
 {
 	FallItem* pFallItem = &g_afallitem[0];
 
@@ -152,7 +157,7 @@ void SetFallItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, ITEMTYPE itemtype, MODELTYPE 
 		pFallItem->itemtype = itemtype;
 
 		// モデルデータ設定
-		pFallItem->NormalObjectData.pModelData = SetModelData(ModelType);
+		pFallItem->NormalObjectData.pModelData = SetModelData(g_ItemModelType[itemtype]);
 		pFallItem->bUse = true;
 		break;
 	}

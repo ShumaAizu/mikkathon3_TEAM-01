@@ -40,7 +40,6 @@ void InitFallItem(void);
 void UninitFallItem(void);
 void UpdateFallItem(void);
 void DrawFallItem(void);
-int CollisionFallItem(D3DXVECTOR3 pos, float fRadius);
-void SetFallItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, ITEMTYPE fallitemtype, MODELTYPE ModelType);
+void SetFallItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, ITEMTYPE itemtype);
 
 #endif

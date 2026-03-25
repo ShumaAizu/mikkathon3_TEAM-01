@@ -18,12 +18,7 @@
 
 //**************************************************************
 // グローバル変数
-//LPDIRECT3DTEXTURE9	g_apTexturePlayer[MAX_TEX_PLAYER] = {};	// テクスチャへのポインタ
-//LPD3DXMESH			g_pMeshPlayer = NULL;					// メッシュ(頂点情報)へのポインタ
-//LPD3DXBUFFER		g_pMatBuffPlayer = NULL;				// マテリアルへのポインタ
-//DWORD				g_dwNumMatPlayer = 0;					// マテリアル数
 Player				g_player;								// プレイヤーの情報
-
 PlayerPlam			g_playerPlam;
 
 #define GRAVITY_FOC			(0.01f)			// 重さによる重力への影響係数
@@ -315,7 +310,7 @@ void PlayerMove(void)
 	//**************************************************************
 	// 強制スクロール
 	if (g_player.move.x <= g_nFocScroll / g_player.fWeight)
-		g_player.move.x += MOVE_FORCE;
+		g_player.move.x += g_fFocMove;
 }
 
 //==============================================================

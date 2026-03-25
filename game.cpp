@@ -25,6 +25,7 @@
 #include "fallpoint.h"
 #include "shadow.h"
 #include "trap.h"
+#include "item.h"
 #include "skybox.h"
 
 #include "time.h"
@@ -78,6 +79,9 @@ void InitGame(void)
 	// トラップの初期化
 	InitTrap();
 
+	// アイテムの初期化
+	InitItem();
+
 	// 落下地点目印の初期化
 	InitFallPoint();
 
@@ -120,6 +124,9 @@ void UninitGame(void)
 
 	// トラップの終了
 	UninitTrap();
+
+	// アイテムの終了
+	UninitItem();
 
 	// 落下地点目印の終了
 	UninitFallPoint();
@@ -171,6 +178,9 @@ void UpdateGame(void)
 
 		// トラップの更新
 		UpdateTrap();
+
+		// アイテムの更新
+		UpdateItem();
 
 		// 落下地点目印の更新
 		UpdateFallPoint();
@@ -229,6 +239,9 @@ void DrawGame(void)
 
 	// トラップの描画
 	DrawTrap();
+
+	// アイテムの描画
+	DrawItem();
 
 	// 落下地点目印の描画
 	DrawFallPoint();

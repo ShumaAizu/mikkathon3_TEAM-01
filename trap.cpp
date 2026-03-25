@@ -23,6 +23,14 @@ Trap g_atrap[MAX_TRAP];				// トラップの情報
 int g_nNumTrapData;					// トラップデータ数
 int g_nNumTrap;						// 現在のトラップ数
 
+// トラップの半径
+const float g_aTrapRadius[TRAPTYPE_MAX] =
+{
+	32.5f,
+	20.0f,
+	0.0f,
+};
+
 //=============================================================================
 //	トラップの初期化処理
 //=============================================================================
@@ -120,9 +128,30 @@ void UpdateTrap(void)
 //=============================================================================
 //	トラップの当たり判定処理
 //=============================================================================
-void CollisionTrap(D3DXVECTOR3* pPos, float fRadius)
+bool CollisionTrap(D3DXVECTOR3 pos, float fRadius)
 {
+	Trap* pTrap = &g_atrap[0];	// トラップへのポインタ
 
+	float fDiff = 0.0f;
+
+	for (int nCntItem = 0; nCntItem < MAX_TRAP; nCntItem++, pTrap++)
+	{
+		if (pTrap->bUse == false)
+		{// 使用していなかったら戻る
+			continue;
+		}
+
+		// 各値を二乗して距離を算出
+		fDiff = powf(pTrap->pos.x - pos.x, 2) + powf(pTrap->pos.y - pos.y, 2) + powf(pTrap->pos.z - pos.z, 2);
+
+		if (fDiff <= powf(fRadius + g_aTrapRadius[pTrap->traptype], 2))
+		{// 当たっていたら
+			pTrap->bUse = false;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 //=============================================================================

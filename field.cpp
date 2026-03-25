@@ -22,11 +22,11 @@
 // グローバル変数
 //*****************************************************************************
 LPDIRECT3DTEXTURE9 g_apTextureField[FIELDTYPE_MAX] = {};		// テクスチャへのポインタ
-Field g_aField[MAX_FIELD];									// メッシュフィールドの情報
+Field g_aField[MAX_FIELD];										// メッシュフィールドの情報
 
 const char* c_pFieldTextureName[FIELDTYPE_MAX] =
 {
-	"data\\TEXTURE\\field100.jpg",
+	"data\\TEXTURE\\stone001.jpg",
 };
 
 //=============================================================================

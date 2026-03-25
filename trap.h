@@ -20,8 +20,8 @@
 //*****************************************************************************
 typedef enum TRAPTYPE
 {
-	TRAPTYPE_000 = 0,
-	TRAPTYPE_001,
+	TRAPTYPE_NORMAL = 0,
+	TRAPTYPE_MINI,
 	TRAPTYPE_002,
 	TRAPTYPE_MAX
 }TRAPTYPE;
@@ -48,7 +48,7 @@ void InitTrap(void);
 void UninitTrap(void);
 void UpdateTrap(void);
 void DrawTrap(void);
-void CollisionTrap(D3DXVECTOR3* pPos, float fRadius);
+bool CollisionTrap(D3DXVECTOR3 pos, float fRadius);
 void SetTrap(D3DXVECTOR3 pos, D3DXVECTOR3 rot, TRAPTYPE traptype, MODELTYPE ModelType);
 
 #endif

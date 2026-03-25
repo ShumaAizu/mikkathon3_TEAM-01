@@ -499,7 +499,7 @@ void Update(void)
 	UpdateDebugProc();
 
 	// ƒJƒƒ‰‚ÌXVˆ—
-	UpdateCamera(g_mode);
+	UpdateCamera();
 
 	switch (g_mode)
 	{

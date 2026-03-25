@@ -9,6 +9,7 @@
 #include "player.h"
 #include "debugproc.h"
 #include "fade.h"
+#include "fallitem.h"
 #include "item.h"
 #include "shadow.h"
 #include "trap.h"
@@ -356,6 +357,9 @@ void ItemDrop(int nItem)
 	// 書っとボタンが押されたら
 	if (GetKeyboardTrigger(PLAYER_KEY_SHOT) || GetJoypadTrigger(PLAYER_PAD_SHOT))
 	{
+		// アイテム投下
+		SetFallItem(g_player.pos, g_player.rot,(ITEMTYPE)*pItem);
+
 		// 前に詰める
 		for (int nCntItem = 1; nCntItem < MAX_GETITEM; nCntItem++,pItem++,pItemNext++)
 		{
@@ -439,11 +443,13 @@ void Collision(void)
 			g_player.move.y = 0.0f;
 	}
 
+	// ステージの端
 	if (WORLD_END < g_player.pos.x)
 	{
 		if (GetSetCutIn())
 		{
 			g_player.pos.x = -WORLD_END;
+			SetPositionCamera(g_player.pos);
 		}
 		else
 		{

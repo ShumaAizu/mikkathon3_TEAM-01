@@ -346,3 +346,18 @@ bool IsEnableCameraEdit(void)
 {
 	return g_bCameraMove;
 }
+
+//=========================================================================================
+// ƒJƒƒ‰‚ÌˆÊ’u‚ð‹­§ˆÚ“®
+//=========================================================================================
+void SetPositionCamera(vec3 pos)
+{
+	P_CAMERA pCamera = GetCamera();
+
+	pCamera->posR = pos;
+
+	pCamera->posV.x = pCamera->posR.x - cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+	pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
+	pCamera->posV.z = pCamera->posR.z - sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+
+}

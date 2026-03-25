@@ -8,7 +8,7 @@
 #include "main.h"
 #include "input.h"
 #include "debugproc.h"
-//#include "sound.h"
+#include "sound.h"
 #include "title.h"
 #include "game.h"
 #include "result.h"
@@ -349,7 +349,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	InitLight();
 
 	// サウンドの初期化処理
-	//InitSound(hWnd);
+	InitSound(hWnd);
 
 	// モーションの初期化処理
 	//InitMotion();
@@ -419,10 +419,10 @@ void Uninit(void)
 	//UninitParticle();
 
 	// サウンドを止める
-	//StopSound();
+	StopSound();
 
 	// サウンドの終了処理
-	//UninitSound();
+	UninitSound();
 
 	// 当たり判定の終了処理
 	//UninitCollision();

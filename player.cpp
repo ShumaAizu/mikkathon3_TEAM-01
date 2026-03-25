@@ -29,6 +29,8 @@ float g_fFocMove = MOVE_FOC;
 #define SCROLL_FOC			(30)			// スクロール速度の係数
 int g_nFocScroll = SCROLL_FOC;
 
+bool g_bInvincible = false;					// 無敵モード
+
 //**************************************************************
 // プロトタイプ宣言
 void PlayerState(void);			// プレイヤー状態管理
@@ -179,10 +181,22 @@ void PlayerState(void)
 {
 	//**************************************************************
 	// 死んでいたら
-	if (g_player.state == PLAYERSTATE_DEAD)
+	if (g_player.state == PLAYERSTATE_DEAD && g_bInvincible == false)
 	{
 		SetFade(MODE_RESULT);
 	}
+
+	//**************************************************************
+	// 無敵モード
+	if (g_bInvincible)
+		PrintDebugProc("\n無敵中！");
+	else
+		PrintDebugProc("\n");
+
+	if (GetKeyboardTrigger(DIK_F2))
+		g_bInvincible = g_bInvincible ^ 1;
+
+	PrintDebugProc("  F2で切り替え]\n");
 }
 
 //==============================================================

@@ -141,6 +141,9 @@
     <ClCompile Include="fallitem.cpp">
       <Filter>ソース ファイル\object</Filter>
     </ClCompile>
+    <ClCompile Include="resultdelivered.cpp">
+      <Filter>ソース ファイル\result</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debugproc.h">
@@ -232,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="fallitem.h">
       <Filter>ヘッダー ファイル\object</Filter>
+    </ClInclude>
+    <ClInclude Include="resultdelivered.h">
+      <Filter>ヘッダー ファイル\result</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

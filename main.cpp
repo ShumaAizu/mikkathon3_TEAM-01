@@ -18,6 +18,10 @@
 #include "camera.h"
 #include "light.h"
 
+#include "field.h"
+#include "wall.h"
+#include "skybox.h"
+
 #include "modeldata.h"
 #include "texture.h"
 //#include "effect.h"
@@ -363,6 +367,15 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// デバッグ表示の初期化処理
 	InitDebugProc();
+
+	// フィールドの初期化
+	InitField();
+
+	// 壁の初期化
+	InitWall();
+
+	// 空の初期化
+	InitSkyBox();
 	
 	// エフェクトの初期化処理
 	//InitEffect();
@@ -415,6 +428,15 @@ void Uninit(void)
 
 	// フェードの終了処理
 	UninitFade();
+
+	// フィールドの終了
+	UninitField();
+
+	// 壁の終了
+	UninitWall();
+
+	// 空の終了
+	UninitSkyBox();
 
 	// エフェクトの終了処理
 	//UninitEffect();

@@ -13,12 +13,21 @@
 #include "fade.h"
 #include "game.h"
 #include "camera.h"
+#include "fog.h"
+#include "sound.h"
+
+#include "field.h"
+#include "wall.h"
+#include "skybox.h"
+#include "resultdelivered.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define MAX_RESULT			(2)			// リザルトテクスチャの枚数
 #define RESULTFADE_TIMER	(300)		// タイマーの秒数
+#define RESULTFOG_START		(0.0f)		// リザルトでの霧の開始位置
+#define RESULTFOG_END		(7500.0f)	// リザルトでの霧の終了位置
 
 //*****************************************************************************
 // グローバル変数
@@ -40,6 +49,12 @@ void InitResult(void)
 	g_nResultFadeCounter = 0;
 
 	g_bResultEvent = true;
+
+	// リザルトでの届けた数の初期化
+	InitResultDelivered();
+
+	// 霧の設定
+	SetFog(D3DXCOLOR(1.0f, 0.87f, 0.56f, 1.0f), RESULTFOG_START, RESULTFOG_END);
 }
 
 //====================================
@@ -47,15 +62,8 @@ void InitResult(void)
 //====================================
 void UninitResult(void)
 {
-
-}
-
-//====================================
-//	リザルトの描画処理
-//====================================
-void DrawResult(void)
-{
-
+	// リザルトでの届けた数の終了
+	UninitResultDelivered();
 }
 
 //====================================
@@ -65,10 +73,47 @@ void UpdateResult(void)
 {
 	PrintDebugProc("RESULT\n");
 
+	// フィールドの更新
+	UpdateField();
+
+	// 壁の更新
+	UpdateWall();
+
+	// 空の更新
+	UpdateSkyBox();
+
+	// リザルトでの届けた数の更新
+	UpdateResultDelivered();
+
 	if (GetKeyboardTrigger(DIK_RETURN))
 	{
 		SetFade(MODE_TITLE);
 	}
+
+	// 再生終了
+	StopSound();
+}
+
+//====================================
+//	リザルトの描画処理
+//====================================
+void DrawResult(void)
+{
+	// フィールドの描画
+	DrawField();
+
+	// 壁の描画
+	DrawWall();
+
+	// 空の描画処理
+	DrawSkyBox();
+
+	bool isFog = SetFogEnable(false);
+
+	// リザルトでの届けた数の描画
+	DrawResultDelivered();
+
+	SetFogEnable(isFog);
 }
 
 //=============================================================================

@@ -17,12 +17,13 @@
 #define SKYBOX_ANGLE_VERTICAL		(D3DX_PI / (SKYBOX_SPLIT_VERTICAL))					// 縦の分割数に応じた角度
 #define SKYBOX_ANGLE_HORIZONTAL		(D3DX_PI / (SKYBOX_SPLIT_HORIZONTAL - 1))			// 横の分割数に応じた角度
 #define SKYBOX_MOVESPEED			(0.000025f)											// 空のテクスチャが動く速度
+#define MAX_SKYBOXTEX				(2)													// 空のテクスチャ数
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-LPDIRECT3DTEXTURE9 g_pTextureSkyBox = NULL;		// テクスチャへのポインタ
-SkyBox g_askybox[MAX_SKYBOX];					// 空の情報
+LPDIRECT3DTEXTURE9 g_apTextureSkyBox[MAX_SKYBOXTEX] = {};		// テクスチャへのポインタ
+SkyBox g_askybox[MAX_SKYBOX];									// 空の情報
 
 //=============================================================================
 //	空の初期化処理
@@ -35,7 +36,12 @@ void InitSkyBox(void)
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
 		"data\\TEXTURE\\sky000.jpg",
-		&g_pTextureSkyBox);
+		&g_apTextureSkyBox[0]);
+
+	// テクスチャの読み込み
+	D3DXCreateTextureFromFile(pDevice,
+		"data\\TEXTURE\\sky001.jpg",
+		&g_apTextureSkyBox[1]);
 
 	for (int nCntSkyBox = 0; nCntSkyBox < MAX_SKYBOX; nCntSkyBox++)
 	{
@@ -57,10 +63,13 @@ void InitSkyBox(void)
 void UninitSkyBox(void)
 {
 	// テクスチャの破棄
-	if (g_pTextureSkyBox != NULL)
+	for (int nCntTex = 0; nCntTex < MAX_SKYBOXTEX; nCntTex++)
 	{
-		g_pTextureSkyBox->Release();
-		g_pTextureSkyBox = NULL;
+		if (g_apTextureSkyBox[nCntTex] != NULL)
+		{
+			g_apTextureSkyBox[nCntTex]->Release();
+			g_apTextureSkyBox[nCntTex] = NULL;
+		}
 	}
 	
 	for (int nCntSkyBox = 0; nCntSkyBox < MAX_SKYBOX; nCntSkyBox++)
@@ -122,7 +131,14 @@ void DrawSkyBox(void)
 		pDevice->SetFVF(FVF_VERTEX_3D);
 
 		// テクスチャの設定
-		pDevice->SetTexture(0, g_pTextureSkyBox);
+		if (GetMode() != MODE_RESULT)
+		{
+			pDevice->SetTexture(0, g_apTextureSkyBox[0]);
+		}
+		else
+		{
+			pDevice->SetTexture(0, g_apTextureSkyBox[1]);
+		}
 
 		if (g_askybox[nCntSkyBox].bUse == true)
 		{

@@ -13,6 +13,7 @@
 #include "fade.h"
 #include "loadscript.h"
 #include "texture.h"
+#include "sound.h"
 
 //**************************************************************
 // マクロ定義
@@ -152,6 +153,9 @@ void UninitTitle(void)
 		g_pVtxBuffTitle->Release();
 		g_pVtxBuffTitle = NULL;
 	}
+
+	// 再生終了
+	StopSound();
 }
 
 //=========================================================================================

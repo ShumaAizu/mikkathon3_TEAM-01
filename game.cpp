@@ -72,12 +72,6 @@ void InitGame(void)
 	// オブジェクトの初期化
 	InitObject();
 
-	// フィールドの初期化
-	InitField();
-
-	// 壁の初期化
-	InitWall();
-
 	// トラップの初期化
 	InitTrap();
 
@@ -89,9 +83,6 @@ void InitGame(void)
 
 	// 落下地点目印の初期化
 	InitFallPoint();
-
-	// 空の初期化
-	InitSkyBox();
 
 	// タイムの初期化
 	InitTime();
@@ -124,12 +115,6 @@ void UninitGame(void)
 	// オブジェクトの終了
 	UninitObject();
 
-	// フィールドの終了
-	UninitField();
-
-	// 壁の終了
-	UninitWall();
-
 	// トラップの終了
 	UninitTrap();
 
@@ -145,14 +130,14 @@ void UninitGame(void)
 	// 影の終了
 	UninitShadow();
 
-	// 空の終了
-	UninitSkyBox();
-
 	// タイムの終了
 	UninitTime();
 
 	// 届けた数の終了
 	UninitDelivered();
+
+	// 再生終了
+	StopSound();
 }
 
 //=============================================================================
@@ -231,6 +216,11 @@ void UpdateGame(void)
 			SetFade(MODE_RESULT, COLOR_WHITE, DEFAULT_FADESPEED, DEFAULT_FADESPEED);
 			break;
 		}
+	}
+
+	if (GetKeyboardTrigger(DIK_RETURN))
+	{
+		SetFade(MODE_RESULT);
 	}
 }
 

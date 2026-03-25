@@ -13,6 +13,7 @@
 #include "input.h"
 #include "sound.h"
 #include "fade.h"
+#include "fog.h"
 //#include "effect.h"
 //#include "particle.h"
 #include "pause.h"
@@ -27,6 +28,12 @@
 #include "skybox.h"
 
 #include "time.h"
+
+//*****************************************************************************
+// マクロ定義
+//*****************************************************************************
+#define GAMEFOG_START			(100.0f)			// ゲームでの霧開始位置
+#define GAMEFOG_END				(5000.0f)			// ゲームでの霧終了位置
 
 //*****************************************************************************
 // グローバル変数
@@ -83,6 +90,10 @@ void InitGame(void)
 	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
 
 	LoadObject("data\\SCRIPTS\\model.txt");
+
+	// 霧の設定
+	SetFogEnable(true);
+	SetFog(COLOR_WHITE, GAMEFOG_START, GAMEFOG_END);
 
 	PlaySound(SOUND_LABEL_000);
 }
@@ -222,14 +233,20 @@ void DrawGame(void)
 	// 落下地点目印の描画
 	DrawFallPoint();
 
-	// 影の描画
-	DrawShadow();
-
 	// 空の描画
 	DrawSkyBox();
 
+	// 霧の切り替え
+	bool isFog = SetFogEnable(false);
+
+	// 影の描画
+	DrawShadow();
+
 	// タイムの描画
 	DrawTime();
+
+	// 再設定
+	SetFogEnable(isFog);
 }
 
 //=============================================================================

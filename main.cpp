@@ -13,7 +13,7 @@
 #include "game.h"
 #include "result.h"
 #include "fade.h"
-//#include "fog.h"
+#include "fog.h"
 //#include "loadscript.h"
 #include "camera.h"
 #include "light.h"

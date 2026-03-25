@@ -129,6 +129,9 @@
     <ClCompile Include="sound.cpp">
       <Filter>ソース ファイル\main</Filter>
     </ClCompile>
+    <ClCompile Include="fog.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debugproc.h">
@@ -208,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="wall.h">
       <Filter>ヘッダー ファイル\object</Filter>
+    </ClInclude>
+    <ClInclude Include="fog.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -26,7 +26,7 @@ LOADTEXTURE_INFO g_aTitleTex[TITLETEXTURE_MAX] =	// 使うテクスチャの情報
 {
 	{"data/TEXTURE/titlelogo000.png",false,-1},
 	{"data/TEXTURE/titlelogo000.png",false,-1},
-	{"data/TEXTURE/titlelogo000.png",false,-1},
+	{"data/TEXTURE/PressAButton.png",false,-1},
 	{"data/TEXTURE/GameMode3minutes.png",false,-1},
 	{"data/TEXTURE/GameModeEndless.png", false,-1},
 };
@@ -34,7 +34,7 @@ LOADTEXTURE_INFO g_aTitleTex[TITLETEXTURE_MAX] =	// 使うテクスチャの情報
 Title g_aTitlePolygon[TITLEPOLYGON_MAX] =				// タイトルの2Dポリゴン
 {
 	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.4f,0.0f),vec3(600.0f,300.0f,0.0f), -1,true},		// タイトル
-	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.7f,0.0f),vec3(600.0f,150.0f,0.0f), -1,true},		// Press Any Key
+	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.7f,0.0f),vec3(600.0f,100.0f,0.0f), -1,true},		// Press Any Key
 	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f),vec3(600.0f,150.0f,0.0f), -1,false},		// GameMode 3Min
 	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.7f,0.0f),vec3(600.0f,150.0f,0.0f), -1,false},		// GameMode Endless
 };
@@ -85,7 +85,7 @@ void InitTitle(void)
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_TITLE].nTex;
 			break;
 		case TITLEPOLYGON_START:
-			pTitle->nTex = g_aTitleTex[0].nTex;
+			pTitle->nTex = g_aTitleTex[TITLETEXTURE_START_JOY].nTex;
 			break;
 		case TITLEPOLYGON_3MIN:
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_3MIN].nTex;

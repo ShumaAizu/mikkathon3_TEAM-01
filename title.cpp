@@ -24,6 +24,7 @@ TITLESTATE g_titleState = TITLESTATE_WAIT;			// タイトルの状態
 int g_nCounterTitleState = 0;						// 状態管理カウンター
 LOADTEXTURE_INFO g_aTitleTex[TITLETEXTURE_MAX] =	// 使うテクスチャの情報
 {
+	{"data/TEXTURE/sky000.png",false,-1},
 	{"data/TEXTURE/titlelogo000.png",false,-1},
 	{"data/TEXTURE/titlelogo000.png",false,-1},
 	{"data/TEXTURE/PressAButton.png",false,-1},
@@ -33,10 +34,11 @@ LOADTEXTURE_INFO g_aTitleTex[TITLETEXTURE_MAX] =	// 使うテクスチャの情報
 
 Title g_aTitlePolygon[TITLEPOLYGON_MAX] =				// タイトルの2Dポリゴン
 {
+	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f),vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f), -1,true},		// 背景
 	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.4f,0.0f),vec3(600.0f,300.0f,0.0f), -1,true},		// タイトル
 	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.7f,0.0f),vec3(600.0f,100.0f,0.0f), -1,true},		// Press Any Key
-	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f),vec3(600.0f,150.0f,0.0f), -1,false},		// GameMode 3Min
-	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.7f,0.0f),vec3(600.0f,150.0f,0.0f), -1,false},		// GameMode Endless
+	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f),vec3(300.0f,60.0f,0.0f), -1,false},		// GameMode 3Min
+	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.7f,0.0f),vec3(300.0f,60.0f,0.0f), -1,false},		// GameMode Endless
 };
 //**************************************************************
 // プロトタイプ宣言
@@ -81,6 +83,9 @@ void InitTitle(void)
 	{
 		switch (nCnt)
 		{
+		case TITLEPOLYGON_BG:
+			pTitle->nTex = g_aTitleTex[TITLETEXTURE_BG].nTex;
+			break;
 		case TITLEPOLYGON_TITLE:
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_TITLE].nTex;
 			break;
@@ -98,10 +103,10 @@ void InitTitle(void)
 		}
 
 		// 頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(pTitle->pos.x - (pTitle->size.x * 0.5f), pTitle->pos.y - (pTitle->size.y * 0.5f), 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(pTitle->pos.x + (pTitle->size.x * 0.5f), pTitle->pos.y - (pTitle->size.y * 0.5f), 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(pTitle->pos.x - (pTitle->size.x * 0.5f), pTitle->pos.y + (pTitle->size.y * 0.5f), 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(pTitle->pos.x + (pTitle->size.x * 0.5f), pTitle->pos.y + (pTitle->size.y * 0.5f), 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(pTitle->pos.x - pTitle->size.x, pTitle->pos.y - pTitle->size.y, 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(pTitle->pos.x + pTitle->size.x, pTitle->pos.y - pTitle->size.y, 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(pTitle->pos.x - pTitle->size.x, pTitle->pos.y + pTitle->size.y, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(pTitle->pos.x + pTitle->size.x, pTitle->pos.y + pTitle->size.y, 0.0f);
 
 		// rhwの設定
 		pVtx[0].rhw = 1.0f;
@@ -115,12 +120,22 @@ void InitTitle(void)
 		pVtx[2].col = COLOR_WHITE;
 		pVtx[3].col = COLOR_WHITE;
 
-		// テクスチャ座標の設定
-		pVtx[0].tex = D3DXVECTOR2(0.0f,0.0f);
-		pVtx[1].tex = D3DXVECTOR2(1.0f,0.0f);
-		pVtx[2].tex = D3DXVECTOR2(0.0f,1.0f);
-		pVtx[3].tex = D3DXVECTOR2(1.0f,1.0f);
-
+		if (nCnt == 0)
+		{
+			// テクスチャ座標の設定
+			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(0.25f, 0.0f);
+			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(0.25f, 1.0f);
+		}
+		else
+		{
+			// テクスチャ座標の設定
+			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+		}
 		pVtx += 4;
 	}
 	// 頂点バッファをアンロックする

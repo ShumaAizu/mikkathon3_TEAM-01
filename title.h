@@ -27,7 +27,8 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
-	TITLEPOLYGON_TITLE = 0,		// タイトル
+	TITLEPOLYGON_BG = 0,		// 背景
+	TITLEPOLYGON_TITLE,			// タイトル
 	TITLEPOLYGON_START,			// スタート
 	TITLEPOLYGON_3MIN,			// ３分モード
 	TITLEPOLYGON_ENDLESS,		// エンドレスモード
@@ -39,7 +40,8 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
-	TITLETEXTURE_TITLE = 0,		// タイトル
+	TITLETEXTURE_BG = 0,		// 背景
+	TITLETEXTURE_TITLE,			// タイトル
 	TITLETEXTURE_START_KEY,		// キーボードのスタート
 	TITLETEXTURE_START_JOY,		// コントローラーのスタート
 	TITLETEXTURE_3MIN,			// ３分モード

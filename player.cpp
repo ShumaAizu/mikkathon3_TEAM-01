@@ -17,17 +17,34 @@
 // 構造体の定義
 
 //**************************************************************
+// パラメータ情報構造体
+typedef struct
+{
+	float fSpeedforce,	// 加速力
+		fJumpforce,		// 上昇力
+		fMaxMoveSpeed,	// 最大水平移動速度
+		fMaxRiseSpeed,	// 最大上昇速度
+		fInertia,		// 慣性割合
+		fGravity,		// 重力
+		fFocMove,		// 重さによる左右移動への影響
+		fFocGravity;	// 重さによる重力への影響係数
+
+	int nFocScroll;		// スクロールの係数
+}Parameter;
+
+
+//**************************************************************
 // グローバル変数
-Player				g_player;								// プレイヤーの情報
-PlayerPlam			g_playerPlam;
+Player		g_player;						// プレイヤーの情報
+Parameter	g_parameter;					// 各種値
 
 #define GRAVITY_FOC			(0.01f)			// 重さによる重力への影響係数
-float g_fFGravity = GRAVITY;
-float g_fFocGravity = GRAVITY_FOC;
+//float g_fFGravity = GRAVITY;
+//float g_fFocGravity = GRAVITY_FOC;
 #define MOVE_FOC			(1.0f)			// 重さによる左右移動への影響係数
-float g_fFocMove = MOVE_FOC;
+//float g_fFocMove = MOVE_FOC;
 #define SCROLL_FOC			(30)			// スクロール速度の係数
-int g_nFocScroll = SCROLL_FOC;
+//int g_nFocScroll = SCROLL_FOC;
 
 bool g_bInvincible = false;					// 無敵モード
 
@@ -40,9 +57,10 @@ void Joypad(void);				// コントローラー
 void PlayerMove(void);			// 移動
 void ItemDrop(int nType = -1);	// アイテムを投下
 void Collision(void);			// 当たり判定
-void PlayerPlamLoad(void);		// プレイヤーパラメータ読み込み
-void PlayerPlamSave(void);		// プレイヤーパラメータ保存
+void ParameterLoad(void);		// プレイヤーパラメータ読み込み
+void ParameterSave(void);		// プレイヤーパラメータ保存
 void DebugSetValue(float* fVal, float fAdd, int nKey, int nSubKey);
+Parameter* GetParameter(void);	// パラメータ情報取得
 
 //=========================================================================================
 // モデル初期化処理
@@ -85,7 +103,7 @@ void InitPlayer(void)
 	}
 
 	// プレイヤーパラメータ情報の読み込み
-	PlayerPlamLoad();
+	ParameterLoad();
 
 	// プレイヤーの状態→今後、スタートのカウントダウンで設定
 	SetPlayerState(PLAYERSTATE_RUN);
@@ -142,35 +160,37 @@ void UpdatePlayer(void)
 		PrintDebugProc("\nプレイヤーの重さ [↑/↓]: %f", g_player.fWeight);
 
 		// 重力
-		DebugSetValue(&g_fFGravity, 0.001f, DIK_O, DIK_L);
-		PrintDebugProc("\n重力             [ O/ L]: %f", g_fFGravity);
+		DebugSetValue(&g_parameter.fGravity, 0.001f, DIK_O, DIK_L);
+		PrintDebugProc("\n重力             [ O/ L]: %f", g_parameter.fGravity);
 
-		DebugSetValue(&g_fFocGravity, 0.01f, DIK_I, DIK_K);
-		PrintDebugProc("\n重力係数         [ I/ K]: %f", g_fFocGravity);
+		DebugSetValue(&g_parameter.fFocGravity, 0.01f, DIK_I, DIK_K);
+		PrintDebugProc("\n重力係数         [ I/ K]: %f", g_parameter.fFocGravity);
 
-		DebugSetValue(&g_playerPlam.fSpeedforce, 0.01f, DIK_U, DIK_J);
-		PrintDebugProc("\n加速力           [ U/ J]: %f", g_playerPlam.fSpeedforce);
+		DebugSetValue(&g_parameter.fSpeedforce, 0.01f, DIK_U, DIK_J);
+		PrintDebugProc("\n加速力           [ U/ J]: %f", g_parameter.fSpeedforce);
 
-		DebugSetValue(&g_fFocMove, 0.01f, DIK_Y, DIK_H);
-		PrintDebugProc("\n左右速度係数     [ Y/ H]: %f", g_fFocMove);
+		DebugSetValue(&g_parameter.fFocMove, 0.01f, DIK_Y, DIK_H);
+		PrintDebugProc("\n左右速度係数     [ Y/ H]: %f", g_parameter.fFocMove);
 
 		if (GetKeyboardRepeat(DIK_T))
 		{
-			g_nFocScroll++;
+			g_parameter.nFocScroll++;
 		}
 		if (GetKeyboardRepeat(DIK_G))
 		{
-			g_nFocScroll--;
-			if (g_nFocScroll <= 0)
-				g_nFocScroll = 1;
+			g_parameter.nFocScroll--;
+			if (g_parameter.nFocScroll <= 0)
+				g_parameter.nFocScroll = 1;
 		}
-		PrintDebugProc("\nスクロール係数   [ T/ G]: %d", g_nFocScroll);
+		PrintDebugProc("\nスクロール係数   [ T/ G]: %d", g_parameter.nFocScroll);
 
-		DebugSetValue(&g_playerPlam.fJumpforce, 0.001f, DIK_R, DIK_F);
-		PrintDebugProc("\n上昇力           [ R/ F]: %f", g_playerPlam.fJumpforce);
+		DebugSetValue(&g_parameter.fJumpforce, 0.001f, DIK_R, DIK_F);
+		PrintDebugProc("\n上昇力           [ R/ F]: %f", g_parameter.fJumpforce);
 
 		PrintDebugProc("\nPlayerpos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
 
+		if (GetKeyboardPress(DIK_LCONTROL) && GetKeyboardTrigger(DIK_S))
+			ParameterSave();
 #endif
 	}
 }
@@ -223,15 +243,15 @@ void Keyboard(void)
 	{
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_UP))
 		{// 左の入力のみ
-			g_player.move.y += g_playerPlam.fJumpforce / g_player.fWeight;
+			g_player.move.y += g_parameter.fJumpforce / g_player.fWeight;
 		}
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_L))
 		{// 左の入力のみ
-			g_player.move.z += g_playerPlam.fSpeedforce;
+			g_player.move.z += g_parameter.fSpeedforce;
 		}
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_R))
 		{// 右の入力のみ
-			g_player.move.z -= g_playerPlam.fSpeedforce;
+			g_player.move.z -= g_parameter.fSpeedforce;
 		}
 	} while (0);
 }
@@ -249,10 +269,10 @@ void Joypad(void)
 	//**************************************************************
 	// 移動
 	if (leftStick.x != 0)
-		g_player.move.z -= leftStick.x * g_playerPlam.fSpeedforce;
+		g_player.move.z -= leftStick.x * g_parameter.fSpeedforce;
 
 	if(0 < leftStick.y)
-		g_player.move.y += leftStick.y * g_playerPlam.fJumpforce / g_player.fWeight;
+		g_player.move.y += leftStick.y * g_parameter.fJumpforce / g_player.fWeight;
 
 }
 
@@ -294,8 +314,8 @@ void PlayerMove(void)
 	// 移動・回転
 	if (g_player.move.x != 0 || g_player.move.z != 0)
 	{// 水平移動
-		g_player.pos.x += g_player.move.x / g_player.fWeight * g_fFocMove;
-		g_player.pos.z += g_player.move.z / g_player.fWeight * g_fFocMove;
+		g_player.pos.x += g_player.move.x / g_player.fWeight * g_parameter.fFocMove;
+		g_player.pos.z += g_player.move.z / g_player.fWeight * g_parameter.fFocMove;
 	}
 	if (g_player.move.y != 0)
 	{// 垂直移動
@@ -314,17 +334,17 @@ void PlayerMove(void)
 	
 	//**************************************************************
 	// 慣性
-	g_player.move += D3DXVECTOR3(-g_player.move.x * g_playerPlam.fInertia, 0.0f, -g_player.move.z * g_playerPlam.fInertia);
+	g_player.move += D3DXVECTOR3(-g_player.move.x * g_parameter.fInertia, 0.0f, -g_player.move.z * g_parameter.fInertia);
 	g_player.spin += D3DXVECTOR3(0.0f, -g_player.spin.y * ROTMOVE_FACTOR, 0.0f);
 
 	//**************************************************************
 	// 重力
-	g_player.move.y -= g_fFGravity * g_player.fWeight * 0.01f;
+	g_player.move.y -= g_parameter.fGravity * g_player.fWeight * 0.01f;
 
 	//**************************************************************
 	// 強制スクロール
-	if (g_player.move.x <= g_nFocScroll / g_player.fWeight)
-		g_player.move.x += g_fFocMove;
+	if (g_player.move.x <= g_parameter.nFocScroll / g_player.fWeight)
+		g_player.move.x += g_parameter.fFocMove;
 }
 
 //==============================================================
@@ -484,12 +504,11 @@ Player* GetPlayer(void)
 	return &g_player;
 }
 
-//=========================================================================================
-// プレイヤーパラメータ情報取得
-//=========================================================================================
-PlayerPlam* GetPlyerPlam(void)
+//==============================================================
+// パラメータ情報取得
+Parameter* GetParameter(void)
 {
-	return &g_playerPlam;
+	return &g_parameter;
 }
 
 
@@ -512,35 +531,39 @@ void DebugSetValue(float* fVal, float fAdd, int nAddKey,int nSubKey)
 
 //=========================================================================================
 // プレイヤーパラメータ読み込み		
-void PlayerPlamLoad(void)
+void ParameterLoad(void)
 {
 	FILE* pFile;
 
 	pFile = fopen(PLAYER_PARAMETERS, "rb");
 	if (pFile != NULL)
 	{// ファイルが開けたら
-		fread(&g_playerPlam, sizeof(PlayerPlam), 1, pFile);
+		fread(&g_parameter, sizeof(Parameter), 1, pFile);
 		fclose(pFile);
 	}
 	else
 	{
-		g_playerPlam.fSpeedforce = MOVE_FORCE;
-		g_playerPlam.fJumpforce = JUMP_FORCE;
-		g_playerPlam.fInertia = POSMOVE_FACTOR;
-		g_playerPlam.fMaxSpeed = MAX_SPEED;
+		g_parameter.fSpeedforce = MOVE_FORCE;
+		g_parameter.fJumpforce = JUMP_FORCE;
+		g_parameter.fMaxMoveSpeed = 10.0f;
+		g_parameter.fMaxRiseSpeed = 10.0f;
+		g_parameter.fInertia = POSMOVE_FACTOR;
+		g_parameter.fGravity = GRAVITY;
+		g_parameter.fFocMove = 1.0f;
+		g_parameter.fFocGravity = 1.0f;
 	}
 }
 
 //=========================================================================================
 // プレイヤーパラメータ保存
-void PlayerPlamSave(void)
+void ParameterSave(void)
 {
 	FILE* pFile;
 
 	pFile = fopen(PLAYER_PARAMETERS, "wb");
 	if (pFile != NULL)
 	{// ファイルが開けたら
-		fwrite(&g_playerPlam, sizeof(PlayerPlam), 1, pFile);
+		fwrite(&g_parameter, sizeof(Parameter), 1, pFile);
 		fclose(pFile);
 	}
 }

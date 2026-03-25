@@ -90,17 +90,6 @@ typedef struct Player
 }Player;
 typedef Player* P_PLAYER;
 
-//==============================================================
-// プレイヤーパラメータ情報構造体
-//==============================================================
-typedef struct
-{
-	float fSpeedforce,
-		fJumpforce,
-		fInertia,
-		fMaxSpeed;
-}PlayerPlam;
-
 //=========================================================================================
 // プロトタイプ宣言
 //=========================================================================================
@@ -111,6 +100,5 @@ void DrawPlayer(void);
 void AddPlayerWeight(float fWeight);	// プレイヤーの重さを追加
 void SetPlayerState(PLAYERSTATE state);	// プレイヤーの状態を設定
 Player* GetPlayer(void);				// プレイヤー情報取得
-PlayerPlam* GetPlyerPlam(void);			// プレイヤーパラメータ情報取得
 
 #endif // !_PLAYER_H_

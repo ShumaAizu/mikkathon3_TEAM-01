@@ -122,7 +122,7 @@ void UpdateItem(void)
 //=============================================================================
 //	アイテムの当たり判定処理
 //=============================================================================
-ITEMTYPE CollisionItem(D3DXVECTOR3 pos, float fRadius)
+int CollisionItem(D3DXVECTOR3 pos, float fRadius)
 {
 	Item* pItem = &g_aitem[0];	// アイテムへのポインタ
 
@@ -143,11 +143,11 @@ ITEMTYPE CollisionItem(D3DXVECTOR3 pos, float fRadius)
 		if (fDiff <= powf(fRadius + pItem->fRadius, 2))
 		{// 当たっていたら
 			pItem->bUse = false;
-			return pItem->itemtype;
+			return (int)pItem->itemtype;
 		}
 	}
 
-	return ITEMTYPE_MAX;
+	return -1;
 }
 
 //=============================================================================

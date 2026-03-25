@@ -49,7 +49,7 @@ void InitItem(void);
 void UninitItem(void);
 void UpdateItem(void);
 void DrawItem(void);
-ITEMTYPE CollisionItem(D3DXVECTOR3 pos, float fRadius);
+int CollisionItem(D3DXVECTOR3 pos, float fRadius);
 void SetItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, ITEMTYPE itemtype, MODELTYPE ModelType);
 
 #endif

@@ -24,6 +24,7 @@ Player				g_player;								// プレイヤーの情報
 PlayerPlam			g_playerPlam;
 
 #define GRAVITY_FOC			(1.0f)			// 重さによる重力への影響係数
+float g_fFGravity = GRAVITY;
 float g_fFocGravity = GRAVITY_FOC;
 #define MOVE_FOC			(1.0f)			// 重さによる左右移動への影響係数
 float g_fFocMove = MOVE_FOC;
@@ -41,6 +42,7 @@ void ItemDrop(void);			// アイテムを投下
 void Collision(void);			// 当たり判定
 void PlayerPlamLoad(void);		// プレイヤーパラメータ読み込み
 void PlayerPlamSave(void);		// プレイヤーパラメータ保存
+void DebugSetValue(float* fVal, float fAdd, int nKey, int nSubKey);
 
 //=========================================================================================
 // モデル初期化処理
@@ -127,47 +129,38 @@ void UpdatePlayer(void)
 
 #if _DEBUG
 		// 重さ変更
-		if (GetKeyboardRepeat(DIK_UP))
+		DebugSetValue(&g_player.fWeight, 0.5f, DIK_UP, DIK_DOWN);
+		PrintDebugProc("\nプレイヤーの重さ [↑/↓]: %f", g_player.fWeight);
+
+		// 重力
+		DebugSetValue(&g_fFGravity, 0.001f, DIK_O, DIK_L);
+		PrintDebugProc("\n重力             [ O/ L]: %f", g_fFGravity);
+
+		DebugSetValue(&g_fFocGravity, 0.01f, DIK_I, DIK_K);
+		PrintDebugProc("\n重力係数         [ I/ K]: %f", g_fFocGravity);
+
+		DebugSetValue(&g_playerPlam.fSpeedforce, 0.01f, DIK_U, DIK_J);
+		PrintDebugProc("\n加速力           [ U/ J]: %f", g_playerPlam.fSpeedforce);
+
+		DebugSetValue(&g_fFocMove, 0.01f, DIK_Y, DIK_H);
+		PrintDebugProc("\n左右速度係数     [ Y/ H]: %f", g_fFocMove);
+
+		if (GetKeyboardRepeat(DIK_T))
 		{
-			g_player.fWeight += 1.0f;
+			g_nFocScroll++;
 		}
-		if (GetKeyboardRepeat(DIK_DOWN))
+		if (GetKeyboardRepeat(DIK_G))
 		{
-			g_player.fWeight -= 1.0f;
-			if (g_player.fWeight <= 0)
-			{
-				g_player.fWeight = 1.0f;
-			}
+			g_nFocScroll--;
+			if (g_nFocScroll <= 0)
+				g_nFocScroll = 1;
 		}
-		PrintDebugProc("\nplayer weight : %f", g_player.fWeight);
+		PrintDebugProc("\nスクロール係数   [ T/ G]: %d", g_nFocScroll);
 
-		//**************************************************************
-		// プレイヤーパラメータ情報
-		if (GetKeyboardTrigger(DIK_F9) && GetKeyboardPress(DIK_LCONTROL) && 0)
-		{// 保存
-			PlayerPlamSave();
-		}
-
-		//// 慣性力
-		//if (GetKeyboardRepeat(DIK_9))
-		//	g_playerPlam.fInertia += 0.01f;
-		//if (GetKeyboardRepeat(DIK_8))
-		//	g_playerPlam.fInertia -= 0.01f;
-
-		//// 加速力
-		//if (GetKeyboardRepeat(DIK_7))
-		//	g_playerPlam.fSpeedforce += 0.01f;
-		//if (GetKeyboardRepeat(DIK_6))
-		//	g_playerPlam.fSpeedforce -= 0.01f;
-
-		//// 最高速
-		//if (GetKeyboardRepeat(DIK_5))
-		//	g_playerPlam.fMaxSpeed += 0.01f;
-		//if (GetKeyboardRepeat(DIK_4))
-		//	g_playerPlam.fMaxSpeed -= 0.01f;;
+		DebugSetValue(&g_playerPlam.fJumpforce, 0.001f, DIK_R, DIK_F);
+		PrintDebugProc("\n上昇力           [ R/ F]: %f", g_playerPlam.fJumpforce);
 
 		PrintDebugProc("\nPlayerpos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
-		// PrintDebugProc(DEBUG_LEFT, "move:[%f, %f, %f]\n", g_player.move.x, g_player.move.y, g_player.move.z);
 
 #endif
 	}
@@ -322,7 +315,7 @@ void PlayerMove(void)
 
 	//**************************************************************
 	// 重力
-	g_player.move.y -= GRAVITY * g_player.fWeight * 0.01f;
+	g_player.move.y -= g_fFGravity * g_player.fWeight * 0.01f;
 
 	//**************************************************************
 	// 強制スクロール
@@ -440,6 +433,24 @@ Player* GetPlayer(void)
 PlayerPlam* GetPlyerPlam(void)
 {
 	return &g_playerPlam;
+}
+
+
+//=========================================================================================
+// パラメータ調整	
+void DebugSetValue(float* fVal, float fAdd, int nAddKey,int nSubKey)
+{
+	if (GetKeyboardRepeat(nAddKey))
+	{
+		(*fVal) += fAdd;
+	}
+	if (GetKeyboardRepeat(nSubKey))
+	{
+		(*fVal) -= fAdd;
+		if ((*fVal) <= 0)
+			(*fVal) = fAdd;
+	}
+
 }
 
 //=========================================================================================

@@ -15,9 +15,12 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define SPLIT_WIDHT		(5 + 1)									// 横の分割数
-#define SPLIT_HEIGTH	(1 + 1)									// 縦の分割数
-#define WALL_POS		(D3DXVECTOR3(-5000.0f, 500.0f, 500.0f))	// 壁の位置
+#define SPLIT_WIDHT		(5 + 1)										// 横の分割数
+#define SPLIT_HEIGTH	(1 + 1)										// 縦の分割数
+#define WALL_POSIN1		(D3DXVECTOR3(-5000.0f, 500.0f, 500.0f))		// 壁の位置
+#define WALL_POSOUT1	(D3DXVECTOR3(-7500.0f, 750.0f, 750.0f))		// 壁の位置
+#define WALL_POSIN2		(D3DXVECTOR3(5000.0f, 500.0f, 250.0f))		// 壁の位置
+#define WALL_POSOUT2	(D3DXVECTOR3(7500.0f, 750.0f, 500.0f))		// 壁の位置
 
 //*****************************************************************************
 // グローバル変数
@@ -47,8 +50,10 @@ void InitWall(void)
 		g_awall[nCntWall].bUse = false;
 	}
 
-	SetWall(WALL_POS, INIT_D3DXVEC3, 2500.0f, 500.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
-
+	SetWall(WALL_POSIN1, INIT_D3DXVEC3, 2500.0f, 500.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
+	SetWall(WALL_POSOUT1, INIT_D3DXVEC3, 3500.0f, 750.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
+	//SetWall(WALL_POSIN2, D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.0f), 2500.0f, 500.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
+	//SetWall(WALL_POSOUT2, D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.0f), 3500.0f, 750.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
 }
 
 //=============================================================================

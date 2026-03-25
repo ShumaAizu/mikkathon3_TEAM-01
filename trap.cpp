@@ -11,6 +11,8 @@
 
 #include "debugproc.h"
 
+#include"shadow.h"
+
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
@@ -58,6 +60,7 @@ void InitTrap(void)
 	{
 		g_atrap[nCntTrap].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_atrap[nCntTrap].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_atrap[nCntTrap].nShadowIdx = -1;
 		g_atrap[nCntTrap].bUse = false;
 	}
 
@@ -220,6 +223,8 @@ void SetTrap(void)
 
 				// モデルデータ設定
 				pTrap->NormalObjectData.pModelData = SetModelData(g_aTrapModelType[pTrap->traptype]);
+				pTrap->nShadowIdx = SetShadow(g_aTrapRadius[pTrap->traptype]);
+				SetPotisionShadow(pTrap->nShadowIdx, pTrap->pos, 1.0f);
 				pTrap->bUse = true;
 
 				g_nNumTrap++;

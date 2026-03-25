@@ -36,6 +36,7 @@ typedef struct Trap
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
 	TRAPTYPE traptype;							// トラップの種類
 	Object_Normal NormalObjectData;				// 通常オブジェクトのデータ
+	int nShadowIdx;								// 影のインデックス
 	bool bUse;									// 使用状態
 }Trap;
 

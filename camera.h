@@ -14,10 +14,10 @@
 //=========================================================================================
 // マクロ定義
 //=========================================================================================
-#define CAMERA_V_DEFPOS			vec3(0.0f, 350.0f, 500.0f)	// 視点のデフォ位置
+#define CAMERA_V_DEFPOS			vec3(0.0f, 250.0f, 500.0f)	// 視点のデフォ位置
 #define CAMERA_R_DEFPOS			vec3(0.0f, 0.0f, 0.0f)		// 注視点のデフォ位置
-#define CAMERA_ROT				vec3(1.17f, 2.73f, 0.0f)	// カメラのデフォ向き
-#define CAMERA_DISTANS			(300.0f)					// カメラと注視点の距離
+#define CAMERA_ROT				vec3(1.3f, 2.73f, 0.0f)	// カメラのデフォ向き
+#define CAMERA_DISTANS			(500.0f)					// カメラと注視点の距離
 #define VIEW_MINDEPTH			(5.0f)						// 最小描画距離
 #define VIEW_MAXDEPTH			(10000.0f)					// 最大描画距離
 #define VIEW_RADIAN				(45.0f)						// 視野角

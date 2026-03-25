@@ -96,7 +96,8 @@ void UpdateCamera(MODE mode)
 	}
 
 	pCamera->posV.x = pCamera->posR.x - cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
-	pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
+	if (pCamera->posR.y <= 260.0f)
+		pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
 	pCamera->posV.z = pCamera->posR.z - sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
 	
 	PrintDebugProc("\nCameraRot:%f:%f:%f\n", pCamera->rot.x, pCamera->rot.y, pCamera->rot.z);
@@ -113,7 +114,7 @@ void CameraFollow(P_CAMERA pCamera)
 	// 変数宣言
 	Player* pPlayer = GetPlayer();				// プレイヤー情報
 	static float fPlayerMoveRot = atan2f(-pPlayer->move.x, -pPlayer->move.z);
-	float	fCameraRDest = pPlayer->pos.y + 40.0f;		// プレイヤーの起点より上
+	float	fCameraRDest = pPlayer->pos.y;		// プレイヤーの起点より上
 	bool	bRise = false;
 
 	//**************************************************************
@@ -121,14 +122,8 @@ void CameraFollow(P_CAMERA pCamera)
 	pCamera->posRDest.x = pPlayer->pos.x + 60.0f;		// プレイヤーの起点より前
 
 	// 地面見える範囲
-	if (fCameraRDest <= 150.0f)
-		pCamera->posRDest.y = 150.0f;
-	// 一緒に上がる範囲
-	else if (fCameraRDest <= 300.0f)
-	{
-		pCamera->posRDest.y = fCameraRDest;
-		bRise = true;
-	}
+	if (fCameraRDest <= 180.0f)
+		pCamera->posRDest.y = 180.0f;
 	// 見上げる範囲
 	else
 		pCamera->posRDest.y = fCameraRDest;
@@ -138,9 +133,6 @@ void CameraFollow(P_CAMERA pCamera)
 	pCamera->posR.x += (pCamera->posRDest.x - pCamera->posR.x) * CAMERA_FOLLOW_FACTOR;
 	pCamera->posR.y += (pCamera->posRDest.y - pCamera->posR.y) * CAMERA_FOLLOW_FACTOR;
 	pCamera->posR.z += (pCamera->posRDest.z - pCamera->posR.z) * CAMERA_FOLLOW_FACTOR;
-
-	if (bRise)
-		pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
 }
 
 //==============================================================

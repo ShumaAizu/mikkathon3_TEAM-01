@@ -24,6 +24,7 @@ HRESULT LoadParentModelDataScript(const char* pParentModelDataFileName);
 HRESULT LoadMotionInfo(const char* pMotionFileName);
 HRESULT LoadObject(const char* pObjectFileName);
 ColliderInfo LoadCollider(FILE* pFile);
+HRESULT LoadTrapPattern(const char* pTrapPatternScript);
 void LoadEnableString(char* aStrCpy, char* pStart);
 
 #endif	_LOADSCRIPT_H_

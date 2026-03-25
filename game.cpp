@@ -90,15 +90,23 @@ void InitGame(void)
 	// 届けた数の初期化
 	InitDelivered();
 
+	// モデルデータの読み込み
 	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
 
+	// ステージ情報の読み込み
 	LoadObject("data\\SCRIPTS\\model.txt");
+
+	// トラップパターンの読み込み
+	LoadTrapPattern("data\\SCRIPTS\\TrapPatternInfo.txt");
+
+	// 最初のトラップ設置
+	SetTrap();
 
 	// 霧の設定
 	SetFogEnable(true);
 	SetFog(COLOR_WHITE, GAMEFOG_START, GAMEFOG_END);
 
-	PlaySound(SOUND_LABEL_000);
+	//PlaySound(SOUND_LABEL_000);
 }
 
 //=============================================================================

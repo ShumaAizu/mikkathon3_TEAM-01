@@ -14,21 +14,36 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_TRAP		(16)		// トラップの最大数
+#define MAX_TRAP			(256)		// トラップの最大数
+#define MAX_TRAPPATTERN		(32)		// トラップパターンの最大数
+#define MAX_GRID			(28)		// グリッドの最大数
+#define INIT_GRIDPOSX		(-2500.0f)	// グリッドの開始位置
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-Trap g_atrap[MAX_TRAP];				// トラップの情報
-int g_nNumTrapData;					// トラップデータ数
-int g_nNumTrap;						// 現在のトラップ数
+Trap g_atrap[MAX_TRAP];							// トラップの情報
+TrapPattern g_aTrapPattern[MAX_TRAPPATTERN];	// トラップパターンの情報
+int g_nNumTrapData;								// トラップデータ数
+int g_nNumTrap;									// 現在のトラップ数
+int g_nNumTrapPattern;							// 現在のトラップパターン数
+int g_nCntGrid;									// 現在のグリッド
+bool g_isTrapPattern[MAX_TRAPPATTERN];			// トラップパターンテーブル
+int g_nNumUsePattern;							// 使用しているパターン数
+float g_fGridPosX;								// 現在のグリッド位置
 
 // トラップの半径
 const float g_aTrapRadius[TRAPTYPE_MAX] =
 {
 	32.5f,
 	20.0f,
-	0.0f,
+};
+
+// トラップの対応モデル
+const MODELTYPE g_aTrapModelType[TRAPTYPE_MAX] =
+{
+	MODELTYPE_TRAP,
+	MODELTYPE_TRAP_MINI,
 };
 
 //=============================================================================
@@ -46,11 +61,14 @@ void InitTrap(void)
 		g_atrap[nCntTrap].bUse = false;
 	}
 
+	memset(&g_isTrapPattern[0], false, sizeof(bool) * MAX_TRAPPATTERN);
+
 	g_nNumTrap = 0;
 	g_nNumTrapData = 0;
-
-	// test
-	SetTrap(D3DXVECTOR3(750.0f, 150.0f, 0.0f), INIT_D3DXVEC3, TRAPTYPE_NORMAL, MODELTYPE_TRAP);
+	g_nNumTrapPattern = 0;
+	g_nCntGrid = 0;
+	g_nNumUsePattern = 0;
+	g_fGridPosX = INIT_GRIDPOSX;
 }
 
 //=============================================================================
@@ -157,26 +175,71 @@ bool CollisionTrap(D3DXVECTOR3 pos, float fRadius)
 //=============================================================================
 //	トラップの設定処理
 //=============================================================================
-void SetTrap(D3DXVECTOR3 pos, D3DXVECTOR3 rot, TRAPTYPE traptype, MODELTYPE ModelType)
+void SetTrap(void)
 {
-	Trap* pTrap = &g_atrap[0];
-
-	for (int nCntTrap = 0; nCntTrap < MAX_TRAP; nCntTrap++, pTrap++)
+	for (int nCntTrapPattern = 0; nCntTrapPattern < MAX_GRID; nCntTrapPattern++)
 	{
-		if (pTrap->bUse == true)
+		int nCurrentPattern = 0;
+
+		// テーブル
+		while (true)
 		{
-			continue;
+			nCurrentPattern = rand() % g_nNumTrapPattern;
+			if (g_isTrapPattern[nCurrentPattern] == false)
+			{
+				g_isTrapPattern[nCurrentPattern] = true;
+				g_nNumUsePattern++;
+				break;
+			}
 		}
 
-		pTrap->pos = pos;
-		pTrap->rot = rot;
-		pTrap->traptype = traptype;
+		if (g_nNumUsePattern >= g_nNumTrapPattern)
+		{
+			memset(&g_isTrapPattern[0], false, sizeof(bool) * MAX_TRAPPATTERN);
+			g_nNumUsePattern = 0;
+		}
 
-		// モデルデータ設定
-		pTrap->NormalObjectData.pModelData = SetModelData(ModelType);
-		pTrap->bUse = true;
+		TrapPattern* pTrapPattern = &g_aTrapPattern[nCurrentPattern];
 
-		g_nNumTrap++;
-		break;
+		Trap* pTrap = &g_atrap[0];
+
+		for (int nCntTrapInfo = 0; nCntTrapInfo < pTrapPattern->nNumTrap; nCntTrapInfo++)
+		{
+			for (int nCntTrap = 0; nCntTrap < MAX_TRAP; nCntTrap++, pTrap++)
+			{
+				if (pTrap->bUse == true)
+				{
+					continue;
+				}
+
+				pTrap->pos = pTrapPattern->aTrapInfo[nCntTrapInfo].pos;
+				pTrap->rot = pTrapPattern->aTrapInfo[nCntTrapInfo].rot;
+				pTrap->traptype = pTrapPattern->aTrapInfo[nCntTrapInfo].traptype;
+
+				pTrap->pos.x += g_fGridPosX;
+
+				// モデルデータ設定
+				pTrap->NormalObjectData.pModelData = SetModelData(g_aTrapModelType[pTrap->traptype]);
+				pTrap->bUse = true;
+
+				g_nNumTrap++;
+				break;
+			}
+		}
+
+		g_nCntGrid++;
+		g_fGridPosX += 250.0f;
 	}
+
+	g_fGridPosX = INIT_GRIDPOSX;
+}
+
+//=============================================================================
+//	トラップパターンの設定処理
+//=============================================================================
+void SetTrapPattern(TrapPattern TrapPattern)
+{
+	g_aTrapPattern[g_nNumTrapPattern] = TrapPattern;
+
+	g_nNumTrapPattern++;
 }

@@ -27,7 +27,7 @@
 #define MAX_RESULT			(2)			// リザルトテクスチャの枚数
 #define RESULTFADE_TIMER	(300)		// タイマーの秒数
 #define RESULTFOG_START		(0.0f)		// リザルトでの霧の開始位置
-#define RESULTFOG_END		(7500.0f)	// リザルトでの霧の終了位置
+#define RESULTFOG_END		(10000.0f)	// リザルトでの霧の終了位置
 
 //*****************************************************************************
 // グローバル変数

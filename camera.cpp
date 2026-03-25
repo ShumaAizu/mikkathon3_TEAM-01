@@ -113,11 +113,11 @@ void CameraFollow(P_CAMERA pCamera)
 	// 変数宣言
 	Player* pPlayer = GetPlayer();				// プレイヤー情報
 	static float fPlayerMoveRot = atan2f(-pPlayer->move.x, -pPlayer->move.z);
-	float	fCameraRDest = pPlayer->pos.y;
+	float	fCameraRDest = pPlayer->pos.y + 30.0f;
 
 	//**************************************************************
 	// プレイヤーに追従
-	pCamera->posRDest.x = pPlayer->pos.x;
+	pCamera->posRDest.x = pPlayer->pos.x + 60.0f;
 
 	if (fCameraRDest <= 150.0f)
 		pCamera->posRDest.y = 80.0f;

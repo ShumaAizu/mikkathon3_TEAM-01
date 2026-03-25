@@ -14,9 +14,11 @@
 #include "loadscript.h"
 #include "texture.h"
 #include "sound.h"
+#include "modeldata.h"
 
 //**************************************************************
 // マクロ定義
+#define TITLE_WAIT_BLINK	(50)		// 点滅の間隔
 
 //**************************************************************
 // グローバル変数
@@ -25,9 +27,8 @@ TITLESTATE g_titleState = TITLESTATE_WAIT;			// タイトルの状態
 int g_nCounterTitleState = 0;						// 状態管理カウンター
 LOADTEXTURE_INFO g_aTitleTex[TITLETEXTURE_MAX] =	// 使うテクスチャの情報
 {
-	{"data/TEXTURE/sky000.png",false,-1},
 	{"data/TEXTURE/titlelogo000.png",false,-1},
-	{"data/TEXTURE/titlelogo000.png",false,-1},
+	//{"data/TEXTURE/titlelogo000.png",false,-1},
 	{"data/TEXTURE/PressAButton.png",false,-1},
 	{"data/TEXTURE/GameMode3minutes.png",false,-1},
 	{"data/TEXTURE/GameModeEndless.png", false,-1},
@@ -35,9 +36,8 @@ LOADTEXTURE_INFO g_aTitleTex[TITLETEXTURE_MAX] =	// 使うテクスチャの情報
 
 Title g_aTitlePolygon[TITLEPOLYGON_MAX] =				// タイトルの2Dポリゴン
 {
-	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f),vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f), -1,true},		// 背景
-	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.4f,0.0f),vec3(600.0f,300.0f,0.0f), -1,true},		// タイトル
-	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.7f,0.0f),vec3(600.0f,100.0f,0.0f), -1,true},		// Press Any Key
+	{vec3(SCREEN_WIDTH * 0.35f,SCREEN_HEIGHT * 0.3f,0.0f),vec3(400.0f,200.0f,0.0f), -1,true},		// タイトル
+	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.85f,0.0f),vec3(300.0f,40.0f,0.0f), -1,true},		// Press Any Key
 	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f),vec3(300.0f,60.0f,0.0f), -1,false},		// GameMode 3Min
 	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.7f,0.0f),vec3(300.0f,60.0f,0.0f), -1,false},		// GameMode Endless
 };
@@ -47,6 +47,8 @@ void TitleWait(void);
 void TitleMove(void);
 void TitleOp(void);
 void TitleMenu(void);
+void TitleVtxPos(TITLEPOLYGON type, vec3 pos,vec3 size);
+void TitleVtxCol(TITLEPOLYGON type, D3DXCOLOR col);
 
 //=========================================================================================
 //	タイトルの初期化処理
@@ -55,6 +57,10 @@ void InitTitle(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
 	VERTEX_2D* pVtx;							// 頂点情報へのポインタ
+
+	// グローバル変数初期化
+	g_titleState = TITLESTATE_WAIT;
+	g_nCounterTitleState = 0;
 
 	// テクスチャの読み込み
 	P_LOADTEXTURE_INFO pTexInfo = &g_aTitleTex[0];
@@ -82,27 +88,6 @@ void InitTitle(void)
 
 	for (int nCnt = 0; nCnt < TITLEPOLYGON_MAX; nCnt++, pTitle++)
 	{
-		switch (nCnt)
-		{
-		case TITLEPOLYGON_BG:
-			pTitle->nTex = g_aTitleTex[TITLETEXTURE_BG].nTex;
-			break;
-		case TITLEPOLYGON_TITLE:
-			pTitle->nTex = g_aTitleTex[TITLETEXTURE_TITLE].nTex;
-			break;
-		case TITLEPOLYGON_START:
-			pTitle->nTex = g_aTitleTex[TITLETEXTURE_START_JOY].nTex;
-			break;
-		case TITLEPOLYGON_3MIN:
-			pTitle->nTex = g_aTitleTex[TITLETEXTURE_3MIN].nTex;
-			break;
-		case TITLEPOLYGON_ENDLESS:
-			pTitle->nTex = g_aTitleTex[TITLETEXTURE_ENDLESS].nTex;
-			break;
-		default:
-			break;
-		}
-
 		// 頂点座標の設定
 		pVtx[0].pos = D3DXVECTOR3(pTitle->pos.x - pTitle->size.x, pTitle->pos.y - pTitle->size.y, 0.0f);
 		pVtx[1].pos = D3DXVECTOR3(pTitle->pos.x + pTitle->size.x, pTitle->pos.y - pTitle->size.y, 0.0f);
@@ -121,26 +106,39 @@ void InitTitle(void)
 		pVtx[2].col = COLOR_WHITE;
 		pVtx[3].col = COLOR_WHITE;
 
-		if (nCnt == 0)
-		{
-			// テクスチャ座標の設定
-			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-			pVtx[1].tex = D3DXVECTOR2(0.25f, 0.0f);
-			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-			pVtx[3].tex = D3DXVECTOR2(0.25f, 1.0f);
-		}
-		else
-		{
-			// テクスチャ座標の設定
-			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-			pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
-		}
+		// テクスチャ座標の設定
+		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+		pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+		pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+
 		pVtx += 4;
 	}
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTitle->Unlock();
+
+	pTitle = &g_aTitlePolygon[0];
+	for (int nCnt = 0; nCnt < TITLEPOLYGON_MAX; nCnt++, pTitle++)
+	{
+		switch (nCnt)
+		{
+		case TITLEPOLYGON_TITLE:
+			pTitle->nTex = g_aTitleTex[TITLETEXTURE_TITLE].nTex;
+			TitleVtxPos(TITLEPOLYGON_TITLE, vec3(pTitle->pos.x, -600.0f, 0.0f), pTitle->size);
+			break;
+		case TITLEPOLYGON_START:
+			pTitle->nTex = g_aTitleTex[TITLETEXTURE_START_JOY].nTex;
+			break;
+		case TITLEPOLYGON_3MIN:
+			pTitle->nTex = g_aTitleTex[TITLETEXTURE_3MIN].nTex;
+			break;
+		case TITLEPOLYGON_ENDLESS:
+			pTitle->nTex = g_aTitleTex[TITLETEXTURE_ENDLESS].nTex;
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 //=========================================================================================
@@ -196,16 +194,16 @@ void UpdateTitle(void)
 // 待機状態
 void TitleWait(void)
 {
-	if (GetKeyboardTrigger(DIK_RETURN))
-	{
+	// フェードが終わったら次へ
+	if(GetFade() == FADE_NONE)
 		SetTitleState(TITLESTATE_MOVE);
-	}
 }
 
 //==============================================================
 // ぐいーん
 void TitleMove(void)
 {
+	// 次へ
 	if (GetKeyboardTrigger(DIK_RETURN))
 	{
 		SetTitleState(TITLESTATE_OP);
@@ -216,6 +214,7 @@ void TitleMove(void)
 // ちかちかきらーん
 void TitleOp(void)
 {
+	// 次へ
 	if (GetKeyboardTrigger(DIK_RETURN))
 	{
 		g_aTitlePolygon[TITLEPOLYGON_TITLE].bDraw = false;
@@ -223,6 +222,20 @@ void TitleOp(void)
 		g_aTitlePolygon[TITLEPOLYGON_3MIN].bDraw = true;
 		g_aTitlePolygon[TITLEPOLYGON_ENDLESS].bDraw = true;
 		SetTitleState(TITLESTATE_MENU);
+		return;
+	}
+
+	g_nCounterTitleState++;
+	PrintDebugProc("\nCounterTitle: %d\n", g_nCounterTitleState);
+	if (g_nCounterTitleState == TITLE_WAIT_BLINK)
+	{
+		TitleVtxCol(TITLEPOLYGON_START, D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f));
+	}
+	else if (g_nCounterTitleState == TITLE_WAIT_BLINK * 2)
+	{
+		TitleVtxCol(TITLEPOLYGON_START, COLOR_WHITE);
+
+		g_nCounterTitleState = 0;
 	}
 }
 
@@ -234,6 +247,47 @@ void TitleMenu(void)
 	{
 		SetFade(MODE_GAME);
 	}
+}
+
+//==============================================================
+// 頂点座標設定
+void TitleVtxPos(TITLEPOLYGON type, vec3 pos, vec3 size)
+{
+	VERTEX_2D* pVtx;							// 頂点情報へのポインタ
+
+	// 頂点バッファをロックし,頂点情報へのポインタを取得
+	g_pVtxBuffTitle->Lock(0, 0, (void**)&pVtx, 0);
+	pVtx += (int)type * 4;
+
+	// 頂点座標の設定
+	pVtx[0].pos = D3DXVECTOR3(pos.x - size.x, pos.y - size.y, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(pos.x + size.x, pos.y - size.y, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(pos.x - size.x, pos.y + size.y, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(pos.x + size.x, pos.y + size.y, 0.0f);
+
+	// 頂点バッファをアンロックする
+	g_pVtxBuffTitle->Unlock();
+}
+
+//==============================================================
+// 頂点カラー設定
+void TitleVtxCol(TITLEPOLYGON type, D3DXCOLOR col)
+{
+	VERTEX_2D* pVtx;							// 頂点情報へのポインタ
+	P_TITLE pTitle = &g_aTitlePolygon[type];	// タイトル用ポリゴン情報
+
+	// 頂点バッファをロックし,頂点情報へのポインタを取得
+	g_pVtxBuffTitle->Lock(0, 0, (void**)&pVtx, 0);
+	pVtx += (int)type * 4;
+
+	// 頂点カラーの設定
+	pVtx[0].col = col;
+	pVtx[1].col = col;
+	pVtx[2].col = col;
+	pVtx[3].col = col;
+
+	// 頂点バッファをアンロックする
+	g_pVtxBuffTitle->Unlock();
 }
 
 //=========================================================================================

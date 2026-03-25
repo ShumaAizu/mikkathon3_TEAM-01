@@ -18,6 +18,7 @@ bool g_bCameraMove = false;
 
 //**************************************************************
 // プロトタイプ宣言
+void GameModeCamera(void);					// ゲームモードのカメラ更新処理
 void CameraFollow(P_CAMERA pCamera);		// プレイヤーに追従移動
 void CameraMove(P_CAMERA pCamera);			// カメラ移動処理
 void CameraRotation(P_CAMERA pCamera);		// カメラ回転処理
@@ -76,6 +77,27 @@ void UninitCamera(void)
 //=========================================================================================
 void UpdateCamera(MODE mode)
 {
+	switch (GetMode())
+	{
+	case MODE_TITLE:
+		break;
+
+	case MODE_GAME:
+		GameModeCamera();
+		break;
+
+	case MODE_RESULT:
+		break;
+
+	default:
+		break;
+	}
+}
+
+//==============================================================
+// ゲームモードのカメラ更新処理
+void GameModeCamera(void)
+{
 	//**************************************************************
 	// 変数宣言
 	P_CAMERA pCamera = GetCamera();
@@ -99,11 +121,12 @@ void UpdateCamera(MODE mode)
 	if (pCamera->posR.y <= 260.0f)
 		pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
 	pCamera->posV.z = pCamera->posR.z - sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
-	
+
 	PrintDebugProc("\nCameraRot:%f:%f:%f\n", pCamera->rot.x, pCamera->rot.y, pCamera->rot.z);
 
 	if (GetKeyboardTrigger(DIK_F1))
 		g_bCameraMove = g_bCameraMove ^ 1;
+
 }
 
 //==============================================================

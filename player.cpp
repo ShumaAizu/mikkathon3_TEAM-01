@@ -15,11 +15,10 @@
 
 //**************************************************************
 // グローバル変数
-LPDIRECT3DTEXTURE9	g_apTexturePlayer[MAX_TEX_PLAYER] = {};	// テクスチャへのポインタ
-LPD3DXMESH			g_pMeshPlayer = NULL;					// メッシュ(頂点情報)へのポインタ
-LPD3DXBUFFER		g_pMatBuffPlayer = NULL;				// マテリアルへのポインタ
-DWORD				g_dwNumMatPlayer = 0;					// マテリアル数
-D3DXMATRIX			g_mtxWorldPlayer;						// ワールドマトリックス
+//LPDIRECT3DTEXTURE9	g_apTexturePlayer[MAX_TEX_PLAYER] = {};	// テクスチャへのポインタ
+//LPD3DXMESH			g_pMeshPlayer = NULL;					// メッシュ(頂点情報)へのポインタ
+//LPD3DXBUFFER		g_pMatBuffPlayer = NULL;				// マテリアルへのポインタ
+//DWORD				g_dwNumMatPlayer = 0;					// マテリアル数
 Player				g_player;								// プレイヤーの情報
 
 PlayerPlam			g_playerPlam;
@@ -65,85 +64,20 @@ void InitPlayer(void)
 	g_player.rot = vec3_ZORO;
 	g_player.move = vec3_ZORO;
 	g_player.spin = vec3_ZORO;
-	g_player.fWeight = 10.0f;
-	g_player.state = PLAYERSTATE_NONE;
-	g_player.vtxMin = D3DXVECTOR3(0xffff, 0xffff, 0xffff);
-	g_player.vtxMax = D3DXVECTOR3(-0xffff, -0xffff, -0xffff);
+	g_player.fWeight = 10.0f;						// 重さ
+	g_player.state = PLAYERSTATE_NONE;				// 状態
 	g_player.bUse = false;
+	g_player.pModel = SetModelData(MODELTYPE_002);	// モデル呼び出し
+
+	// 呼び出しに成功したら
+	if (g_player.pModel)
+	{
+		g_player.bUse = true;
+	}
 
 	// プレイヤーパラメータ情報の読み込み
 	PlayerPlamLoad();
 
-	//**************************************************************
-	// X ファイル読み込み
-	if (SUCCEEDED(D3DXLoadMeshFromX("data\\MODEL\\balloon.x", D3DXMESH_SYSTEMMEM, pDevice,
-		NULL, &g_pMatBuffPlayer, NULL, &g_dwNumMatPlayer, &g_pMeshPlayer)))
-	{
-		g_player.bUse = true;//	読み込めた
-
-		//**************************************************************
-		// マテリアルデータへのポインタを取得
-		pMat = (D3DXMATERIAL*)g_pMatBuffPlayer->GetBufferPointer();
-
-		for (int nCntMat = 0; nCntMat < (int)g_dwNumMatPlayer; nCntMat++)
-		{
-			if (pMat[nCntMat].pTextureFilename != NULL)
-			{// テクスチャがあれば
-				// テクスチャ読み込み
-				D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &g_apTexturePlayer[nCntMat]);
-			}
-		}
-		//**************************************************************
-		// 頂点数を取得
-		nNumVtx = g_pMeshPlayer->GetNumVertices();
-
-		// 頂点フォーマットサイズの取得
-		dwSizeFVF = D3DXGetFVFVertexSize(g_pMeshPlayer->GetFVF());
-
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		// 頂点バッファをロック
-		g_pMeshPlayer->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVtxBuff);
-
-		for (int nCntVtx = 0; nCntVtx < nNumVtx; nCntVtx++, pVtxBuff += dwSizeFVF)
-		{
-			vtx = *(D3DXVECTOR3*)pVtxBuff;		// 頂点情報を代入
-
-			// 最小値
-			if (vtx.x < g_player.vtxMin.x)
-			{
-				g_player.vtxMin.x = vtx.x;
-			}
-			if (vtx.y < g_player.vtxMin.y)
-			{
-				g_player.vtxMin.y = vtx.y;
-			}
-			if (vtx.z < g_player.vtxMin.z)
-			{
-				g_player.vtxMin.z = vtx.z;
-			}
-
-			// 最大値
-			if (g_player.vtxMax.x < vtx.x)
-			{
-				g_player.vtxMax.x = vtx.x;
-			}
-			if (g_player.vtxMax.y < vtx.y)
-			{
-				g_player.vtxMax.y = vtx.y;
-			}
-			if (g_player.vtxMax.z < vtx.z)
-			{
-				g_player.vtxMax.z = vtx.z;
-			}
-
-		}
-		// アンロック
-		g_pMeshPlayer->UnlockVertexBuffer();
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-		g_player.nShadow = SetShadow((g_player.vtxMax.x - g_player.vtxMin.x) * 0.3f);
-
-	}
 }
 
 //=========================================================================================
@@ -151,33 +85,6 @@ void InitPlayer(void)
 //=========================================================================================
 void UninitPlayer(void)
 {
-	//**************************************************************
-	// テクスチャの破棄
-	for (int nCntTex = 0; nCntTex < MAX_TEX_PLAYER; nCntTex++)
-	{
-		if (g_apTexturePlayer[nCntTex] != NULL)
-		{
-			g_apTexturePlayer[nCntTex]->Release();
-			g_apTexturePlayer[nCntTex] = NULL;
-		}
-	}
-
-	//**************************************************************
-	// メッシュの破棄
-	if (g_pMeshPlayer != NULL)
-	{
-		g_pMeshPlayer->Release();
-		g_pMeshPlayer = NULL;
-	}
-
-	//**************************************************************
-	// マテリアルの破棄
-	if (g_pMatBuffPlayer != NULL)
-	{
-		g_pMatBuffPlayer->Release();
-		g_pMatBuffPlayer = NULL;
-	}
-
 	//**************************************************************
 	// 影インデックスの解放
 	if (g_player.nShadow != -1)
@@ -461,44 +368,44 @@ void DrawPlayer(void)
 	//**************************************************************
 	// 変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans;					// マトリックス計算用
-	D3DMATERIAL9 matDef;							// 現在のマテリアル保存用
-	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
-
+	D3DXMATRIX		mtxRot, mtxTrans;				// マトリックス計算用
+	D3DMATERIAL9	matDef;							// 現在のマテリアル保存用
+	D3DXMATERIAL*	pMat;							// マテリアルデータへのポインタ
+	P_PLAYER		pPlayer = &g_player;
 	if (g_player.bUse)
 	{
 		//**************************************************************
 		// ワールドマトリックスの初期化
-		D3DXMatrixIdentity(&g_mtxWorldPlayer);
+		D3DXMatrixIdentity(&pPlayer->mtxWorldr);
 
 		// 向きを反映
 		D3DXMatrixRotationYawPitchRoll(&mtxRot, g_player.rot.y, g_player.rot.x, g_player.rot.z);
-		D3DXMatrixMultiply(&g_mtxWorldPlayer, &g_mtxWorldPlayer, &mtxRot);
+		D3DXMatrixMultiply(&pPlayer->mtxWorldr, &pPlayer->mtxWorldr, &mtxRot);
 
 		// 位置を反映
 		D3DXMatrixTranslation(&mtxTrans, g_player.pos.x, g_player.pos.y, g_player.pos.z);
-		D3DXMatrixMultiply(&g_mtxWorldPlayer, &g_mtxWorldPlayer, &mtxTrans);
+		D3DXMatrixMultiply(&pPlayer->mtxWorldr, &pPlayer->mtxWorldr, &mtxTrans);
 
 		// ワールドマトリックスの設定
-		pDevice->SetTransform(D3DTS_WORLD, &g_mtxWorldPlayer);
+		pDevice->SetTransform(D3DTS_WORLD, &pPlayer->mtxWorldr);
 
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// 現在のマテリアルを取得
 		pDevice->GetMaterial(&matDef);
 
 		// マテリアルデータへのポインタを取得
-		pMat = (D3DXMATERIAL*)g_pMatBuffPlayer->GetBufferPointer();
+		pMat = (D3DXMATERIAL*)pPlayer->pModel->pBuffMat->GetBufferPointer();
 
-		for (int nCntMat = 0; nCntMat < (int)g_dwNumMatPlayer; nCntMat++)
+		for (int nCntMat = 0; nCntMat < (int)pPlayer->pModel->dwNumMat; nCntMat++)
 		{
 			// マテリアルの設定
 			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 			// テクスチャの設定
-			pDevice->SetTexture(0, g_apTexturePlayer[nCntMat]);
+			pDevice->SetTexture(0, pPlayer->pModel->apTexture[nCntMat]);
 
 			// モデル(パーツ)の描画
-			g_pMeshPlayer->DrawSubset(nCntMat);
+			pPlayer->pModel->pMesh->DrawSubset(nCntMat);
 		}
 
 		// 保存していたマテリアルに戻す

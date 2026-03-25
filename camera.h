@@ -68,7 +68,7 @@ typedef struct Camera
 	CameraType	type;					// カメラタイプ
 	bool		bUse;					// 配列を使っているか
 }Camera;
-typedef struct Camera* P_CAMERA;
+typedef Camera* P_CAMERA;
 
 //=========================================================================================
 //プロトタイプ宣言

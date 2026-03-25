@@ -12,6 +12,7 @@
 #include "main.h"
 #include "input.h"
 #include "camera.h"
+#include "modeldata.h"
 
 //=========================================================================================
 // マクロ定義
@@ -72,20 +73,21 @@ typedef enum
 //==============================================================
 // プレイヤー情報構造体
 //==============================================================
-typedef struct
+typedef struct Player
 {
-	D3DXVECTOR3 pos;					// 位置
-	D3DXVECTOR3 posOld;					// 過去の位置
-	D3DXVECTOR3 rot;					// 向き
-	D3DXVECTOR3 move;					// 移動速度
-	D3DXVECTOR3 spin;					// 回転速度
-	int			nShadow;				// 影番号
-	float		fWeight;				// 重さ
-	PLAYERSTATE state;					// 状態
-	D3DXVECTOR3 vtxMin;					// 頂点の最小座標
-	D3DXVECTOR3 vtxMax;					// 頂点の最大座標
-	bool		bUse;					// 使っているか
+	D3DXVECTOR3 pos;			// 位置
+	D3DXVECTOR3 posOld;			// 過去の位置
+	D3DXVECTOR3 rot;			// 向き
+	D3DXVECTOR3 move;			// 移動速度
+	D3DXVECTOR3 spin;			// 回転速度
+	int			nShadow;		// 影番号
+	float		fWeight;		// 重さ
+	PLAYERSTATE state;			// 状態
+	ModelData*	pModel;			// モデルデータ
+	D3DXMATRIX	mtxWorldr;		// ワールドマトリックス
+	bool		bUse;			// 使っているか
 }Player;
+typedef Player* P_PLAYER;
 
 //==============================================================
 // プレイヤーパラメータ情報構造体

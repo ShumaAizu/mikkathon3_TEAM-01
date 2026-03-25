@@ -60,8 +60,6 @@ void InitCamera(void)
 		pCamera->viewport.MinZ = 0.0f;
 		pCamera->viewport.MaxZ = 1.0f;
 		pCamera->bUse = true;
-		pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
-
 	}
 }
 
@@ -90,7 +88,6 @@ void UpdateCamera(MODE mode)
 
 		// 回転
 		CameraRotation(pCamera);
-		pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
 	}
 	else
 	{
@@ -99,7 +96,10 @@ void UpdateCamera(MODE mode)
 	}
 
 	pCamera->posV.x = pCamera->posR.x - cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+	pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
 	pCamera->posV.z = pCamera->posR.z - sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+	
+	PrintDebugProc("\nCameraRot:%f:%f:%f\n", pCamera->rot.x, pCamera->rot.y, pCamera->rot.z);
 
 	if (GetKeyboardTrigger(DIK_F1))
 		g_bCameraMove = g_bCameraMove ^ 1;
@@ -113,25 +113,25 @@ void CameraFollow(P_CAMERA pCamera)
 	// 変数宣言
 	Player* pPlayer = GetPlayer();				// プレイヤー情報
 	static float fPlayerMoveRot = atan2f(-pPlayer->move.x, -pPlayer->move.z);
-	float	fCameraRDest = pPlayer->pos.y + 30.0f;
+	float	fCameraRDest = pPlayer->pos.y + 40.0f;		// プレイヤーの起点より上
 	bool	bRise = false;
 
 	//**************************************************************
 	// プレイヤーに追従
-	pCamera->posRDest.x = pPlayer->pos.x + 60.0f;
+	pCamera->posRDest.x = pPlayer->pos.x + 60.0f;		// プレイヤーの起点より前
 
 	// 地面見える範囲
 	if (fCameraRDest <= 150.0f)
-		pCamera->posRDest.y = 80.0f;
+		pCamera->posRDest.y = 150.0f;
 	// 一緒に上がる範囲
 	else if (fCameraRDest <= 300.0f)
 	{
-		pCamera->posRDest.y = fCameraRDest - 70.0f;
+		pCamera->posRDest.y = fCameraRDest;
 		bRise = true;
 	}
 	// 見上げる範囲
 	else
-		pCamera->posRDest.y = fCameraRDest - 70.0f;
+		pCamera->posRDest.y = fCameraRDest;
 
 	//**************************************************************
 	// カメラの位置を補正
@@ -175,7 +175,9 @@ void CameraRotation(P_CAMERA pCamera)
 	// 注視点のまわりを旋回
 	if (GetJoypadStickRight(&stickRight.x, &stickRight.y))
 	{
-		pCamera->rot.y += stickRight.x * CAMERA_REV;
+		pCamera->rot.x += stickRight.y * CAMERA_SPIN_Y;
+		pCamera->rot.y += stickRight.x * CAMERA_SPIN_X;
+		bUse = true;
 	}
 
 	//**************************************************************
@@ -193,20 +195,20 @@ void CameraRotation(P_CAMERA pCamera)
 
 	//**************************************************************
 	// -πからπまでにする	
-	if (pCamera->rot.x < -D3DX_PI)
-		pCamera->rot.x = D3DX_PI;
-	else if (D3DX_PI < pCamera->rot.x)
-		pCamera->rot.x = -D3DX_PI;
+	if (pCamera->rot.x < -CAMERA_LOWLIM)
+		pCamera->rot.x = -CAMERA_LOWLIM;
+	else if (CAMERA_UPLIM < pCamera->rot.x)
+		pCamera->rot.x = CAMERA_UPLIM;
 
 	if (pCamera->rot.y < -D3DX_PI)
-		pCamera->rot.y = D3DX_PI;
+		pCamera->rot.y += D3DX_PI * 2;
 	else if (D3DX_PI < pCamera->rot.y)
-		pCamera->rot.y = -D3DX_PI;
+		pCamera->rot.y += -D3DX_PI * 2;
 
 	if (pCamera->rot.z < -D3DX_PI)
-		pCamera->rot.z = D3DX_PI;
+		pCamera->rot.z += D3DX_PI * 2;
 	else if (D3DX_PI < pCamera->rot.z)
-		pCamera->rot.z = -D3DX_PI;
+		pCamera->rot.z += -D3DX_PI * 2;
 
 	//**************************************************************
 	// 視点から注視点を求める	

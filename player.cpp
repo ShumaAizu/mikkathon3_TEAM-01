@@ -71,7 +71,7 @@ void InitPlayer(void)
 	//**************************************************************
 	// 各値の初期化
 	// プレイヤー情報
-	g_player.pos = D3DXVECTOR3(0.0f, 150.0f, 0.0f);
+	g_player.pos = D3DXVECTOR3(-WORLD_END, 150.0f, 0.0f);
 	g_player.posOld = g_player.pos;
 	g_player.rot = vec3_ZORO;
 	g_player.move = vec3_ZORO;
@@ -153,11 +153,13 @@ void UpdatePlayer(void)
 		DebugSetValue(&g_player.fWeight, 0.1f, DIK_UP, DIK_DOWN);
 		PrintDebugProc("\nプレイヤーの重さ [↑/↓]: %f", g_player.fWeight);
 
-		DebugSetValue(&g_parameter.fGravity, 0.0001f, DIK_O, DIK_L);
-		PrintDebugProc("\n重力             [ O/ L]: %f", g_parameter.fGravity);
+		//DebugSetValue(&g_parameter.fGravity, 0.0001f, DIK_O, DIK_L);
+		//PrintDebugProc("\n重力             [ O/ L]: %f", g_parameter.fGravity);
+		DebugSetValue(&g_parameter.fMaxRiseSpeed, 0.0001f, DIK_O, DIK_L);
+		PrintDebugProc("\n最大上昇速度     [ O/ L]: %f", g_parameter.fMaxRiseSpeed);
 
-		DebugSetValue(&g_parameter.fFacGravity, 0.0001f, DIK_I, DIK_K);
-		PrintDebugProc("\n重力係数         [ I/ K]: %f", g_parameter.fFacGravity);
+		DebugSetValue(&g_parameter.fMaxMoveSpeed, 0.0001f, DIK_I, DIK_K);
+		PrintDebugProc("\n最大移動速度     [ I/ K]: %f", g_parameter.fMaxMoveSpeed);
 
 		DebugSetValue(&g_parameter.fSpeedforce, 0.01f, DIK_U, DIK_J);
 		PrintDebugProc("\n加速力           [ U/ J]: %f", g_parameter.fSpeedforce);
@@ -235,15 +237,20 @@ void Keyboard(void)
 	do
 	{
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_UP))
-		{// 左の入力のみ
-			g_player.move.y += g_parameter.fJumpforce / g_player.fWeight;
+		{// 上昇
+			if (g_player.pos.y <= HEIGHT_RES)
+				g_player.move.y += g_parameter.fJumpforce / g_player.fWeight;
+			else
+				g_player.move.y += g_parameter.fJumpforce / (g_player.fWeight + PENALTY_WEIGHT);
 		}
+
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_L))
-		{// 左の入力のみ
+		{// 奥
 			g_player.move.z += g_parameter.fSpeedforce;
 		}
+
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_R))
-		{// 右の入力のみ
+		{// 手前
 			g_player.move.z -= g_parameter.fSpeedforce;
 		}
 	} while (0);
@@ -265,9 +272,13 @@ void Joypad(void)
 	if (leftStick.x != 0)
 		g_player.move.z -= leftStick.x * g_parameter.fSpeedforce;
 
-	if(0 < leftStick.y)
-		g_player.move.y += leftStick.y * g_parameter.fJumpforce / g_player.fWeight;
-
+	if (0 < leftStick.y)
+	{
+		if (g_player.pos.y <= HEIGHT_RES)
+			g_player.move.y += leftStick.y * g_parameter.fJumpforce / g_player.fWeight;
+		else
+			g_player.move.y += leftStick.y * g_parameter.fJumpforce / (g_player.fWeight + PENALTY_WEIGHT);
+	}
 }
 
 //==============================================================
@@ -280,29 +291,9 @@ void PlayerMove(void)
 	D3DXVECTOR3 ref = GetCamera()->rot;			// カメラの向き
 
 	//**************************************************************
-	// 移動に合わせて向きを変える
-	if ((g_player.move.x != 0 || g_player.move.z != 0) && 0)
-	{// 動いていれば
-		if (D3DX_PI < fRotMove)
-		{//	逆回転補正
-			fRotMove -= D3DX_PI * 2;
-		}
-		if (fRotMove < -D3DX_PI)
-		{//	逆回転補正
-			fRotMove += D3DX_PI * 2;
-		}
-
-		// 回転を保存
-		fRotMove *= ROTMOVE_FACTOR;
-		g_player.spin.y = fRotMove;
-	}
-
-	//**************************************************************
-	// 異常な角度(X_PIを超える)値を修正
-	if (g_player.rot.y < -D3DX_PI)
-		g_player.rot.y = D3DX_PI;
-	else if (g_player.rot.y > D3DX_PI)
-		g_player.rot.y = -D3DX_PI;
+	// 速度の制限
+	if (g_parameter.fMaxRiseSpeed <= g_player.move.y)
+		g_player.move.y = g_parameter.fMaxRiseSpeed;
 
 	//**************************************************************
 	// 移動・回転
@@ -323,6 +314,13 @@ void PlayerMove(void)
 	}
 
 	//**************************************************************
+	// 異常な角度(X_PIを超える)値を修正
+	if (g_player.rot.y < -D3DX_PI)
+		g_player.rot.y = D3DX_PI;
+	else if (g_player.rot.y > D3DX_PI)
+		g_player.rot.y = -D3DX_PI;
+
+	//**************************************************************
 	// 影の追従
 	SetPotisionShadow(g_player.nShadow, g_player.pos, 1.0f);
 	
@@ -333,7 +331,10 @@ void PlayerMove(void)
 
 	//**************************************************************
 	// 重力
-	g_player.move.y -= g_parameter.fGravity * g_player.fWeight;
+	if (g_player.pos.y <= HEIGHT_RES)
+		g_player.move.y -= g_parameter.fGravity * g_player.fWeight;
+	else
+		g_player.move.y -= g_parameter.fGravity * (g_player.fWeight + PENALTY_WEIGHT);
 
 	//**************************************************************
 	// 強制スクロール
@@ -404,28 +405,36 @@ void Collision(void)
 	}
 	
 	// 地面
-	if (g_player.pos.y <= 0.0f)
+	if (g_player.pos.y <= HEIGHT_GROUND)
 	{
-		g_player.pos.y = 0.0f;
-
-		g_player.move.x = 0.0f;
+		g_player.pos.y = HEIGHT_GROUND;		// 接地
+		g_player.move.x = 0.0f;				// 移動不可
 		g_player.move.z = 0.0f;
-		if (g_player.move.y < 0.0f)
+
+		if (g_player.move.y < 0.0f)			// それ以下には移動しないように
 			g_player.move.y = 0.0f;
 	}
 
 	// 大人の壁
-	if (g_player.pos.z <= -100.0f)
+	if (g_player.pos.z <= DEPTH_FRONT)
 	{
-		g_player.pos.z = -100.0f;
+		g_player.pos.z = DEPTH_FRONT;
 		if (g_player.move.z <= 0.0f)
 			g_player.move.z = 0.0f;
 	}
-	if (150.0f <= g_player.pos.z)
+	if (DEPTH_END <= g_player.pos.z)
 	{
-		g_player.pos.z = 150.0f;
+		g_player.pos.z = DEPTH_END;
 		if (0.0f <= g_player.move.z)
 			g_player.move.z = 0.0f;
+	}
+
+	// 天井
+	if (HEIGHT_LIMIT <= g_player.pos.y)
+	{
+		g_player.pos.y = HEIGHT_LIMIT;
+		if (0.0f <= g_player.move.y)
+			g_player.move.y = 0.0f;
 	}
 
 	if (WORLD_END < g_player.pos.x)

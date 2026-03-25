@@ -38,14 +38,23 @@
 #define JUMP_FORCE			(0.04f)			// 上昇速度
 #define MOVE_FOC			(1.0f)			// 重さによる左右移動への影響係数
 #define SCROLL_FOC			(90)			// スクロール速度の係数
-#define MAX_MOVE_SPEED		(10.0f)			// 最大移動速度
-#define MAX_RISE_SPEED		(10.0f)			// 最大上昇速度
+#define MAX_MOVE_SPEED		(1.0f)			// 最大移動速度
+#define MAX_RISE_SPEED		(0.4f)			// 最大上昇速度
 #define PLAYER_SHADOWSIZE	(15.0f)			// プレイヤーの影の大きさ
 #define POSMOVE_FACTOR		(0.05f)			// 移動慣性の補正係数
 #define ROTMOVE_FACTOR		(0.1f)			// 回転慣性の補正係数
 #define GRAVITY_FAC			(0.002f)		// 重さによる重力への影響係数
 #define MOVE_FAC			(1.0f)			// 重さによる左右移動への影響係数
 #define SCROLL_FAC			(30)			// スクロール速度の係数
+
+//==============================================================
+// 制限区間
+#define HEIGHT_LIMIT		(400.0f)		// 限界高度
+#define HEIGHT_RES			(330.0f)		// 制限高度
+#define PENALTY_WEIGHT		(8.0f)			// 制限高度による負荷
+#define HEIGHT_GROUND		(0.0f)			// 地上
+#define DEPTH_FRONT			(-100.0f)		// 手前
+#define DEPTH_END			(150.0f)		// 奥
 
 //==============================================================
 // プレイヤー操作

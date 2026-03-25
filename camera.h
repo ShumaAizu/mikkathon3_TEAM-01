@@ -16,7 +16,7 @@
 //=========================================================================================
 #define CAMERA_V_DEFPOS			vec3(0.0f, 350.0f, 500.0f)	// 視点のデフォ位置
 #define CAMERA_R_DEFPOS			vec3(0.0f, 0.0f, 0.0f)		// 注視点のデフォ位置
-#define CAMERA_ROT				vec3(0.6f, 2.52f, 0.0f)		// カメラのデフォ向き
+#define CAMERA_ROT				vec3(1.17f, 2.73f, 0.0f)	// カメラのデフォ向き
 #define CAMERA_DISTANS			(300.0f)					// カメラと注視点の距離
 #define VIEW_MINDEPTH			(5.0f)						// 最小描画距離
 #define VIEW_MAXDEPTH			(10000.0f)					// 最大描画距離
@@ -28,6 +28,9 @@
 #define CAMERA_SPIN_Y			(0.015f)					// カメラの垂直回転速度
 #define CAMERA_FOLLOW_FACTOR	(0.15f)						// カメラが追従移動する時の補正
 #define CAMERA_ROTET_FACTOR		(0.1f)						// カメラが追従回転する時の補正
+
+#define CAMERA_UPLIM			(2.8f)						// カメラの上限角度
+#define CAMERA_LOWLIM			(2.8f)						// カメラの下限角度
 
 #define UICAMERA_POSV			vec3(0.0f,20.0f,-20.0f)		// インターフェース用カメラの座標
 #define UICAMERA_POSR			vec3(0.0f,0.0f,0.0f)		// インターフェース用カメラの注視点座標

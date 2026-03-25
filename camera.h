@@ -23,6 +23,7 @@
 #define VIEW_RADIAN				(45.0f)						// 視野角
 
 #define CAMERA_MOVE				(10.0f)						// カメラの移動速度
+#define CAMERA_REV				(0.1f)						// カメラの回転
 #define CAMERA_SPIN_X			(0.05f)						// カメラの水平回転速度
 #define CAMERA_SPIN_Y			(0.015f)					// カメラの垂直回転速度
 #define CAMERA_FOLLOW_FACTOR	(0.15f)						// カメラが追従移動する時の補正
@@ -76,8 +77,9 @@ typedef Camera* P_CAMERA;
 void InitCamera(void);
 void UninitCamera(void);
 void UpdateCamera(MODE mode);
-void SetCamera(void);													// カメラを設置（mainのDrawの最初にする）
-void SetUICamera(vec3 viewTopLeft, D3DXVECTOR2 size);							// UI用などで画面上にモデルを描画したい場合
-P_CAMERA GetCamera(void);												// カメラ除法配列の先頭アドレスを取得
+void SetCamera(void);										// カメラを設置（mainのDrawの最初にする）
+void SetUICamera(vec3 viewTopLeft, D3DXVECTOR2 size);		// UI用などで画面上にモデルを描画したい場合
+P_CAMERA GetCamera(void);									// カメラ除法配列の先頭アドレスを取得
+bool IsEnableCameraEdit(void);
 
 #endif// !_CAMERA_H_#endif#endif

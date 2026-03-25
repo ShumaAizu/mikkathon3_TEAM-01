@@ -26,8 +26,8 @@ typedef struct
 		fMaxRiseSpeed,	// 最大上昇速度
 		fInertia,		// 慣性割合
 		fGravity,		// 重力
-		fFocMove,		// 重さによる左右移動への影響
-		fFocGravity;	// 重さによる重力への影響係数
+		fFacMove,		// 重さによる左右移動への影響
+		fFacGravity;	// 重さによる重力への影響係数
 
 	int nFocScroll;		// スクロールの係数
 }Parameter;
@@ -37,14 +37,6 @@ typedef struct
 // グローバル変数
 Player		g_player;						// プレイヤーの情報
 Parameter	g_parameter;					// 各種値
-
-#define GRAVITY_FOC			(0.01f)			// 重さによる重力への影響係数
-//float g_fFGravity = GRAVITY;
-//float g_fFocGravity = GRAVITY_FOC;
-#define MOVE_FOC			(1.0f)			// 重さによる左右移動への影響係数
-//float g_fFocMove = MOVE_FOC;
-#define SCROLL_FOC			(30)			// スクロール速度の係数
-//int g_nFocScroll = SCROLL_FOC;
 
 bool g_bInvincible = false;					// 無敵モード
 
@@ -134,43 +126,44 @@ void UpdatePlayer(void)
 		// プレイヤーの過去の位置を保存
 		g_player.posOld = g_player.pos;
 
-		//**************************************************************
-		// 状態管理
-		PlayerState();
+		if (IsEnableCameraEdit() == false)
+		{
+			//**************************************************************
+			// 状態管理
+			PlayerState();
 
-		//**************************************************************
-		// 操作
-		PlayerContoroll();
+			//**************************************************************
+			// 操作
+			PlayerContoroll();
 
-		//**************************************************************
-		// 移動
-		PlayerMove();
+			//**************************************************************
+			// 移動
+			PlayerMove();
 
-		//**************************************************************
-		// 移動
-		ItemDrop();
+			//**************************************************************
+			// アイテム投下
+			ItemDrop();
+		}
 
 		//**************************************************************
 		// 判定
 		Collision();
 
 #if _DEBUG
-		// 重さ変更
-		DebugSetValue(&g_player.fWeight, 0.5f, DIK_UP, DIK_DOWN);
+		DebugSetValue(&g_player.fWeight, 0.1f, DIK_UP, DIK_DOWN);
 		PrintDebugProc("\nプレイヤーの重さ [↑/↓]: %f", g_player.fWeight);
 
-		// 重力
-		DebugSetValue(&g_parameter.fGravity, 0.001f, DIK_O, DIK_L);
+		DebugSetValue(&g_parameter.fGravity, 0.0001f, DIK_O, DIK_L);
 		PrintDebugProc("\n重力             [ O/ L]: %f", g_parameter.fGravity);
 
-		DebugSetValue(&g_parameter.fFocGravity, 0.01f, DIK_I, DIK_K);
-		PrintDebugProc("\n重力係数         [ I/ K]: %f", g_parameter.fFocGravity);
+		DebugSetValue(&g_parameter.fFacGravity, 0.0001f, DIK_I, DIK_K);
+		PrintDebugProc("\n重力係数         [ I/ K]: %f", g_parameter.fFacGravity);
 
 		DebugSetValue(&g_parameter.fSpeedforce, 0.01f, DIK_U, DIK_J);
 		PrintDebugProc("\n加速力           [ U/ J]: %f", g_parameter.fSpeedforce);
 
-		DebugSetValue(&g_parameter.fFocMove, 0.01f, DIK_Y, DIK_H);
-		PrintDebugProc("\n左右速度係数     [ Y/ H]: %f", g_parameter.fFocMove);
+		DebugSetValue(&g_parameter.fFacMove, 0.01f, DIK_Y, DIK_H);
+		PrintDebugProc("\n左右速度係数     [ Y/ H]: %f", g_parameter.fFacMove);
 
 		if (GetKeyboardRepeat(DIK_T))
 		{
@@ -265,6 +258,7 @@ void Joypad(void)
 	D3DXVECTOR3 ref = GetCamera()->rot;
 	D3DXVECTOR3 leftStick = vec3_ZORO;
 	GetJoypadStickLeft(&leftStick.x, &leftStick.y);
+	// PrintDebugProc("\nLeftStick\nx: %f\ny: %f", leftStick.x, leftStick.y);
 
 	//**************************************************************
 	// 移動
@@ -314,8 +308,8 @@ void PlayerMove(void)
 	// 移動・回転
 	if (g_player.move.x != 0 || g_player.move.z != 0)
 	{// 水平移動
-		g_player.pos.x += g_player.move.x / g_player.fWeight * g_parameter.fFocMove;
-		g_player.pos.z += g_player.move.z / g_player.fWeight * g_parameter.fFocMove;
+		g_player.pos.x += g_player.move.x / g_player.fWeight * g_parameter.fFacMove;
+		g_player.pos.z += g_player.move.z / g_player.fWeight * g_parameter.fFacMove;
 	}
 	if (g_player.move.y != 0)
 	{// 垂直移動
@@ -339,12 +333,12 @@ void PlayerMove(void)
 
 	//**************************************************************
 	// 重力
-	g_player.move.y -= g_parameter.fGravity * g_player.fWeight * 0.01f;
+	g_player.move.y -= g_parameter.fGravity * g_player.fWeight;
 
 	//**************************************************************
 	// 強制スクロール
 	if (g_player.move.x <= g_parameter.nFocScroll / g_player.fWeight)
-		g_player.move.x += g_parameter.fFocMove;
+		g_player.move.x += g_parameter.fFacMove;
 }
 
 //==============================================================
@@ -545,12 +539,13 @@ void ParameterLoad(void)
 	{
 		g_parameter.fSpeedforce = MOVE_FORCE;
 		g_parameter.fJumpforce = JUMP_FORCE;
-		g_parameter.fMaxMoveSpeed = 10.0f;
-		g_parameter.fMaxRiseSpeed = 10.0f;
+		g_parameter.fMaxMoveSpeed = MAX_MOVE_SPEED;
+		g_parameter.fMaxRiseSpeed = MAX_RISE_SPEED;
 		g_parameter.fInertia = POSMOVE_FACTOR;
 		g_parameter.fGravity = GRAVITY;
-		g_parameter.fFocMove = 1.0f;
-		g_parameter.fFocGravity = 1.0f;
+		g_parameter.fFacMove = MOVE_FAC;
+		g_parameter.fFacGravity = GRAVITY_FAC;
+		g_parameter.nFocScroll = SCROLL_FOC;
 	}
 }
 

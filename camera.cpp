@@ -82,9 +82,7 @@ void UpdateCamera(MODE mode)
 	// 変数宣言
 	P_CAMERA pCamera = GetCamera();
 
-	// 追従
-	CameraFollow(pCamera);
-
+	// カメラを動かすモード
 	if (g_bCameraMove)
 	{
 		// 移動
@@ -92,10 +90,15 @@ void UpdateCamera(MODE mode)
 
 		// 回転
 		CameraRotation(pCamera);
+		pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
+	}
+	else
+	{
+		// 追従
+		CameraFollow(pCamera);
 	}
 
 	pCamera->posV.x = pCamera->posR.x - cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
-	//pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
 	pCamera->posV.z = pCamera->posR.z - sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
 
 	if (GetKeyboardTrigger(DIK_F1))
@@ -110,12 +113,16 @@ void CameraFollow(P_CAMERA pCamera)
 	// 変数宣言
 	Player* pPlayer = GetPlayer();				// プレイヤー情報
 	static float fPlayerMoveRot = atan2f(-pPlayer->move.x, -pPlayer->move.z);
+	float	fCameraRDest = pPlayer->pos.y;
 
 	//**************************************************************
 	// プレイヤーに追従
 	pCamera->posRDest.x = pPlayer->pos.x;
-	pCamera->posRDest.y = pPlayer->pos.y;
-	// pCamera->posRDest.z = pPlayer->pos.z;
+
+	if (fCameraRDest <= 150.0f)
+		pCamera->posRDest.y = 80.0f;
+	else
+		pCamera->posRDest.y = fCameraRDest - 70.0f;
 
 	//**************************************************************
 	// カメラの位置を補正
@@ -133,9 +140,14 @@ void CameraMove(P_CAMERA pCamera)
 	{
 		//**************************************************************
 		//移動
-		pCamera->posR.z += sinf(pCamera->rot.y) * stickLeft.x;
-		pCamera->posR.x += cosf(pCamera->rot.y) * stickLeft.y;
+		pCamera->posR.z += sinf(pCamera->rot.y) * stickLeft.y + cosf(pCamera->rot.y) * stickLeft.x;
+		pCamera->posR.x += sinf(pCamera->rot.y) * stickLeft.x - cosf(pCamera->rot.y) * stickLeft.y;
 	}
+
+	if (GetJoypadPress(JOYKEY_LEFT_TRIGGER))
+		pCamera->posR.y += 1.0f;
+	if (GetJoypadPress(JOYKEY_RIGHT_TRIGGER))
+		pCamera->posR.y -= 1.0f;
 }
 
 //==============================================================
@@ -148,11 +160,22 @@ void CameraRotation(P_CAMERA pCamera)
 	vec3 stickRight;
 
 	//**************************************************************
-	// 注視点のまわりを回転
-	// コントローラー操作
+	// 注視点のまわりを旋回
 	if (GetJoypadStickRight(&stickRight.x, &stickRight.y))
 	{
-		pCamera->rot.y += stickRight.x * REV_PLAYER;
+		pCamera->rot.y += stickRight.x * CAMERA_REV;
+	}
+
+	//**************************************************************
+	// その場で回転
+	if (GetJoypadPress(JOYKEY_LEFT_SHOULDER))
+	{
+		pCamera->rot.y += CAMERA_REV * 0.5f;
+		bUse = true;
+	}
+	if (GetJoypadPress(JOYKEY_RIGHT_SHOULDER))
+	{
+		pCamera->rot.y -= CAMERA_REV * 0.5f;
 		bUse = true;
 	}
 
@@ -172,6 +195,15 @@ void CameraRotation(P_CAMERA pCamera)
 		pCamera->rot.z = D3DX_PI;
 	else if (D3DX_PI < pCamera->rot.z)
 		pCamera->rot.z = -D3DX_PI;
+
+	//**************************************************************
+	// 視点から注視点を求める	
+	if (bUse)
+	{
+		pCamera->posR.x = pCamera->posV.x + cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+		pCamera->posR.y = pCamera->posV.y + cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
+		pCamera->posR.z = pCamera->posV.z + sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+	}
 }
 
 //=========================================================================================
@@ -299,4 +331,12 @@ void CameraReset(P_CAMERA pCamera)
 	pCamera->posV.x = pCamera->posR.x - cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
 	pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
 	pCamera->posV.z = pCamera->posR.z - sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+}
+
+//=========================================================================================
+// カメラを動かすかのbool値を取得
+//=========================================================================================
+bool IsEnableCameraEdit(void)
+{
+	return g_bCameraMove;
 }

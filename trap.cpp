@@ -50,7 +50,7 @@ void InitTrap(void)
 	g_nNumTrapData = 0;
 
 	// test
-	SetTrap(D3DXVECTOR3(750.0f, 150.0f, 0.0f), INIT_D3DXVEC3, TRAPTYPE_NORMAL, MODELTYPE_TRAP);
+	//SetTrap(D3DXVECTOR3(750.0f, 150.0f, 0.0f), INIT_D3DXVEC3, TRAPTYPE_NORMAL, MODELTYPE_TRAP);
 }
 
 //=============================================================================

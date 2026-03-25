@@ -1,6 +1,6 @@
 //=============================================================================
 //
-//	落下地点目印処理 [fallpoint.cpp]
+//	目標地点処理 [fallpoint.cpp]
 //	Author : SHUMA AIZU
 // 
 //=============================================================================
@@ -8,6 +8,7 @@
 #include "main.h"
 #include "fallpoint.h"
 #include "input.h"
+#include "delivered.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -19,10 +20,10 @@
 // グローバル変数
 //*****************************************************************************
 LPDIRECT3DTEXTURE9 g_pTextureFallPoint = NULL;			// テクスチャへのポインタ
-FallPoint g_aFallPoint[MAX_FALLPOINT];					// 落下地点目印の情報
+FallPoint g_aFallPoint[MAX_FALLPOINT];					// 目標地点の情報
 
 //=============================================================================
-//	落下地点目印の初期化処理
+//	目標地点の初期化処理
 //=============================================================================
 void InitFallPoint(void)
 {
@@ -42,11 +43,13 @@ void InitFallPoint(void)
 	}
 
 	// test
-	//SetFallPoint(D3DXVECTOR3(0.0f, 0.0f, 100.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 100.0f, 250.0f);
+	SetFallPoint(D3DXVECTOR3(300.0f, 0.5f, 25.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 25.0f, 35.0f);
+
+	//SetFallPoint(D3DXVECTOR3(425.0f, 0.5f, -100.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 25.0f, 35.0f);
 }
 
 //=============================================================================
-//	落下地点目印の終了処理
+//	目標地点の終了処理
 //=============================================================================
 void UninitFallPoint(void)
 {
@@ -76,7 +79,7 @@ void UninitFallPoint(void)
 }
 
 //=============================================================================
-//	落下地点目印の描画処理
+//	目標地点の描画処理
 //=============================================================================
 void DrawFallPoint(void)
 {
@@ -113,7 +116,7 @@ void DrawFallPoint(void)
 
 		if (g_aFallPoint[nCntFallPoint].bUse == true)
 		{
-			// 落下地点目印の描画
+			// 目標地点の描画
 			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,
 				0,
 				0,
@@ -125,7 +128,7 @@ void DrawFallPoint(void)
 }
 
 //=============================================================================
-//	落下地点目印の更新処理
+//	目標地点の更新処理
 //=============================================================================
 void UpdateFallPoint(void)
 {
@@ -159,14 +162,14 @@ void UpdateFallPoint(void)
 }
 
 //=============================================================================
-//	落下地点目印の設定処理
+//	目標地点の設定処理
 //=============================================================================
 void SetFallPoint(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fInRadius, float fOutRadius)
 {
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
-	FallPoint* pFallPoint = &g_aFallPoint[0];	// 落下地点目印へのポインタ
+	FallPoint* pFallPoint = &g_aFallPoint[0];	// 目標地点へのポインタ
 
 	for (int nCntFallPoint = 0; nCntFallPoint < MAX_FALLPOINT; nCntFallPoint++, pFallPoint++)
 	{
@@ -175,7 +178,7 @@ void SetFallPoint(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fInRadius, float fOutR
 			continue;
 		}
 
-		// 落下地点目印の設定
+		// 目標地点の設定
 		pFallPoint->pos = pos;
 		pFallPoint->rot = rot;
 		pFallPoint->fInRadius = fInRadius;
@@ -206,8 +209,8 @@ void SetFallPoint(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fInRadius, float fOutR
 			pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 			pVtx[1].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
-			pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-			pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
+			pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
 
 			pVtx[0].tex = D3DXVECTOR2(1.0f * nCntVtx, 1.0f);
 			pVtx[1].tex = D3DXVECTOR2(1.0f * nCntVtx, 0.0f);
@@ -241,5 +244,29 @@ void SetFallPoint(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fInRadius, float fOutR
 		g_aFallPoint[nCntFallPoint].pIdxBuff->Unlock();
 
 		break;
+	}
+}
+
+//=============================================================================
+//	目標地点との当たり判定処理
+//=============================================================================
+void CollisionFallPoint(D3DXVECTOR3 pos)
+{
+	FallPoint* pFallPoint = &g_aFallPoint[0];	// 目標地点へのポインタ
+
+	for (int nCntFallPoint = 0; nCntFallPoint < MAX_FALLPOINT; nCntFallPoint++, pFallPoint++)
+	{
+		if (pFallPoint->bUse == false)
+		{// 使用していなかったら戻る
+			continue;
+		}
+
+		float fDiff = SQRTF((pFallPoint->pos.x - pos.x), (pFallPoint->pos.z - pos.z));
+
+		if (fDiff <= pFallPoint->fInRadius)
+		{// 当たっていたら
+			pFallPoint->bUse = false;
+			AddDelivered(1);
+		}
 	}
 }

@@ -59,7 +59,7 @@ void InitDelivered(void)
 		NULL);
 
 	// 初期化
-	g_nDelivered = 0;
+	g_nDelivered = 1;
 
 	VERTEX_2D *pVtx;			// 頂点情報へのポインタ
 

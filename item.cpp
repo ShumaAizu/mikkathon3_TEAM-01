@@ -44,7 +44,7 @@ void InitItem(void)
 	g_nNumItemData = 0;
 
 	// test
-	SetItem(D3DXVECTOR3(500.0f, 150.0f, 0.0f), INIT_D3DXVEC3, ITEMTYPE_000, MODELTYPE_PRESENT);
+	//SetItem(D3DXVECTOR3(500.0f, 150.0f, 0.0f), INIT_D3DXVEC3, ITEMTYPE_000, MODELTYPE_PRESENT);
 }
 
 //=============================================================================

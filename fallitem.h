@@ -1,43 +1,46 @@
 //=============================================================================
 //
-//	目標地点処理 [meshring.h]
+//	アイテム処理 [fallitem.h]
 //	Author : SHUMA AIZU
 // 
 //=============================================================================
 
-#ifndef _FALLPOINT_H_
-#define _FALLPOINT_H_
+#ifndef _FALLITEM_H_
+#define _FALLITEM_H_
 
 #include "main.h"
+#include "object.h"
+#include "item.h"
 
 //*****************************************************************************
 // マクロ定義
-//*****************************************************************************
-#define MAX_FALLPOINT			(64)				// 目標地点の最大数
+//*****************************************************************************AX
 
 //*****************************************************************************
-// 目標地点の構造体定義
+// アイテムの構造体定義
 //*****************************************************************************
-typedef struct
+typedef struct FallItem
 {
-	LPDIRECT3DVERTEXBUFFER9 pVtxBuff;			// 頂点バッファへのポインタ
-	LPDIRECT3DINDEXBUFFER9 pIdxBuff;			// インデックスバッファへのポインタ
 	D3DXVECTOR3 pos;							// 位置
+	D3DXVECTOR3 move;							// 移動量
+	D3DXVECTOR3 CollOffset;						// 当たり判定のオフセット
 	D3DXVECTOR3 rot;							// 向き
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
-	float fInRadius;							// 内側の半径
-	float fOutRadius;							// 外側の半径
+	ITEMTYPE itemtype;							// アイテムの種類
+	Object_Normal NormalObjectData;				// 通常オブジェクトのデータ
+	float fRadius;								// 半径
+	int nCollisionIdx;							// 当たり判定のインデックス
 	bool bUse;									// 使用状態
-}FallPoint;
+}FallItem;
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-void InitFallPoint(void);
-void UninitFallPoint(void);
-void UpdateFallPoint(void);
-void DrawFallPoint(void);
-void SetFallPoint(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fInRadius, float fOutRadius);
-void CollisionFallPoint(D3DXVECTOR3 pos);
+void InitFallItem(void);
+void UninitFallItem(void);
+void UpdateFallItem(void);
+void DrawFallItem(void);
+int CollisionFallItem(D3DXVECTOR3 pos, float fRadius);
+void SetFallItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, ITEMTYPE fallitemtype, MODELTYPE ModelType);
 
 #endif

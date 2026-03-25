@@ -154,6 +154,7 @@
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="delivered.cpp" />
     <ClCompile Include="fade.cpp" />
+    <ClCompile Include="fallitem.cpp" />
     <ClCompile Include="fallpoint.cpp" />
     <ClCompile Include="field.cpp" />
     <ClCompile Include="fog.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="delivered.h" />
     <ClInclude Include="fade.h" />
+    <ClInclude Include="fallitem.h" />
     <ClInclude Include="fallpoint.h" />
     <ClInclude Include="field.h" />
     <ClInclude Include="fog.h" />

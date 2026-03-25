@@ -67,7 +67,7 @@ void InitPlayer(void)
 	g_player.fWeight = 10.0f;						// 重さ
 	g_player.state = PLAYERSTATE_NONE;				// 状態
 	g_player.bUse = false;
-	g_player.pModel = SetModelData(MODELTYPE_002);	// モデル呼び出し
+	g_player.pModel = SetModelData(MODELTYPE_BALLOON);	// モデル呼び出し
 
 	// 呼び出しに成功したら
 	if (g_player.pModel)

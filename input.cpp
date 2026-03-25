@@ -519,7 +519,7 @@ bool GetJoypadStickLeft(float* pValueH, float* pValueV, int nIdx)
 {
 	XINPUT_STATE* pJoykeyState = &g_JoypadState[nIdx].JoykeyState;
 
-	float fValueH, fValueV;
+	float fValueH = 0, fValueV = 0;
 
 	fValueH = pJoykeyState->Gamepad.sThumbLX;
 	fValueV = pJoykeyState->Gamepad.sThumbLY;
@@ -527,8 +527,8 @@ bool GetJoypadStickLeft(float* pValueH, float* pValueV, int nIdx)
 	if (SQRTF(fValueH, fValueV) * 0.5f > CUSTOM_DEADZONE)
 	{// デッドゾーン外なら
 		// 正規化
-		fValueH = (fValueH) / (JOYSTICKVALUE_MAX - CUSTOM_DEADZONE);
-		fValueV = (fValueV) / (JOYSTICKVALUE_MAX - CUSTOM_DEADZONE);
+		fValueH = (fValueH) / JOYSTICKVALUE_MAX;
+		fValueV = (fValueV) / JOYSTICKVALUE_MAX;
 
 		// 値を渡す
 		*pValueH = fValueH;
@@ -556,8 +556,8 @@ bool GetJoypadStickRight(float* pValueH, float* pValueV, int nIdx)
 	if (SQRTF(fValueH, fValueV) * 0.5f > CUSTOM_DEADZONE)
 	{// デッドゾーン外なら
 		// 正規化
-		fValueH = (fValueH) / (JOYSTICKVALUE_MAX - CUSTOM_DEADZONE);
-		fValueV = (fValueV) / (JOYSTICKVALUE_MAX - CUSTOM_DEADZONE);
+		fValueH = (fValueH) / JOYSTICKVALUE_MAX;
+		fValueV = (fValueV) / JOYSTICKVALUE_MAX;
 
 		// 値を渡す
 		*pValueH = fValueH;

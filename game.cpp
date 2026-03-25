@@ -20,6 +20,7 @@
 
 #include "object.h"
 #include "field.h"
+#include "wall.h"
 #include "fallpoint.h"
 #include "shadow.h"
 #include "trap.h"
@@ -64,6 +65,9 @@ void InitGame(void)
 	// フィールドの初期化
 	InitField();
 
+	// 壁の初期化
+	InitWall();
+
 	// トラップの初期化
 	InitTrap();
 
@@ -99,6 +103,9 @@ void UninitGame(void)
 
 	// フィールドの終了
 	UninitField();
+
+	// 壁の終了
+	UninitWall();
 
 	// トラップの終了
 	UninitTrap();
@@ -147,6 +154,9 @@ void UpdateGame(void)
 
 		// フィールドの更新
 		UpdateField();
+
+		// 壁の更新
+		UpdateWall();
 
 		// トラップの更新
 		UpdateTrap();
@@ -202,6 +212,9 @@ void DrawGame(void)
 
 	// フィールドの描画
 	DrawField();
+
+	// 壁の描画
+	DrawWall();
 
 	// トラップの描画
 	DrawTrap();

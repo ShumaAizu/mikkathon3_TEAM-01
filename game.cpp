@@ -11,7 +11,7 @@
 #include "camera.h"
 #include "light.h"
 #include "input.h"
-//#include "sound.h"
+#include "sound.h"
 #include "fade.h"
 //#include "effect.h"
 //#include "particle.h"
@@ -79,6 +79,8 @@ void InitGame(void)
 	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
 
 	LoadObject("data\\SCRIPTS\\model.txt");
+
+	PlaySound(SOUND_LABEL_000);
 }
 
 //=============================================================================

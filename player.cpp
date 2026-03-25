@@ -162,7 +162,7 @@ void UpdatePlayer(void)
 		//if (GetKeyboardRepeat(DIK_4))
 		//	g_playerPlam.fMaxSpeed -= 0.01f;;
 
-		// PrintDebugProc("\npos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
+		PrintDebugProc("\nPlayerpos :[%f, %f, %f]\n", g_player.pos.x, g_player.pos.y, g_player.pos.z);
 		// PrintDebugProc(DEBUG_LEFT, "move:[%f, %f, %f]\n", g_player.move.x, g_player.move.y, g_player.move.z);
 
 #endif

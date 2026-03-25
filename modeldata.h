@@ -22,8 +22,9 @@
 //*****************************************************************************
 typedef enum MODELTYPE
 {
-	MODELTYPE_000 = 0,		// [0]
-	MODELTYPE_001 = 0,		// [1]
+	MODELTYPE_000 = 0,		// [0] トラップ
+	MODELTYPE_001,			// [1] ボックス
+	MODELTYPE_002,			// [2] 気球
 	MODELTYPE_MAX
 }MODELTYPE;
 

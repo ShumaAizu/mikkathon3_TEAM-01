@@ -19,6 +19,7 @@
 #include "light.h"
 
 #include "modeldata.h"
+#include "texture.h"
 //#include "effect.h"
 //#include "particle.h"
 //#include "motion.h"
@@ -351,6 +352,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// サウンドの初期化処理
 	InitSound(hWnd);
 
+	// テクスチャの初期化
+	InitTexture();
+
 	// モーションの初期化処理
 	//InitMotion();
 
@@ -423,6 +427,9 @@ void Uninit(void)
 
 	// サウンドの終了処理
 	UninitSound();
+
+	// テクスチャの終了
+	UninitTexture();
 
 	// 当たり判定の終了処理
 	//UninitCollision();

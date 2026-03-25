@@ -8,6 +8,7 @@
 // インクルード
 #include "player.h"
 #include "debugproc.h"
+#include "fade.h"
 #include "item.h"
 #include "shadow.h"
 #include "trap.h"
@@ -185,11 +186,7 @@ void PlayerState(void)
 	// 死んでいたら
 	if (g_player.state == PLAYERSTATE_DEAD)
 	{
-		g_player.pos = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-		g_player.posOld = g_player.pos;
-		g_player.rot = vec3_ZORO;
-		g_player.move = vec3_ZORO;
-		g_player.spin = vec3_ZORO;
+		SetFade(MODE_RESULT);
 	}
 }
 
@@ -380,7 +377,7 @@ void Collision(void)
 	// トラップ
 	if (CollisionTrap(Pos[0], RADIUS_BALLOON) || CollisionTrap(Pos[1], RADIUS_BASKET))
 	{
-
+		g_player.state = PLAYERSTATE_DEAD;
 	}
 	
 	// 地面

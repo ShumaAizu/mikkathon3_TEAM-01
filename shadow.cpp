@@ -221,11 +221,14 @@ void SetPotisionShadow(int nIdxShadow, D3DXVECTOR3 pos, float fShadowHeight)
 	VERTEX_3D* pVtx;				//頂点情報へのポインタ
 	float fSpread;					//ぼやかす倍率
 
+	// 範囲外のインデックスは終了
+	if (nIdxShadow < 0 || MAX_SHADOW <= nIdxShadow)	return;
+
 	//位置を保存
 	g_aShadow[nIdxShadow].pos = D3DXVECTOR3(pos.x, fShadowHeight, pos.z);
 
-	if (fShadowHeight < pos.y && -1 < nIdxShadow)
-	{//影より実体が高いところにあったら
+	if(g_aShadow[nIdxShadow].bUse)
+	{
 		fSpread = (pos.y - fShadowHeight) * 0.1f;
 
 		//**************************************************************

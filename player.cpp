@@ -8,7 +8,9 @@
 // インクルード
 #include "player.h"
 #include "debugproc.h"
+#include "item.h"
 #include "shadow.h"
+#include "trap.h"
 
 //**************************************************************
 // 構造体の定義
@@ -23,7 +25,7 @@ Player				g_player;								// プレイヤーの情報
 
 PlayerPlam			g_playerPlam;
 
-#define GRAVITY_FOC			(1.0f)			// 重さによる重力への影響係数
+#define GRAVITY_FOC			(0.01f)			// 重さによる重力への影響係数
 float g_fFGravity = GRAVITY;
 float g_fFocGravity = GRAVITY_FOC;
 #define MOVE_FOC			(1.0f)			// 重さによる左右移動への影響係数
@@ -38,7 +40,7 @@ void PlayerContoroll(void);		// プレイヤー操作（共通
 void Keyboard(void);			// キーボード
 void Joypad(void);				// コントローラー
 void PlayerMove(void);			// 移動
-void ItemDrop(void);			// アイテムを投下
+void ItemDrop(int nType = -1);	// アイテムを投下
 void Collision(void);			// 当たり判定
 void PlayerPlamLoad(void);		// プレイヤーパラメータ読み込み
 void PlayerPlamSave(void);		// プレイヤーパラメータ保存
@@ -70,6 +72,7 @@ void InitPlayer(void)
 	g_player.state = PLAYERSTATE_NONE;				// 状態
 	g_player.bUse = false;
 	g_player.pModel = SetModelData(MODELTYPE_BALLOON);	// モデル呼び出し
+	g_player.nShadow = SetShadow(RADIUS_BASKET);
 
 	// 呼び出しに成功したら
 	if (g_player.pModel)
@@ -77,9 +80,17 @@ void InitPlayer(void)
 		g_player.bUse = true;
 	}
 
+	// アイテム欄の初期化
+	for (int nCntItem = 0; nCntItem < MAX_GETITEM; nCntItem++)
+	{
+		g_player.nItem[nCntItem] = -1;
+	}
+
 	// プレイヤーパラメータ情報の読み込み
 	PlayerPlamLoad();
 
+	// プレイヤーの状態→今後、スタートのカウントダウンで設定
+	SetPlayerState(PLAYERSTATE_RUN);
 }
 
 //=========================================================================================
@@ -180,10 +191,6 @@ void PlayerState(void)
 		g_player.move = vec3_ZORO;
 		g_player.spin = vec3_ZORO;
 	}
-
-	//**************************************************************
-	// プレイヤー状態を初期化
-	g_player.state = PLAYERSTATE_WAIT;
 }
 
 //==============================================================
@@ -283,19 +290,10 @@ void PlayerMove(void)
 	{// 水平移動
 		g_player.pos.x += g_player.move.x / g_player.fWeight * g_fFocMove;
 		g_player.pos.z += g_player.move.z / g_player.fWeight * g_fFocMove;
-		g_player.state = PLAYERSTATE_RUN;
 	}
 	if (g_player.move.y != 0)
 	{// 垂直移動
 		g_player.pos.y += g_player.move.y;
-		if (0 < g_player.move.y)
-		{
-			g_player.state = PLAYERSTATE_JUMP;
-		}
-		else
-		{
-			g_player.state = PLAYERSTATE_JUMP;
-		}
 	}
 
 	// 回転
@@ -325,11 +323,24 @@ void PlayerMove(void)
 
 //==============================================================
 // アイテムを投下
-void ItemDrop(void)
+void ItemDrop(int nItem)
 {
+	//**************************************************************
+	// 変数宣言
+	int* pItem = &g_player.nItem[0];
+	int* pItemNext = &g_player.nItem[1];
+
+	// 書っとボタンが押されたら
 	if (GetKeyboardTrigger(PLAYER_KEY_SHOT) || GetJoypadTrigger(PLAYER_PAD_SHOT))
 	{
+		// 前に詰める
+		for (int nCntItem = 1; nCntItem < MAX_GETITEM; nCntItem++,pItem++,pItemNext++)
+		{
+			*pItem = *pItemNext;
+		}
 
+		// 最後を開ける
+		*pItemNext = nItem;
 	}
 }
 
@@ -339,7 +350,39 @@ void Collision(void)
 {
 	//**************************************************************
 	// 変数宣言
+	vec3	Pos[2] = { vec3(g_player.pos.x, g_player.pos.y + OFFSET_BALLOON, g_player.pos.z), vec3(g_player.pos.x, g_player.pos.y + OFFSET_BASKET, g_player.pos.z) };
+	float	fRasius[2] = { RADIUS_BALLOON ,RADIUS_BASKET };
+	int		nItem = -1;
 
+	//**************************************************************
+	// アイテム
+	for (int nCnt = 0; nCnt < 2; nCnt++,nItem = -1)
+	{
+		nItem = CollisionItem(Pos[nCnt], fRasius[nCnt]);	// 風船
+		// あたったアイテムを保存
+		if (-1 < nItem && nItem < ITEMTYPE_MAX)
+		{
+			for (int nCntItem = 0; nCntItem <= MAX_GETITEM; nCntItem++)
+			{
+				if (g_player.nItem[nCntItem] == -1)
+				{// アイテム欄に空きがあれば取得
+					g_player.nItem[nCntItem] = nItem;
+					break;
+				}
+				if (nCntItem == MAX_GETITEM)
+				{// 最後まで空きがなければ、その場で一つ落としてから取得
+					ItemDrop(nItem);
+				}
+			}
+		}
+	}
+
+	// トラップ
+	if (CollisionTrap(Pos[0], RADIUS_BALLOON) || CollisionTrap(Pos[1], RADIUS_BASKET))
+	{
+
+	}
+	
 	// 地面
 	if (g_player.pos.y <= 0.0f)
 	{
@@ -417,6 +460,14 @@ void DrawPlayer(void)
 void AddPlayerWeight(float fWeight)
 {
 	g_player.fWeight += fWeight;
+}
+
+//=========================================================================================
+// プレイヤーの状態を設定
+//=========================================================================================
+void SetPlayerState(PLAYERSTATE state)
+{
+	g_player.state = state;
 }
 
 //=========================================================================================

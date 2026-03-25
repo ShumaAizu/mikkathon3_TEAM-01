@@ -16,6 +16,7 @@
 #define SKYBOX_SPLIT_HORIZONTAL		(64 + 1)											// 横の分割数
 #define SKYBOX_ANGLE_VERTICAL		(D3DX_PI / (SKYBOX_SPLIT_VERTICAL))					// 縦の分割数に応じた角度
 #define SKYBOX_ANGLE_HORIZONTAL		(D3DX_PI / (SKYBOX_SPLIT_HORIZONTAL - 1))			// 横の分割数に応じた角度
+#define SKYBOX_MOVESPEED			(0.000025f)											// 空のテクスチャが動く速度
 
 //*****************************************************************************
 // グローバル変数
@@ -158,7 +159,7 @@ void UpdateSkyBox(void)
 			continue;
 		}
 
-		pSkyBox->tex.x += 0.00025f;
+		pSkyBox->tex.x += SKYBOX_MOVESPEED;
 
 		VERTEX_3D* pVtx;			// 頂点情報へのポインタ
 
@@ -172,7 +173,7 @@ void UpdateSkyBox(void)
 			for (int nCntVtxHorizontal = 0; nCntVtxHorizontal < pSkyBox->nHorizontal; nCntVtxHorizontal++)
 			{
 				// テクスチャ座標の設定
-				pVtx[nCntVtxHorizontal].tex = D3DXVECTOR2((1.0f / (pSkyBox->nHorizontal / 2)) * nCntVtxHorizontal + pSkyBox->tex.x, (pSkyBox->tex.y / pSkyBox->nVertical) * nCntVtxVertical);
+				pVtx[nCntVtxHorizontal].tex = D3DXVECTOR2((1.0f / (pSkyBox->nHorizontal)) * nCntVtxHorizontal + pSkyBox->tex.x, (pSkyBox->tex.y / pSkyBox->nVertical) * nCntVtxVertical);
 			}
 
 			// ポインタを進める
@@ -255,7 +256,7 @@ void SetSkyBox(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fRadius, int nVertical, i
 				pVtx[nCntVtxHorizontal].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 				// テクスチャ座標の設定
-				pVtx[nCntVtxHorizontal].tex = D3DXVECTOR2((1.0f / (nHorizontal / 2)) * nCntVtxHorizontal, (1.0f / nVertical) * nCntVtxVertical);
+				pVtx[nCntVtxHorizontal].tex = D3DXVECTOR2((1.0f / (nHorizontal / 4)) * nCntVtxHorizontal, (1.0f / nVertical) * nCntVtxVertical);
 
 				// 角度を加算
 				fAngleHorizontal += (D3DX_PI / (nHorizontal - 1)) * 2.0f;	// 合計6.28加算したいので倍にする

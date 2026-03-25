@@ -14,8 +14,8 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define FIELD_SPLIT_WIDHT		(20 + 1)		// 横の分割数
-#define FIELD_SPLIT_DEPTH		(10 + 1)		// 縦の分割数
+#define FIELD_SPLIT_WIDHT		(25 + 1)		// 横の分割数
+#define FIELD_SPLIT_DEPTH		(25 + 1)		// 縦の分割数
 #define MAX_FIELD				(32)			// メッシュフィールドの最大数
 
 //*****************************************************************************
@@ -51,7 +51,7 @@ void InitField(void)
 	memset(pField, NULL, sizeof(Field) * MAX_FIELD);
 
 	// 設置
-	SetField(D3DXVECTOR3(-2500.0f, 0.0f, 2500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, FIELD_SPLIT_WIDHT, FIELD_SPLIT_DEPTH, FIELDTYPE_000);
+	SetField(D3DXVECTOR3(-5000.0f, 0.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, FIELD_SPLIT_WIDHT, FIELD_SPLIT_DEPTH, FIELDTYPE_000);
 }
 
 //=============================================================================

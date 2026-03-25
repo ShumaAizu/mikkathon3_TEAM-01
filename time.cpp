@@ -13,15 +13,15 @@
 // マクロ定義
 //*****************************************************************************
 #define NUM_PLACE		(3)			// 制限時間の桁数
-#define TIME_POSX		(615.0f)	// 制限時間の座標X
-#define TIME_POSY		(0.0f)		// 制限時間の座標Y
-#define LIMIT_POSX		(470.0f)	// 残り時間の座標X
-#define LIMIT_POSY		(0.0f)		// 残り時間の座標Y
-#define TIME_SIZEX		(50.0f)		// 制限時間のサイズX
-#define TIME_SIZEY		(100.0f)	// 制限時間のサイズY
-#define LIMIT_WIDTH		(300.0f)	// 残り時間の幅
+#define TIME_POSX		(678.0f)	// 制限時間の座標X
+#define TIME_POSY		(28.25f)	// 制限時間の座標Y
+#define LIMIT_POSX		(415.0f)	// 残り時間の座標X
+#define LIMIT_POSY		(25.0f)		// 残り時間の座標Y
+#define TIME_SIZEX		(45.0f)		// 制限時間のサイズX
+#define TIME_SIZEY		(90.0f)		// 制限時間のサイズY
+#define LIMIT_WIDTH		(450.0f)	// 残り時間の幅
 #define LIMIT_HEIGHT	(100.0f)	// 残り時間の高さ
-#define LIMIT_TIME		(60)		// 制限時間
+#define LIMIT_TIME		(180)		// 制限時間
 #define LIMIT_MAXTEX	(2)			// テクスチャ数
 
 //*****************************************************************************
@@ -130,9 +130,9 @@ void InitTime(void)
 	g_pVtxBuffTime->Unlock();
 }
 
-//====================================
+//=============================================================================
 //	制限時間の終了処理
-//====================================
+//=============================================================================
 void UninitTime(void)
 {
 	for (int nCntTex = 0; nCntTex < LIMIT_MAXTEX; nCntTex++)
@@ -153,42 +153,9 @@ void UninitTime(void)
 	}
 }
 
-//====================================
-//	制限時間の描画処理
-//====================================
-void DrawTime(void)
-{
-	LPDIRECT3DDEVICE9 pDevice;				// デバイスへのポインタ
-	int nCntNumber;
-
-	// デバイスの取得
-	pDevice = GetDevice();
-
-	// 頂点バッファをデータストリームに設定
-	pDevice->SetStreamSource(0, g_pVtxBuffTime, 0, sizeof(VERTEX_2D));
-
-	// 頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_2D);
-
-	// テクスチャの設定
-	pDevice->SetTexture(0, g_apTextureTime[0]);
-
-	for (nCntNumber = 0; nCntNumber < NUM_PLACE + 1; nCntNumber++)
-	{
-		if (nCntNumber == NUM_PLACE)
-		{
-			// テクスチャの設定
-			pDevice->SetTexture(0, g_apTextureTime[1]);
-		}
-
-		// ポリゴンの描画
-		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntNumber * 4, 2);
-	}
-}
-
-//====================================
+//=============================================================================
 //	制限時間の更新処理
-//====================================
+//=============================================================================
 void UpdateTime(void)
 {
 
@@ -213,8 +180,9 @@ void UpdateTime(void)
 		g_nTime = 0;
 	}
 
-	aTexU[0] = g_nTime % 100 / 10;
-	aTexU[1] = g_nTime % 10 / 1;
+	aTexU[0] = g_nTime % 1000 / 100;
+	aTexU[1] = g_nTime % 100 / 10;
+	aTexU[2] = g_nTime % 10 / 1;
 
 	// テクスチャ座標の設定
 	VERTEX_2D* pVtx;			// 頂点情報へのポインタ
@@ -246,9 +214,42 @@ void UpdateTime(void)
 	g_pVtxBuffTime->Unlock();
 }
 
-//====================================
+//=============================================================================
+//	制限時間の描画処理
+//=============================================================================
+void DrawTime(void)
+{
+	LPDIRECT3DDEVICE9 pDevice;				// デバイスへのポインタ
+	int nCntNumber;
+
+	// デバイスの取得
+	pDevice = GetDevice();
+
+	// 頂点バッファをデータストリームに設定
+	pDevice->SetStreamSource(0, g_pVtxBuffTime, 0, sizeof(VERTEX_2D));
+
+	// 頂点フォーマットの設定
+	pDevice->SetFVF(FVF_VERTEX_2D);
+
+	// テクスチャの設定
+	pDevice->SetTexture(0, g_apTextureTime[0]);
+
+	for (nCntNumber = 0; nCntNumber < NUM_PLACE + 1; nCntNumber++)
+	{
+		if (nCntNumber == NUM_PLACE)
+		{
+			// テクスチャの設定
+			pDevice->SetTexture(0, g_apTextureTime[1]);
+		}
+
+		// ポリゴンの描画
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntNumber * 4, 2);
+	}
+}
+
+//=============================================================================
 //	制限時間の確認処理
-//====================================
+//=============================================================================
 int GetTime(void)
 {
 	return g_nTime;

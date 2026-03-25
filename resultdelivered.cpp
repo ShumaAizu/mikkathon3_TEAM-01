@@ -29,9 +29,9 @@
 // グローバル変数
 //*****************************************************************************
 LPDIRECT3DTEXTURE9 g_apTextureResultDelivered[RESULTDELIVEREDSTRING_MAXTEX] = {};	// テクスチャへのポインタ
-LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffResultDelivered = NULL;						// 頂点バッファへのポインタ
-D3DXVECTOR3 g_posResultDelivered;												// 届けた数の位置
-int g_nResultDelivered;														// 届けた数の値
+LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffResultDelivered = NULL;							// 頂点バッファへのポインタ
+D3DXVECTOR3 g_posResultDelivered;													// 届けた数の位置
+int g_nResultDelivered;																// 届けた数の値
 
 //=============================================================================
 //	届けた数の初期化処理

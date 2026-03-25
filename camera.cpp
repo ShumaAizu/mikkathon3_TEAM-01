@@ -122,11 +122,11 @@ void CameraFollow(P_CAMERA pCamera)
 	pCamera->posRDest.x = pPlayer->pos.x + 60.0f;		// プレイヤーの起点より前
 
 	// 地面見える範囲
-	if (fCameraRDest <= 180.0f)
+	if (fCameraRDest <= 240.0f)
 		pCamera->posRDest.y = 180.0f;
 	// 見上げる範囲
 	else
-		pCamera->posRDest.y = fCameraRDest;
+		pCamera->posRDest.y = fCameraRDest - 60.0f;
 
 	//**************************************************************
 	// カメラの位置を補正

@@ -114,13 +114,22 @@ void CameraFollow(P_CAMERA pCamera)
 	Player* pPlayer = GetPlayer();				// プレイヤー情報
 	static float fPlayerMoveRot = atan2f(-pPlayer->move.x, -pPlayer->move.z);
 	float	fCameraRDest = pPlayer->pos.y + 30.0f;
+	bool	bRise = false;
 
 	//**************************************************************
 	// プレイヤーに追従
 	pCamera->posRDest.x = pPlayer->pos.x + 60.0f;
 
+	// 地面見える範囲
 	if (fCameraRDest <= 150.0f)
 		pCamera->posRDest.y = 80.0f;
+	// 一緒に上がる範囲
+	else if (fCameraRDest <= 300.0f)
+	{
+		pCamera->posRDest.y = fCameraRDest - 70.0f;
+		bRise = true;
+	}
+	// 見上げる範囲
 	else
 		pCamera->posRDest.y = fCameraRDest - 70.0f;
 
@@ -129,6 +138,9 @@ void CameraFollow(P_CAMERA pCamera)
 	pCamera->posR.x += (pCamera->posRDest.x - pCamera->posR.x) * CAMERA_FOLLOW_FACTOR;
 	pCamera->posR.y += (pCamera->posRDest.y - pCamera->posR.y) * CAMERA_FOLLOW_FACTOR;
 	pCamera->posR.z += (pCamera->posRDest.z - pCamera->posR.z) * CAMERA_FOLLOW_FACTOR;
+
+	if (bRise)
+		pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
 }
 
 //==============================================================

@@ -414,6 +414,20 @@ void Collision(void)
 			g_player.move.y = 0.0f;
 	}
 
+	// ‘ål‚Ì•Ç
+	if (g_player.pos.z <= -100.0f)
+	{
+		g_player.pos.z = -100.0f;
+		if (g_player.move.z <= 0.0f)
+			g_player.move.z = 0.0f;
+	}
+	if (150.0f <= g_player.pos.z)
+	{
+		g_player.pos.z = 150.0f;
+		if (0.0f <= g_player.move.z)
+			g_player.move.z = 0.0f;
+	}
+
 	if (WORLD_END < g_player.pos.x)
 	{
 		g_player.pos.x = -WORLD_END;

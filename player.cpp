@@ -395,7 +395,8 @@ void ItemDrop(int nItem)
 		|| GetKeyboardTrigger(DIK_SPACE)
 		|| GetKeyboardTrigger(DIK_RETURN)
 		|| GetJoypadTrigger(PLAYER_PAD_SHOT)
-		|| GetJoypadTrigger(PLAYER_PAD_SHOT_SUB))
+		|| GetJoypadTrigger(PLAYER_PAD_SHOT_SUB)
+		|| GetJoypadStickPressL(JOYSTICK_DOWN))
 	{
 		if (pItem && 0 <= *pItem)
 			// ƒAƒCƒeƒ€“Š‰º

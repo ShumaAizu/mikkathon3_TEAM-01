@@ -29,7 +29,7 @@ void InitEffect(void)
 
 	//**************************************************************
 	//テクスチャ読み込み
-	D3DXCreateTextureFromFile(pDevice,"data\\TEXTURE\\Bullet\\effect000.jpg",&g_pTextureEffect);
+	D3DXCreateTextureFromFile(pDevice,"data\\TEXTURE\\shadow000.jpg",&g_pTextureEffect);
 
 	//頂点バッファの読み込み
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D)* 4 * MAX_EFFECT,

@@ -24,8 +24,8 @@
 #include "loadscript.h"
 #include "modeldata.h"
 #include "texture.h"
-//#include "effect.h"
-//#include "particle.h"
+#include "effect.h"
+#include "particle.h"
 //#include "motion.h"
 //#include "collision.h"
 
@@ -381,10 +381,10 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	LoadModelDataScript("data\\SCRIPTS\\modeldata.txt");
 
 	// エフェクトの初期化処理
-	//InitEffect();
+	InitEffect();
 
 	// パーティクルの初期化処理
-	//InitParticle();
+	InitParticle();
 
 	// 当たり判定の初期化処理
 	//InitCollision();
@@ -442,10 +442,10 @@ void Uninit(void)
 	UninitSkyBox();
 
 	// エフェクトの終了処理
-	//UninitEffect();
+	UninitEffect();
 
 	// パーティクルの終了処理
-	//UninitParticle();
+	UninitParticle();
 
 	// サウンドを止める
 	StopSound();
@@ -526,10 +526,10 @@ void Update(void)
 	UpdateFade();
 
 	// エフェクトの更新処理
-	//UpdateEffect();
+	UpdateEffect();
 
 	// パーティクルの更新処理
-	//UpdateParticle();
+	UpdateParticle();
 }
 
 //===============================================================================
@@ -575,6 +575,9 @@ void Draw(void)
 			// ビューポートを元に戻す
 			g_pD3DDevice->SetViewport(&viewportDef);
 		//}
+
+		// エフェクトの描画処理
+		DrawEffect();
 
 		// フェードの描画処理
 		DrawFade();

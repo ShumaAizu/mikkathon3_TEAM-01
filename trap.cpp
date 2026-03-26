@@ -14,6 +14,7 @@
 
 #include"shadow.h"
 #include "particle.h"
+#include "sound.h"
 
 //*****************************************************************************
 // ƒ}ƒNƒ’è‹`
@@ -174,6 +175,7 @@ bool CollisionTrap(D3DXVECTOR3 pos, float fRadius)
 		{// “–‚½‚Á‚Ä‚¢‚½‚ç
 			pTrap->bUse = false;
 			SetParticle(pTrap->pos, PARTICLE_ITEMUSE);
+			PlaySound(SOUND_LABEL_003);
 			return true;
 		}
 	}

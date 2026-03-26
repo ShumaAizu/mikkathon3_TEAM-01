@@ -22,7 +22,8 @@ typedef enum
 	SOUND_LABEL_004,	// [4] SE 落下
 	SOUND_LABEL_005,	// [5] SE 上昇
 	SOUND_LABEL_006,	// [6] SE 笛
-	SOUND_LABEL_007,	// [7] SE ゲーム開始
+	SOUND_LABEL_007,	// [7] SE 決定
+	SOUND_LABEL_008,	// [7] SE ゲーム開始
 	SOUND_LABEL_MAX,
 } SOUND_LABEL;
 

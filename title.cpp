@@ -262,10 +262,15 @@ void TitleMove(void)
 	// 次へ
 	if (GetKeyboardTrigger(DIK_RETURN) || GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(JOYKEY_A) || TITLE_MOVE_COUNT <= g_nCounterTitleState)
 	{
+		if (g_nCounterTitleState < TITLE_MOVE_COUNT)
+		{
+			PlaySound(SOUND_LABEL_007);
+		}
 		pTitle = &g_aTitlePolygon[TITLEPOLYGON_TITLE];
 		TitleVtxPos(TITLEPOLYGON_TITLE, pTitle->pos, pTitle->size);
 		TitleVtxCol(TITLEPOLYGON_START, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		SetTitleState(TITLESTATE_OP);
+
 	}
 }
 
@@ -281,6 +286,8 @@ void TitleOp(void)
 		g_aTitlePolygon[TITLEPOLYGON_3MIN].bDraw = true;
 		g_aTitlePolygon[TITLEPOLYGON_ENDLESS].bDraw = true;
 		SetTitleState(TITLESTATE_MENU);
+		PlaySound(SOUND_LABEL_007);
+
 		return;
 	}
 
@@ -300,9 +307,9 @@ void TitleOp(void)
 // モードセレクト
 void TitleMenu(void)
 {
-	if (GetKeyboardTrigger(DIK_RETURN) || GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(JOYKEY_A))
+	if ((GetKeyboardTrigger(DIK_RETURN) || GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(JOYKEY_A)) && GetFade() == FADE_NONE)
 	{
-		PlaySound(SOUND_LABEL_007);
+		PlaySound(SOUND_LABEL_008);
 		SetFade(MODE_GAME);
 	}
 }

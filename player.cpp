@@ -12,6 +12,7 @@
 #include "fallitem.h"
 #include "item.h"
 #include "shadow.h"
+#include "sound.h"
 #include "trap.h"
 
 #include "cutin.h"
@@ -44,7 +45,8 @@ Player		g_player;						// プレイヤーの情報
 Parameter	g_parameter;					// 各種値
 
 bool g_bInvincible = false;					// 無敵モード
-int	 g_nDamageCouter = 0;
+int	 g_nDamageCounter = 0;
+int  g_nFireCounter = 0;
 
 //**************************************************************
 // プロトタイプ宣言
@@ -65,7 +67,8 @@ Parameter* GetParameter(void);	// パラメータ情報取得
 //=========================================================================================
 void InitPlayer(void)
 {
-	g_nDamageCouter = 0;
+	g_nDamageCounter = 0;
+	g_nFireCounter = 0;
 
 	//**************************************************************
 	// 変数宣言
@@ -157,9 +160,16 @@ void UpdatePlayer(void)
 		// 判定
 		Collision();
 
-		if (0 < g_nDamageCouter)
-			g_nDamageCouter--;
-		PrintDebugProc("DMG CNT %d", g_nDamageCouter);
+		if (0 < g_nFireCounter)
+			g_nFireCounter--;
+		else
+			g_nFireCounter = 0;
+
+		if (0 < g_nDamageCounter)
+			g_nDamageCounter--;
+		else
+			g_nDamageCounter = 0;
+		PrintDebugProc("DMG CNT %d", g_nDamageCounter);
 
 #if _DEBUG
 		DebugSetValue(&g_player.fWeight, 0.1f, DIK_UP, DIK_DOWN);
@@ -278,6 +288,12 @@ void Keyboard(void)
 			else
 				// 上空では上昇力を減衰
 				g_player.move.y += g_parameter.fJumpforce / (g_player.fWeight + PENALTY_WEIGHT);
+
+			if (g_nFireCounter <= 0)
+			{
+				g_nFireCounter = 60;
+				PlaySound(SOUND_LABEL_005);
+			}
 		}
 
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_L))
@@ -316,6 +332,13 @@ void Joypad(void)
 			g_player.move.y += leftStick.y * g_parameter.fJumpforce / g_player.fWeight;
 		else
 			g_player.move.y += leftStick.y * g_parameter.fJumpforce / (g_player.fWeight + PENALTY_WEIGHT);
+
+		if (g_nFireCounter <= 0)
+		{
+			g_nFireCounter = 60;
+			PlaySound(SOUND_LABEL_005);
+		}
+
 	}
 
 	do
@@ -330,6 +353,13 @@ void Joypad(void)
 			else
 				// 上空では上昇力を減衰
 				g_player.move.y += g_parameter.fJumpforce / (g_player.fWeight + PENALTY_WEIGHT);
+			
+			if (g_nFireCounter <= 0)
+			{
+				g_nFireCounter = 60;
+				PlaySound(SOUND_LABEL_005);
+			}
+
 		}
 
 		if (GetKeyboardPress(PLAYER_PAD_MOVE_L))
@@ -475,7 +505,7 @@ void Collision(void)
 	if (CollisionTrap(Pos[0], RADIUS_BALLOON) || CollisionTrap(Pos[1], RADIUS_BASKET))
 	{
 		g_player.nLife--;
-		g_nDamageCouter = 120;
+		g_nDamageCounter = 120;
 	}
 	
 	// 地面
@@ -547,7 +577,7 @@ void DrawPlayer(void)
 
 	if (g_player.bUse)
 	{
-		if (((0 <= g_nDamageCouter && (g_nDamageCouter / 10) % 2 == 0) && g_bInvincible)|| g_bInvincible == false)
+		if (((0 <= g_nDamageCounter && (g_nDamageCounter / 10) % 2 == 0) && g_bInvincible)|| g_bInvincible == false)
 		{
 			//**************************************************************
 			// ワールドマトリックスの初期化

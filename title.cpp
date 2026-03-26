@@ -75,7 +75,17 @@ void InitTitle(void)
 	g_titleModel[0].pModel = SetModelData(MODELTYPE_BALLOON);
 	g_titleModel[0].pos = vec3(-300.0f,170.0f,-200.0f);
 	g_titleModel[0].rot = vec3(0.0f, D3DX_PI * 0.125f, 0.0f);
-	g_titleModel[1].pModel = SetModelData(MODELTYPE_PRESENT);
+	for (int nCnt = 1; nCnt < MAX_TITLEMODEL; nCnt++)
+	{
+		g_titleModel[nCnt].pModel = SetModelData(MODELTYPE_PRESENT);
+	}
+	g_titleModel[1].pos = vec3(0.0f, 0.0f, 0.0f);
+	g_titleModel[2].pos = vec3(-20.0f, 0.0f, 10.0f);
+	g_titleModel[2].rot.y = 1;
+	g_titleModel[3].pos = vec3(10.0f, 0.0f, 25.0f);
+	g_titleModel[3].rot.y = -1;
+	//g_titleModel[4].pos = vec3(0.0f, 0.0f, 20.0f);
+	//g_titleModel[5].pos = vec3(20.0f, 0.0f, 20.0f);
 
 	// テクスチャの読み込み
 	P_LOADTEXTURE_INFO pTexInfo = &g_aTitleTex[0];
@@ -246,7 +256,7 @@ void TitleMove(void)
 	TitleVtxCol(TITLEPOLYGON_START, D3DXCOLOR(1.0f, 1.0f, 1.0f, F));
 
 	// 次へ
-	if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(JOYKEY_A) || TITLE_MOVE_COUNT <= g_nCounterTitleState)
+	if (GetKeyboardTrigger(DIK_RETURN) || GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(JOYKEY_A) || TITLE_MOVE_COUNT <= g_nCounterTitleState)
 	{
 		pTitle = &g_aTitlePolygon[TITLEPOLYGON_TITLE];
 		TitleVtxPos(TITLEPOLYGON_TITLE, pTitle->pos, pTitle->size);
@@ -260,7 +270,7 @@ void TitleMove(void)
 void TitleOp(void)
 {
 	// 次へ
-	if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(JOYKEY_A))
+	if (GetKeyboardTrigger(DIK_RETURN) || GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(JOYKEY_A))
 	{
 		g_aTitlePolygon[TITLEPOLYGON_TITLE].bDraw = false;
 		g_aTitlePolygon[TITLEPOLYGON_START].bDraw = false;
@@ -286,7 +296,7 @@ void TitleOp(void)
 // モードセレクト
 void TitleMenu(void)
 {
-	if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(JOYKEY_A))
+	if (GetKeyboardTrigger(DIK_RETURN) || GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(JOYKEY_A))
 	{
 		SetFade(MODE_GAME);
 	}
@@ -408,7 +418,7 @@ void DrawTitle3D(void)
 	D3DMATERIAL9	matDef;							// 現在のマテリアル保存用
 	D3DXMATERIAL*	pMat;							// マテリアルデータへのポインタ
 
-	for (int nCnt = 0; nCnt < TITLEMODEL_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < MAX_TITLEMODEL; nCnt++)
 	{
 		if (g_titleModel[nCnt].pModel)
 		{

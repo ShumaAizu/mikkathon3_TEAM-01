@@ -33,6 +33,7 @@ typedef struct Item
 	D3DXVECTOR3 pos;							// 位置
 	D3DXVECTOR3 CollOffset;						// 当たり判定のオフセット
 	D3DXVECTOR3 rot;							// 向き
+	D3DXVECTOR3 curve;							// サインコサインカーブ用
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
 	ITEMTYPE itemtype;							// アイテムの種類
 	Object_Normal NormalObjectData;				// 通常オブジェクトのデータ

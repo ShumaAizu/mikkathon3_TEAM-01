@@ -23,6 +23,9 @@
 #define MAX_ITEMPATTERN		(16)								// アイテムのパターン数
 #define MAGNET_AREA			(3)									// 引き寄せる範囲の倍率
 
+#define ITEM_SPIN			(0.01f)								// アイテムの回転速度
+#define ITEM_FLOATING		(0.01f)								// アイテム上下にふわふわ
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
@@ -54,6 +57,7 @@ void InitItem(void)
 	{
 		g_aitem[nCntItem].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aitem[nCntItem].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_aitem[nCntItem].curve = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aitem[nCntItem].nShadowIdx = -1;
 		g_aitem[nCntItem].bUse = false;
 	}
@@ -75,7 +79,25 @@ void UninitItem(void)
 //=============================================================================
 void UpdateItem(void)
 {
+	Item* pItem = &g_aitem[0];	// アイテムへのポインタ
 
+	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++,pItem++)
+	{
+		if (pItem->bUse)
+		{
+			pItem->rot.y += ITEM_SPIN;
+			pItem->curve.x += ITEM_FLOATING;
+
+			if (D3DX_PI < pItem->rot.y)
+				pItem->rot.y += -D3DX_PI * 2;
+
+			if (D3DX_PI < pItem->curve.x)
+				pItem->curve.x += -D3DX_PI * 2;
+
+			pItem->pos.y += sinf(pItem->curve.x) * 0.1f;
+
+		}
+	}
 }
 
 //=============================================================================

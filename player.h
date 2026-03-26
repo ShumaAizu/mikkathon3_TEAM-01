@@ -35,7 +35,7 @@
 #define PLAYER_WEIGHT		(10.0f)			// 気球の重さ
 #define GRAVITY				(0.0002f)		// 重力
 #define MOVE_FORCE			(0.8f)			// 加速力
-#define JUMP_FORCE			(0.04f)			// 上昇速度
+#define JUMP_FORCE			(0.046f)			// 上昇速度
 #define MOVE_FOC			(1.0f)			// 重さによる左右移動への影響係数
 #define SCROLL_FOC			(210)			// スクロール速度の係数
 #define MAX_MOVE_SPEED		(1.0f)			// 最大移動速度

@@ -17,23 +17,25 @@
 #include "modeldata.h"
 #include "field.h"
 #include "skybox.h"
+#include "fog.h"
 
 //**************************************************************
 // マクロ定義
 #define TITLE_MOVE_COUNT	(180)		// 動いている時間
 #define TITLE_WAIT_BLINK	(50)		// 点滅の間隔
+#define MAX_TITLEMODEL		(16)		// タイトルに出すモデルの最大数
 
 //**************************************************************
 // グローバル変数
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTitle;			// 頂点バッファへのポインタ
 TITLESTATE g_titleState = TITLESTATE_WAIT;			// タイトルの状態
 int g_nCounterTitleState = 0;						// 状態管理カウンター
-TitleModel g_titleModel[TITLEMODEL_MAX] = {};		// タイトル表示用モデル
+int	g_nSelectTitle = 0;								// 選択中のゲームモード
+TitleModel g_titleModel[MAX_TITLEMODEL] = {};		// タイトル表示用モデル
 
 LOADTEXTURE_INFO g_aTitleTex[TITLETEXTURE_MAX] =	// 使うテクスチャの情報
 {
 	{"data/TEXTURE/titlelogo000.png",false,-1},
-	//{"data/TEXTURE/titlelogo000.png",false,-1},
 	{"data/TEXTURE/PressAButton.png",false,-1},
 	{"data/TEXTURE/GameMode3minutes.png",false,-1},
 	{"data/TEXTURE/GameModeEndless.png", false,-1},
@@ -43,8 +45,8 @@ Title g_aTitlePolygon[TITLEPOLYGON_MAX] =				// タイトルの2Dポリゴン
 {
 	{vec3(SCREEN_WIDTH * 0.35f,SCREEN_HEIGHT * 0.3f,0.0f),vec3(400.0f,200.0f,0.0f), -1,true},		// タイトル
 	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.85f,0.0f),vec3(300.0f,40.0f,0.0f), -1,true},		// Press Any Key
-	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f),vec3(300.0f,60.0f,0.0f), -1,false},		// GameMode 3Min
-	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.7f,0.0f),vec3(300.0f,60.0f,0.0f), -1,false},		// GameMode Endless
+	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.75f,0.0f),vec3(300.0f,40.0f,0.0f), -1,false},		// GameMode 3Min
+	{vec3(SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.9f,0.0f),vec3(300.0f,30.0f,0.0f), -1,false},		// GameMode Endless
 };
 //**************************************************************
 // プロトタイプ宣言
@@ -54,6 +56,7 @@ void TitleOp(void);
 void TitleMenu(void);
 void TitleVtxPos(TITLEPOLYGON type, vec3 pos,vec3 size);
 void TitleVtxCol(TITLEPOLYGON type, D3DXCOLOR col);
+void SetTitleModel(MODELTYPE type, vec3 pos, vec3 rot, vec3 move, vec3 spin);
 void DrawTitle2D(void);
 void DrawTitle3D(void);
 
@@ -135,22 +138,32 @@ void InitTitle(void)
 		switch (nCnt)
 		{
 		case TITLEPOLYGON_TITLE:
+			pTitle->bDraw = true;
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_TITLE].nTex;
 			TitleVtxPos(TITLEPOLYGON_TITLE, vec3(pTitle->pos.x, -400.0f, 0.0f), pTitle->size);
 			break;
 		case TITLEPOLYGON_START:
+			pTitle->bDraw = true;
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_START_JOY].nTex;
+			TitleVtxCol(TITLEPOLYGON_START, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 			break;
 		case TITLEPOLYGON_3MIN:
+			pTitle->bDraw = false;
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_3MIN].nTex;
 			break;
 		case TITLEPOLYGON_ENDLESS:
+			pTitle->bDraw = false;
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_ENDLESS].nTex;
+			TitleVtxCol(TITLEPOLYGON_ENDLESS, D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f));
 			break;
 		default:
 			break;
 		}
 	}
+
+	// 霧の設定
+	SetFogEnable(true);
+	SetFog(COLOR_WHITE, GAMEFOG_START, GAMEFOG_END);
 }
 
 //=========================================================================================
@@ -230,11 +243,14 @@ void TitleMove(void)
 	PrintDebugProc("F : %f\n", F);
 
 	TitleVtxPos(TITLEPOLYGON_TITLE, vec3(pTitle->pos.x, -pTitle->pos.y + (220.0f + pTitle->pos.y) * F, 0.0f), pTitle->size);
+	TitleVtxCol(TITLEPOLYGON_START, D3DXCOLOR(1.0f, 1.0f, 1.0f, F));
 
 	// 次へ
 	if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(JOYKEY_A) || TITLE_MOVE_COUNT <= g_nCounterTitleState)
 	{
+		pTitle = &g_aTitlePolygon[TITLEPOLYGON_TITLE];
 		TitleVtxPos(TITLEPOLYGON_TITLE, pTitle->pos, pTitle->size);
+		TitleVtxCol(TITLEPOLYGON_START, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		SetTitleState(TITLESTATE_OP);
 	}
 }
@@ -334,12 +350,9 @@ void DrawTitle(void)
 // タイトル2D描画
 void DrawTitle2D(void)
 {
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタを取得
+	bool bFog = SetFogEnable(false);
 
-	// アルファテストを有効にする
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);		// アルファテストを有効にする
-	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);	// 比較方法(基準値より大きければ描画)
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 150);				// アルファテストの参照値を設定(～以上で描画, intで設定)
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタを取得
 
 	// 頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, g_pVtxBuffTitle, 0, sizeof(VERTEX_2D));
@@ -348,8 +361,24 @@ void DrawTitle2D(void)
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
 	P_TITLE pTitle = &g_aTitlePolygon[0];
+
 	for (int nCntTex = 0; nCntTex < TITLEPOLYGON_MAX; nCntTex++, pTitle++)
 	{
+		if (g_titleState == TITLESTATE_MOVE && nCntTex == TITLEPOLYGON_START)
+		{
+			// アルファテストを無効にする
+			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);		// アルファテストを無効化
+			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);	// 比較方法(すべて描画)
+			pDevice->SetRenderState(D3DRS_ALPHAREF, 255);				// 基準値を設定(すべてを描画している)
+		}
+		else
+		{
+			// アルファテストを有効にする
+			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);		// アルファテストを有効にする
+			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);	// 比較方法(基準値より大きければ描画)
+			pDevice->SetRenderState(D3DRS_ALPHAREF, 150);				// アルファテストの参照値を設定(～以上で描画, intで設定)
+		}
+
 		if (pTitle->bDraw)
 		{
 			// テクスチャの設定
@@ -364,6 +393,8 @@ void DrawTitle2D(void)
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);		// アルファテストを無効化
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);	// 比較方法(すべて描画)
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 255);				// 基準値を設定(すべてを描画している)
+
+	SetFogEnable(bFog);
 }
 
 //==============================================================

@@ -156,8 +156,6 @@ void DrawItem(void)
 		// 保存していたマテリアルを戻す
 		pDevice->SetMaterial(&matDef);
 	}
-
-	OnUIitemEnable();
 }
 
 //=========================================================================================
@@ -173,6 +171,10 @@ void OnUIitemEnable(void)
 	vec3				pos = vec3_ZORO, rot = vec3_ZORO, posWin = vec3(90.0f, 50.0f, 0.0f);
 
 	int* pItem = GetPlayerItem();
+
+	// Zテストを無効にする
+	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
 	for (int nCntItem = 0; nCntItem < MAX_GETITEM; nCntItem++, pItem++)
 	{
@@ -228,6 +230,11 @@ void OnUIitemEnable(void)
 		pDevice->SetMaterial(&matDef);
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	}
+
+	//Zテストを有効にする
+	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+
 }
 
 //=============================================================================

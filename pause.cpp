@@ -41,9 +41,9 @@ void InitPause(void)
 {
 	const char* pPauseMenuFileName[] =
 	{
-		"data\\TEXTURE\\continue000.png",
-		"data\\TEXTURE\\restart000.png",
-		"data\\TEXTURE\\quit000.png"
+		"data\\TEXTURE\\continue.png",
+		"data\\TEXTURE\\retry.png",
+		"data\\TEXTURE\\quit.png"
 	};
 
 	// デバイスの取得

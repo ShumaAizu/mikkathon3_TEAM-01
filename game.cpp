@@ -170,6 +170,7 @@ void UpdateGame(void)
 
 	if (g_bPause == true)
 	{ // ポーズ中なら
+
 		// ポーズの更新処理
 		UpdatePause();
 	}
@@ -232,11 +233,6 @@ void UpdateGame(void)
 			break;
 		}
 	}
-
-	if (GetKeyboardTrigger(DIK_RETURN))
-	{
-		SetFade(MODE_RESULT);
-	}
 }
 
 //=============================================================================
@@ -244,11 +240,6 @@ void UpdateGame(void)
 //=============================================================================
 void DrawGame(void)
 {
-	if (g_bPause == true)
-	{ // ポーズ中なら
-		// ポーズメニューの描画処理
-		DrawPause();
-	}
 
 	// プレイヤーの描画
 	DrawPlayer();
@@ -291,6 +282,12 @@ void DrawGame(void)
 
 	// 届けた数の描画
 	DrawDelivered();
+
+	if (g_bPause == true)
+	{ // ポーズ中なら
+		// ポーズメニューの描画処理
+		DrawPause();
+	}
 
 	// 再設定
 	SetFogEnable(isFog);

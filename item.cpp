@@ -38,7 +38,7 @@ const float g_aItemRadius[ITEMTYPE_MAX] =
 
 MODELTYPE g_aItemModelType[ITEMTYPE_MAX] =
 {
-	MODELTYPE_PRESENT,
+	MODELTYPE_BALLOONPRESENT,
 };
 
 //=============================================================================

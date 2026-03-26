@@ -22,10 +22,11 @@
 //*****************************************************************************
 typedef enum MODELTYPE
 {
-	MODELTYPE_TRAP = 0,		// [0] トラップ
-	MODELTYPE_TRAP_MINI,	// [1] トラップミニ
-	MODELTYPE_BALLOON,		// [2] 気球
-	MODELTYPE_PRESENT,		// [3] プレゼント
+	MODELTYPE_TRAP = 0,			// [0] トラップ
+	MODELTYPE_TRAP_MINI,		// [1] トラップミニ
+	MODELTYPE_BALLOON,			// [2] 気球
+	MODELTYPE_PRESENT,			// [3] プレゼント
+	MODELTYPE_BALLOONPRESENT,	// [4] 風船付きプレゼント
 	MODELTYPE_MAX
 }MODELTYPE;
 

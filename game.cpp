@@ -231,6 +231,10 @@ void UpdateGame(void)
 
 		switch (g_gameFlag)
 		{
+			// ゲームオーバー
+		case GAMEFLAG_GAMEOVER:
+			SetFade(MODE_RESULT,COLOR_BLACK);
+			break;
 			// クリア状態
 		case GAMEFLAG_CLEAR: 
 			SetFade(MODE_RESULT, COLOR_WHITE, DEFAULT_FADESPEED, DEFAULT_FADESPEED);

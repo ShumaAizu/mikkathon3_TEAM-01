@@ -13,6 +13,7 @@
 
 #include "trap.h"
 #include "shadow.h"
+#include "particle.h"
 
 //*****************************************************************************
 // ƒ}ƒNƒ’è‹`
@@ -191,6 +192,7 @@ int CollisionItem(D3DXVECTOR3 pos, float fRadius)
 				pItem->bUse = false;
 				ReleaseShadow(pItem->nShadowIdx);
 				pItem->nShadowIdx = -1;
+				SetParticle(pItem->pos, PARTICLE_ITEMGET);
 				return (int)pItem->itemtype;
 			}
 		}

@@ -133,17 +133,20 @@ void UpdatePlayer(void)
 			// 状態管理
 			PlayerState();
 
-			//**************************************************************
-			// 操作
-			PlayerContoroll();
+			if (g_player.state != PLAYERSTATE_DEAD && g_player.state != PLAYERSTATE_NONE)
+			{
+				//**************************************************************
+				// 操作
+				PlayerContoroll();
 
-			//**************************************************************
-			// 移動
-			PlayerMove();
+				//**************************************************************
+				// 移動
+				PlayerMove();
 
-			//**************************************************************
-			// アイテム投下
-			ItemDrop();
+				//**************************************************************
+				// アイテム投下
+				ItemDrop();
+			}
 		}
 
 		//**************************************************************
@@ -206,7 +209,12 @@ void PlayerState(void)
 	// 死んでいたら
 	if (g_player.state == PLAYERSTATE_DEAD && g_bInvincible == false)
 	{
-		SetFade(MODE_RESULT);
+		// フラグを設定
+		if (GetNextGameFlag() != GAMEFLAG_GAMEOVER)
+			SetGameFlag(GAMEFLAG_GAMEOVER, 60);
+
+		g_player.pos.y -= (g_player.pos.y - 10.0f) * 0.1f;
+		g_player.rot.z += ((-D3DX_PI * 0.5f) - g_player.rot.z) * 0.1f;
 	}
 
 	//**************************************************************

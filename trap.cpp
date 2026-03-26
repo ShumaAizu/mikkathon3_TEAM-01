@@ -13,6 +13,7 @@
 #include "debugproc.h"
 
 #include"shadow.h"
+#include "particle.h"
 
 //*****************************************************************************
 // É}ÉNÉçíËã`
@@ -172,6 +173,7 @@ bool CollisionTrap(D3DXVECTOR3 pos, float fRadius)
 		if (fDiff <= powf(fRadius + g_aTrapRadius[pTrap->traptype], 2))
 		{// ìñÇΩÇ¡ÇƒÇ¢ÇΩÇÁ
 			pTrap->bUse = false;
+			SetParticle(pTrap->pos, PARTICLE_ITEMUSE);
 			return true;
 		}
 	}

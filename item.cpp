@@ -21,6 +21,7 @@
 #define ITEM_COLLOFFSET		(D3DXVECTOR3(0.0f, 9.25f, 0.0f))	// アイテムの当たり判定用オフセット
 #define ITEM_RADIUS			(13.5f)								// アイテムの半径
 #define MAX_ITEMPATTERN		(16)								// アイテムのパターン数
+#define MAGNET_AREA			(3)									// 引き寄せる範囲の倍率
 
 //*****************************************************************************
 // グローバル変数
@@ -65,6 +66,14 @@ void InitItem(void)
 //	アイテムの終了処理
 //=============================================================================
 void UninitItem(void)
+{
+
+}
+
+//=============================================================================
+//	アイテムの更新処理
+//=============================================================================
+void UpdateItem(void)
 {
 
 }
@@ -126,21 +135,14 @@ void DrawItem(void)
 }
 
 //=============================================================================
-//	アイテムの更新処理
-//=============================================================================
-void UpdateItem(void)
-{
-
-}
-
-//=============================================================================
 //	アイテムの当たり判定処理
 //=============================================================================
 int CollisionItem(D3DXVECTOR3 pos, float fRadius)
 {
 	Item* pItem = &g_aitem[0];	// アイテムへのポインタ
 
-	float fDiff = 0.0f;
+	float fDiff = 0.0f;			// 実際の距離
+	float fRange = 0.0f;		// あたる距離
 
 	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++, pItem++)
 	{
@@ -153,13 +155,22 @@ int CollisionItem(D3DXVECTOR3 pos, float fRadius)
 
 		// 各値を二乗して距離を算出
 		fDiff = powf(ItemPos.x - pos.x, 2) + powf(ItemPos.y - pos.y, 2) + powf(ItemPos.z - pos.z, 2);
+		fRange = powf(fRadius + pItem->fRadius, 2);
 
-		if (fDiff <= powf(fRadius + pItem->fRadius, 2))
-		{// 当たっていたら
-			pItem->bUse = false;
-			ReleaseShadow(pItem->nShadowIdx);
-			pItem->nShadowIdx = -1;
-			return (int)pItem->itemtype;
+		if (fDiff <= fRange * MAGNET_AREA)
+		{// アイテムの当たり判定の距離２倍の範囲内なら
+			float fRatio = 1 - (fDiff / (fRange * MAGNET_AREA));
+			// 引き寄せる
+			pItem->pos += (pos - pItem->pos) * 0.05f * fRatio;
+
+			// 当たり判定
+			if (fDiff <= fRange)
+			{// 当たっていたら
+				pItem->bUse = false;
+				ReleaseShadow(pItem->nShadowIdx);
+				pItem->nShadowIdx = -1;
+				return (int)pItem->itemtype;
+			}
 		}
 	}
 

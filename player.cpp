@@ -80,6 +80,7 @@ void InitPlayer(void)
 	g_player.state = PLAYERSTATE_NONE;				// 状態
 	g_player.bUse = false;
 	g_player.pModel = SetModelData(MODELTYPE_BALLOON);	// モデル呼び出し
+	g_player.nLife = 1;
 	g_player.nShadow = SetShadow(RADIUS_BASKET);
 
 	// 呼び出しに成功したら
@@ -196,6 +197,13 @@ void PlayerState(void)
 {
 	//**************************************************************
 	// 死んでいたら
+	if (g_player.nLife <= 0)
+	{
+		g_player.state = PLAYERSTATE_DEAD;
+	}
+
+	//**************************************************************
+	// 死んでいたら
 	if (g_player.state == PLAYERSTATE_DEAD && g_bInvincible == false)
 	{
 		SetFade(MODE_RESULT);
@@ -238,9 +246,13 @@ void Keyboard(void)
 	{
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_UP))
 		{// 上昇
-			if (g_player.pos.y <= HEIGHT_RES)
+			if (g_player.pos.y <= HEIGHT_EASE)
+				// 地上付近では上昇力をブースト
+				g_player.move.y += g_parameter.fJumpforce / (g_player.fWeight - EASE_WEIGHT);
+			else if (g_player.pos.y <= HEIGHT_RES)
 				g_player.move.y += g_parameter.fJumpforce / g_player.fWeight;
 			else
+				// 上空では上昇力を減衰
 				g_player.move.y += g_parameter.fJumpforce / (g_player.fWeight + PENALTY_WEIGHT);
 		}
 
@@ -273,7 +285,10 @@ void Joypad(void)
 
 	if (0 < leftStick.y)
 	{
-		if (g_player.pos.y <= HEIGHT_RES)
+		if (g_player.pos.y <= HEIGHT_EASE)
+			// 地上付近では上昇力をブースト
+			g_player.move.y += leftStick.y * g_parameter.fJumpforce / (g_player.fWeight - EASE_WEIGHT);
+		else if (g_player.pos.y <= HEIGHT_RES)
 			g_player.move.y += leftStick.y * g_parameter.fJumpforce / g_player.fWeight;
 		else
 			g_player.move.y += leftStick.y * g_parameter.fJumpforce / (g_player.fWeight + PENALTY_WEIGHT);
@@ -350,7 +365,7 @@ void ItemDrop(int nItem)
 	int* pItemNext = &g_player.nItem[1];
 
 	// 書っとボタンが押されたら
-	if (GetKeyboardTrigger(PLAYER_KEY_SHOT) || GetJoypadTrigger(PLAYER_PAD_SHOT))
+	if (GetKeyboardTrigger(PLAYER_KEY_SHOT) || GetKeyboardTrigger(DIK_SPACE) || GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(PLAYER_PAD_SHOT))
 	{
 		if (pItem && 0 <= *pItem)
 			// アイテム投下
@@ -403,7 +418,7 @@ void Collision(void)
 	// トラップ
 	if (CollisionTrap(Pos[0], RADIUS_BALLOON) || CollisionTrap(Pos[1], RADIUS_BASKET))
 	{
-		g_player.state = PLAYERSTATE_DEAD;
+		g_player.nLife--;
 	}
 	
 	// 地面

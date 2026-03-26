@@ -51,7 +51,9 @@
 // 制限区間
 #define HEIGHT_LIMIT		(400.0f)		// 限界高度
 #define HEIGHT_RES			(330.0f)		// 制限高度
+#define HEIGHT_EASE			(50.0f)			// 上昇力ブーストエリア
 #define PENALTY_WEIGHT		(8.0f)			// 制限高度による負荷
+#define EASE_WEIGHT			(5.0f)			// 制限高度による緩和
 #define HEIGHT_GROUND		(0.0f)			// 地上
 #define DEPTH_FRONT			(-100.0f)		// 手前
 #define DEPTH_END			(150.0f)		// 奥
@@ -91,6 +93,7 @@ typedef struct Player
 	D3DXVECTOR3 rot;				// 向き
 	D3DXVECTOR3 move;				// 移動速度
 	D3DXVECTOR3 spin;				// 回転速度
+	int			nLife;				// 体力
 	int			nShadow;			// 影番号
 	float		fWeight;			// 重さ
 	PLAYERSTATE state;				// 状態

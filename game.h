@@ -14,6 +14,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MAX_WARD			(256)						// 文字列を読み込める最大
+#define MAX_GAMELEVEL		(5)							// ゲームレベルの最大
 
 //*****************************************************************************
 // ゲームの状態
@@ -51,5 +52,8 @@ GAMEFLAG GetNextGameFlag(void);
 
 bool GetPause(void);
 void SetEnablePause(bool bPause);
+
+int GetGameLevel(void);
+void AddGameLevel(void);
 
 #endif

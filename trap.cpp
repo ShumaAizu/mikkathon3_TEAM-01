@@ -6,6 +6,7 @@
 //=============================================================================
 
 #include "main.h"
+#include "game.h"
 #include "trap.h"
 #include "input.h"
 
@@ -33,6 +34,11 @@ int g_nCntGrid;									// 現在のグリッド
 bool g_isTrapPattern[MAX_TRAPPATTERN];			// トラップパターンテーブル
 int g_nNumUsePattern;							// 使用しているパターン数
 float g_fGridPosX;								// 現在のグリッド位置
+
+const int g_nLevelProbability[MAX_GAMELEVEL] =
+{
+	3, 5, 7, 9, 10
+};
 
 // トラップの半径
 const float g_aTrapRadius[TRAPTYPE_MAX] =
@@ -208,6 +214,12 @@ void SetTrap(void)
 
 		for (int nCntTrapInfo = 0; nCntTrapInfo < pTrapPattern->nNumTrap; nCntTrapInfo++)
 		{
+			if (rand() % 11 > g_nLevelProbability[GetGameLevel()])
+			{
+				continue;
+			}
+
+
 			for (int nCntTrap = 0; nCntTrap < MAX_TRAP; nCntTrap++, pTrap++)
 			{
 				if (pTrap->bUse == true)

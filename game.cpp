@@ -47,6 +47,8 @@ GAMEFLAG g_nextgameFlag = GAMEFLAG_NORMAL;				// 次のゲームの状態
 int g_nCounterGameFlag = 0;								// 状態管理カウンター
 bool g_bPause = false;									// ポーズ中かどうか
 
+int g_nGameLevel;										// ゲームレベル
+
 //=============================================================================
 //	ゲーム画面の初期化処理
 //=============================================================================
@@ -57,6 +59,8 @@ void InitGame(void)
 	g_nextgameFlag = GAMEFLAG_NORMAL;
 
 	g_nCounterGameFlag = 0;
+
+	g_nGameLevel = 0;
 
 	// ポーズ状態の初期化
 	g_bPause = false;
@@ -335,4 +339,25 @@ bool GetPause(void)
 void SetEnablePause(bool bPause)
 {
 	g_bPause = bPause;
+}
+
+//=============================================================================
+//	ゲームレベルの取得
+//=============================================================================
+int GetGameLevel(void)
+{
+	return g_nGameLevel;
+}
+
+//=============================================================================
+//	ゲームレベルの増加
+//=============================================================================
+void AddGameLevel(void)
+{
+	if (g_nGameLevel >= MAX_GAMELEVEL - 1)
+	{
+		return;
+	}
+
+	g_nGameLevel++;
 }

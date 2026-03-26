@@ -16,6 +16,7 @@
 
 #include "cutin.h"
 #include "fallpoint.h"
+#include "game.h"
 
 //**************************************************************
 // ç\ë¢ëÃÇÃíËã`
@@ -447,6 +448,7 @@ void Collision(void)
 			ResetTrap();
 			UninitFallPoint();
 			InitFallPoint();
+			AddGameLevel();
 		}
 		else
 		{

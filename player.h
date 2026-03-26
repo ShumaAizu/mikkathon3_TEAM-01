@@ -27,7 +27,7 @@
 //==============================================================
 // プレイヤーパラメータ
 #define PLAYER_PARAMETERS	"data\\INFO\\status\\playerplam.bin"
-#define MAX_GETITEM			(64)			// 持てるアイテムの最大数
+#define MAX_GETITEM			(12)			// 持てるアイテムの最大数
 #define ITEM_WEIGHT			(0.2f)			// アイテム一つの重さ
 #define PLAYER_FUEL			(4000)			// 初期燃料
 #define PLAYER_LIFE			(1)				// プレイヤーの初期体力
@@ -119,5 +119,6 @@ void DrawPlayer(void);
 void AddPlayerWeight(float fWeight);	// プレイヤーの重さを追加
 void SetPlayerState(PLAYERSTATE state);	// プレイヤーの状態を設定
 Player* GetPlayer(void);				// プレイヤー情報取得
+int* GetPlayerItem(void);				// プレイヤーの所持アイテム欄を取得
 
 #endif // !_PLAYER_H_

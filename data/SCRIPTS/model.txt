@@ -68,23 +68,23 @@ END_MODELSET
 # プレゼント
 #------------------------------------------------------------------------------
 
-MODELSET
-	TYPE = 3
-	POS = 225 150 75
-	ROT = 0 0 0 
-END_MODELSET
-
-MODELSET
-	TYPE = 3
-	POS = 275 150 75
-	ROT = 0 0 0 
-END_MODELSET
-
-MODELSET
-	TYPE = 3
-	POS = 275 200 -50
-	ROT = 0 0 0 
-END_MODELSET
+#MODELSET
+#	TYPE = 3
+#	POS = 225 150 75
+#	ROT = 0 0 0 
+#END_MODELSET
+#
+#MODELSET
+#	TYPE = 3
+#	POS = 275 150 75
+#	ROT = 0 0 0 
+#END_MODELSET
+#
+#MODELSET
+#	TYPE = 3
+#	POS = 275 200 -50
+#	ROT = 0 0 0 
+#END_MODELSET
 
 #------------------------------------------------------------------------------
 # パターン 2
@@ -120,11 +120,11 @@ END_MODELSET
 # プレゼント
 #------------------------------------------------------------------------------
 
-MODELSET
-	TYPE = 3
-	POS = 500 225 70
-	ROT = 0 0 0 
-END_MODELSET
+#MODELSET
+#	TYPE = 3
+#	POS = 500 225 70
+#	ROT = 0 0 0 
+#END_MODELSET
 
 #------------------------------------------------------------------------------
 # パターン 3
@@ -160,11 +160,11 @@ END_MODELSET
 # プレゼント
 #------------------------------------------------------------------------------
 
-MODELSET
-	TYPE = 3
-	POS = 750 200 -75
-	ROT = 0 0 0 
-END_MODELSET
+#MODELSET
+#	TYPE = 3
+#	POS = 750 200 -75
+#	ROT = 0 0 0 
+#END_MODELSET
 
 
 END_SCRIPT		# この行は絶対消さないこと！

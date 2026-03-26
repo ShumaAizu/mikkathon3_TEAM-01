@@ -282,6 +282,7 @@ void ResetTrap(void)
 	g_nCntGrid = 0;
 	g_nNumUsePattern = 0;
 	g_fGridPosX = INIT_GRIDPOSX;
+	memset(&g_nGridUsePattern[0], -1, sizeof(int) * MAX_GRID);
 	memset(&g_isTrapPattern[0], false, sizeof(bool) * MAX_TRAPPATTERN);
 
 	SetTrap();

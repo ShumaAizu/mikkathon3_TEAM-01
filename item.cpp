@@ -17,7 +17,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_ITEM			(16)								// アイテムの最大数
+#define MAX_ITEM			(128)								// アイテムの最大数
 #define ITEM_COLLOFFSET		(D3DXVECTOR3(0.0f, 9.25f, 0.0f))	// アイテムの当たり判定用オフセット
 #define ITEM_RADIUS			(13.5f)								// アイテムの半径
 #define MAX_ITEMPATTERN		(16)								// アイテムのパターン数
@@ -157,6 +157,8 @@ int CollisionItem(D3DXVECTOR3 pos, float fRadius)
 		if (fDiff <= powf(fRadius + pItem->fRadius, 2))
 		{// 当たっていたら
 			pItem->bUse = false;
+			ReleaseShadow(pItem->nShadowIdx);
+			pItem->nShadowIdx = -1;
 			return (int)pItem->itemtype;
 		}
 	}
@@ -180,7 +182,7 @@ void SetItem(void)
 
 		for (int nCntItemInfo = 0; nCntItemInfo < pItemPattern->nNumItem; nCntItemInfo++)
 		{
-			if (rand() % 11 > 5)
+			if (rand() % 11 > 7)
 			{
 				continue;
 			}

@@ -352,8 +352,9 @@ void ItemDrop(int nItem)
 	// 書っとボタンが押されたら
 	if (GetKeyboardTrigger(PLAYER_KEY_SHOT) || GetJoypadTrigger(PLAYER_PAD_SHOT))
 	{
-		// アイテム投下
-		SetFallItem(g_player.pos, g_player.rot,(ITEMTYPE)*pItem);
+		if (pItem && 0 <= *pItem)
+			// アイテム投下
+			SetFallItem(g_player.pos, g_player.rot, (ITEMTYPE)*pItem);
 
 		// 前に詰める
 		for (int nCntItem = 1; nCntItem < MAX_GETITEM; nCntItem++,pItem++,pItemNext++)

@@ -18,6 +18,7 @@
 
 //**************************************************************
 // マクロ定義
+#define TITLE_MOVE_COUNT	(180)		// 動いている時間
 #define TITLE_WAIT_BLINK	(50)		// 点滅の間隔
 
 //**************************************************************
@@ -67,6 +68,7 @@ void InitTitle(void)
 	g_nCounterTitleState = 0;
 
 	g_titleModel[0].pModel = SetModelData(MODELTYPE_BALLOON);
+	g_titleModel[0].pos = vec3_ZORO;
 	g_titleModel[1].pModel = SetModelData(MODELTYPE_PRESENT);
 
 	// テクスチャの読み込み
@@ -131,7 +133,6 @@ void InitTitle(void)
 		{
 		case TITLEPOLYGON_TITLE:
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_TITLE].nTex;
-			TitleVtxPos(TITLEPOLYGON_TITLE, vec3(pTitle->pos.x, -600.0f, 0.0f), pTitle->size);
 			break;
 		case TITLEPOLYGON_START:
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_START_JOY].nTex;
@@ -211,7 +212,7 @@ void TitleWait(void)
 void TitleMove(void)
 {
 	// 次へ
-	if (GetKeyboardTrigger(DIK_RETURN))
+	if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(JOYKEY_A))
 	{
 		SetTitleState(TITLESTATE_OP);
 	}
@@ -222,7 +223,7 @@ void TitleMove(void)
 void TitleOp(void)
 {
 	// 次へ
-	if (GetKeyboardTrigger(DIK_RETURN))
+	if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(JOYKEY_A))
 	{
 		g_aTitlePolygon[TITLEPOLYGON_TITLE].bDraw = false;
 		g_aTitlePolygon[TITLEPOLYGON_START].bDraw = false;
@@ -250,7 +251,7 @@ void TitleOp(void)
 // モードセレクト
 void TitleMenu(void)
 {
-	if (GetKeyboardTrigger(DIK_RETURN))
+	if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(JOYKEY_A))
 	{
 		SetFade(MODE_GAME);
 	}
@@ -348,7 +349,7 @@ void DrawTitle3D(void)
 	D3DMATERIAL9	matDef;							// 現在のマテリアル保存用
 	D3DXMATERIAL*	pMat;							// マテリアルデータへのポインタ
 
-	for (int nCnt = 0; nCnt < 2; nCnt++)
+	for (int nCnt = 0; nCnt < TITLEMODEL_MAX; nCnt++)
 	{
 		if (g_titleModel[nCnt].pModel)
 		{

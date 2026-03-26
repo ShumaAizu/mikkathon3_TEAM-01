@@ -18,7 +18,8 @@ bool g_bCameraMove = false;
 
 //**************************************************************
 // プロトタイプ宣言
-void GameModeCamera(void);					// ゲームモードのカメラ更新処理
+void TitleCamera(void);						// タイトルモードのカメラ更新処理
+void GameCamera(void);						// ゲームモードのカメラ更新処理
 void CameraFollow(P_CAMERA pCamera);		// プレイヤーに追従移動
 void CameraMove(P_CAMERA pCamera);			// カメラ移動処理
 void CameraRotation(P_CAMERA pCamera);		// カメラ回転処理
@@ -48,15 +49,15 @@ void InitCamera(void)
 		pCamera->fViewRadian = VIEW_RADIAN;										// 視野角
 		pCamera->viewport.X = 0.0f;												// 画面左上 X 座標
 		pCamera->viewport.Y = 0.0f;												// 画面左上 Y 座標
-		if (nCntCamera == CAMERATYPE_PLAYER)
-		{
-			pCamera->viewport.Width = SCREEN_WIDTH;								// 表示画面の横幅
-			pCamera->viewport.Height = SCREEN_HEIGHT;							// 表示画面の高さ
-		}
-		else if (nCntCamera == CAMERATYPE_MINIMAP)
+		if (nCntCamera == CAMERATYPE_MINIMAP)
 		{
 			pCamera->viewport.Width = SCREEN_WIDTH;								// 表示画面の横幅
 			pCamera->viewport.Height = (float)SCREEN_HEIGHT / 6;				// 表示画面の高さ
+		}
+		else
+		{
+			pCamera->viewport.Width = SCREEN_WIDTH;								// 表示画面の横幅
+			pCamera->viewport.Height = SCREEN_HEIGHT;							// 表示画面の高さ
 		}
 		pCamera->viewport.MinZ = 0.0f;
 		pCamera->viewport.MaxZ = 1.0f;
@@ -80,10 +81,11 @@ void UpdateCamera(void)
 	switch (GetMode())
 	{
 	case MODE_TITLE:
+		TitleCamera();
 		break;
 
 	case MODE_GAME:
-		GameModeCamera();
+		GameCamera();
 		break;
 
 	case MODE_RESULT:
@@ -95,8 +97,15 @@ void UpdateCamera(void)
 }
 
 //==============================================================
+// タイトルモードのカメラ更新処理
+void TitleCamera(void)
+{
+	SetPositionCamera(vec3_ZORO,CAMERATYPE_TITLE);
+}
+
+//==============================================================
 // ゲームモードのカメラ更新処理
-void GameModeCamera(void)
+void GameCamera(void)
 {
 	//**************************************************************
 	// 変数宣言
@@ -243,7 +252,22 @@ void SetCamera(void)
 	//**************************************************************
 	// 変数宣言
 	LPDIRECT3DDEVICE9	pDevice = GetDevice();			// デバイスへのポインタ
-	P_CAMERA			pCamera = &g_aCamera[0];		// カメラポインタ
+	P_CAMERA			pCamera;		// カメラポインタ
+
+	//**************************************************************
+	// カメラタイプ選択
+	switch (GetMode())
+	{
+	case MODE_TITLE:
+		pCamera = &g_aCamera[CAMERATYPE_TITLE];
+		break;
+	case MODE_GAME:
+		pCamera = &g_aCamera[CAMERATYPE_PLAYER];
+		break;
+	default:
+		pCamera = &g_aCamera[0];
+		break;
+	}
 
 	//**************************************************************
 	// ビューポートの設定
@@ -255,7 +279,7 @@ void SetCamera(void)
 
 	// プロジェクションマトリックスを作成
 	D3DXMatrixPerspectiveFovLH(&pCamera->mtxProjection,
-		D3DXToRadian(pCamera->fViewRadian),					// 視野角
+		D3DXToRadian(pCamera->fViewRadian),				// 視野角
 		(float)pCamera->viewport.Width / (float)pCamera->viewport.Height,	// アスペクト比
 		pCamera->fViewMin,								// 最短描画距離
 		pCamera->fViewMax);								// 最大描画距離

@@ -33,6 +33,7 @@ typedef enum
 	TITLEPOLYGON_ENDLESS,		// エンドレスモード
 	TITLEPOLYGON_MAX
 }TITLEPOLYGON;
+
 typedef enum
 {
 	TITLEMODEL_BALLOON = 0,		// 気球

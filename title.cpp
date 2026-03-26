@@ -73,9 +73,9 @@ void InitTitle(void)
 	g_nCounterTitleState = 0;
 
 	g_titleModel[0].pModel = SetModelData(MODELTYPE_BALLOON);
-	g_titleModel[0].pos = vec3(-300.0f,170.0f,-200.0f);
+	g_titleModel[0].pos = vec3(-80.0f,70.0f,-165.0f);
 	g_titleModel[0].rot = vec3(0.0f, D3DX_PI * 0.125f, 0.0f);
-	for (int nCnt = 1; nCnt < MAX_TITLEMODEL; nCnt++)
+	for (int nCnt = 1; nCnt < 6; nCnt++)
 	{
 		g_titleModel[nCnt].pModel = SetModelData(MODELTYPE_PRESENT);
 	}
@@ -84,8 +84,9 @@ void InitTitle(void)
 	g_titleModel[2].rot.y = 1;
 	g_titleModel[3].pos = vec3(10.0f, 0.0f, 25.0f);
 	g_titleModel[3].rot.y = -1;
-	//g_titleModel[4].pos = vec3(0.0f, 0.0f, 20.0f);
-	//g_titleModel[5].pos = vec3(20.0f, 0.0f, 20.0f);
+	g_titleModel[4].pos = vec3(20.0f, 0.0f, -40.0f);
+	g_titleModel[5].pos = vec3(45.0f, 0.0f, -45.0f);
+	g_titleModel[5].rot.y = 2;
 
 	// テクスチャの読み込み
 	P_LOADTEXTURE_INFO pTexInfo = &g_aTitleTex[0];

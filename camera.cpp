@@ -43,7 +43,10 @@ void InitCamera(void)
 		pCamera->rot = CAMERA_ROT;		// カメラの角度
 		pCamera->rotDest = CAMERA_ROT;	// カメラの角度
 		pCamera->vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);							// 上方向ベクトル
-		pCamera->fDist = CAMERA_DISTANS;										// 視点と注視点の距離
+		if (nCntCamera == CAMERATYPE_TITLE)
+			pCamera->fDist = 300.0f;									// 視点と注視点の距離
+		else
+			pCamera->fDist = CAMERA_DISTANS;									// 視点と注視点の距離
 		pCamera->fViewMin = VIEW_MINDEPTH;										// 最短描画距離
 		pCamera->fViewMax = VIEW_MAXDEPTH;										// 最長描画距離
 		pCamera->fViewRadian = VIEW_RADIAN;										// 視野角
@@ -65,7 +68,7 @@ void InitCamera(void)
 	}
 
 	// タイトルカメラの位置を変更
-	SetPosCamera(vec3(0.0f, 100.0f, 0.0f), CAMERATYPE_TITLE);
+	SetPosCamera(vec3(50.0f, 50.0f, -50.0f), CAMERATYPE_TITLE);
 }
 
 //=========================================================================================

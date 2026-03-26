@@ -9,13 +9,13 @@
 #include "fallpoint.h"
 #include "input.h"
 #include "delivered.h"
+#include "trap.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define FALLPOINT_SPLIT		(64 + 1)							// 分割数
 #define FALLPOINT_ANGLE		(D3DX_PI / (FALLPOINT_SPLIT - 1))
-#define MAX_FALLPOINTGRID	(32)								// グリッド数
 #define FALLPOINTTABLEX		(4)
 #define FALLPOINTTABLEZ		(3)
 
@@ -186,7 +186,7 @@ void SetFallPoint(void)
 	static int nCntTableX = 0;
 	static int nCntTableZ = 0;
 
-	for (int nCntGrid = 0; nCntGrid < MAX_FALLPOINTGRID; nCntGrid++)
+	for (int nCntGrid = 0; nCntGrid < MAX_GRID; nCntGrid++)
 	{
 		int nNumFallPoint = rand() % 3 + 1;
 

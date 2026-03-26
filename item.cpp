@@ -198,6 +198,7 @@ void SetItem(void)
 				pItem->pos = pItemPattern->aItemInfo[nCntItemInfo].pos;
 				pItem->rot = pItemPattern->aItemInfo[nCntItemInfo].rot;
 				pItem->itemtype = pItemPattern->aItemInfo[nCntItemInfo].itemtype;
+				pItem->fRadius = g_aItemRadius[pItem->itemtype];
 
 				pItem->pos.x += fGridPosX;
 

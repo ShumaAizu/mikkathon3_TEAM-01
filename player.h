@@ -67,10 +67,11 @@
 #define PLAYER_KEY_SHOT			DIK_S		// アイテム投下
 
 // コントローラー
-#define PLAYER_PAD_MOVE_UP					// 上昇
-#define PLAYER_PAD_MOVE_R					// 右に動かす
-#define PLAYER_PAD_MOVE_L					// 左に動かす
-#define PLAYER_PAD_SHOT			JOYKEY_A	// アイテム投下
+#define PLAYER_PAD_MOVE_UP		JOYKEY_UP		// 上昇
+#define PLAYER_PAD_MOVE_R		JOYKEY_RIGHT	// 右に動かす
+#define PLAYER_PAD_MOVE_L		JOYKEY_LEFT		// 左に動かす
+#define PLAYER_PAD_SHOT_SUB		JOYKEY_A		// アイテム投下
+#define PLAYER_PAD_SHOT			JOYKEY_DOWN		// アイテム投下
 
 //==============================================================
 // プレイヤー状態列挙

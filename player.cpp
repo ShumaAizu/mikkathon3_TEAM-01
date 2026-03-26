@@ -293,6 +293,32 @@ void Joypad(void)
 		else
 			g_player.move.y += leftStick.y * g_parameter.fJumpforce / (g_player.fWeight + PENALTY_WEIGHT);
 	}
+
+	do
+	{
+		if (GetKeyboardPress(PLAYER_PAD_MOVE_UP))
+		{// 上昇
+			if (g_player.pos.y <= HEIGHT_EASE)
+				// 地上付近では上昇力をブースト
+				g_player.move.y += g_parameter.fJumpforce / (g_player.fWeight - EASE_WEIGHT);
+			else if (g_player.pos.y <= HEIGHT_RES)
+				g_player.move.y += g_parameter.fJumpforce / g_player.fWeight;
+			else
+				// 上空では上昇力を減衰
+				g_player.move.y += g_parameter.fJumpforce / (g_player.fWeight + PENALTY_WEIGHT);
+		}
+
+		if (GetKeyboardPress(PLAYER_PAD_MOVE_L))
+		{// 奥
+			g_player.move.z += g_parameter.fSpeedforce;
+		}
+
+		if (GetKeyboardPress(PLAYER_PAD_MOVE_R))
+		{// 手前
+			g_player.move.z -= g_parameter.fSpeedforce;
+		}
+	} while (0);
+
 }
 
 //==============================================================
@@ -365,7 +391,11 @@ void ItemDrop(int nItem)
 	int* pItemNext = &g_player.nItem[1];
 
 	// 書っとボタンが押されたら
-	if (GetKeyboardTrigger(PLAYER_KEY_SHOT) || GetKeyboardTrigger(DIK_SPACE) || GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(PLAYER_PAD_SHOT))
+	if (GetKeyboardTrigger(PLAYER_KEY_SHOT)
+		|| GetKeyboardTrigger(DIK_SPACE)
+		|| GetKeyboardTrigger(DIK_RETURN)
+		|| GetJoypadTrigger(PLAYER_PAD_SHOT)
+		|| GetJoypadTrigger(PLAYER_PAD_SHOT_SUB))
 	{
 		if (pItem && 0 <= *pItem)
 			// アイテム投下

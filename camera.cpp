@@ -100,7 +100,7 @@ void UpdateCamera(void)
 // タイトルモードのカメラ更新処理
 void TitleCamera(void)
 {
-	SetPositionCamera(vec3_ZORO,CAMERATYPE_TITLE);
+	SetPositionCamera(vec3(0.0f,100.0f,0.0f),CAMERATYPE_TITLE);
 }
 
 //==============================================================
@@ -397,11 +397,26 @@ bool IsEnableCameraEdit(void)
 //=========================================================================================
 // カメラの位置を強制移動
 //=========================================================================================
-void SetPositionCamera(vec3 pos, CAMERATYPE type)
+void SetPosCamera(vec3 pos, CAMERATYPE type)
 {
 	P_CAMERA pCamera = GetCamera(type);
 
 	pCamera->posR = pos;
+
+	pCamera->posV.x = pCamera->posR.x - cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+	pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;
+	pCamera->posV.z = pCamera->posR.z - sinf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
+
+}
+
+//=========================================================================================
+// カメラの角度を強制変更
+//=========================================================================================
+void SetRotCamera(vec3 rot, CAMERATYPE type) 
+{
+	P_CAMERA pCamera = GetCamera(type);
+
+	pCamera->rot = rot;
 
 	pCamera->posV.x = pCamera->posR.x - cosf(D3DX_PI - pCamera->rot.y) * pCamera->fDist;
 	pCamera->posV.y = pCamera->posR.y - cosf(D3DX_PI - pCamera->rot.x) * pCamera->fDist;

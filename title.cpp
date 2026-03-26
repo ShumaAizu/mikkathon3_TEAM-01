@@ -15,6 +15,8 @@
 #include "texture.h"
 #include "sound.h"
 #include "modeldata.h"
+#include "field.h"
+#include "skybox.h"
 
 //**************************************************************
 // マクロ定義
@@ -196,6 +198,9 @@ void UpdateTitle(void)
 		g_titleState = TITLESTATE_WAIT;
 		break;
 	}
+
+	UpdateField();
+	UpdateSkyBox();
 }
 
 //==============================================================
@@ -303,6 +308,9 @@ void TitleVtxCol(TITLEPOLYGON type, D3DXCOLOR col)
 //=========================================================================================
 void DrawTitle(void)
 {
+	DrawField();
+	DrawSkyBox();
+
 	DrawTitle2D();
 
 	DrawTitle3D();
@@ -312,10 +320,12 @@ void DrawTitle(void)
 // タイトル2D描画
 void DrawTitle2D(void)
 {
-	LPDIRECT3DDEVICE9 pDevice;				// デバイスへのポインタ
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタを取得
 
-	// デバイスの取得
-	pDevice = GetDevice();
+	// アルファテストを有効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);		// アルファテストを有効にする
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);	// 比較方法(基準値より大きければ描画)
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 150);				// アルファテストの参照値を設定(～以上で描画, intで設定)
 
 	// 頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, g_pVtxBuffTitle, 0, sizeof(VERTEX_2D));
@@ -336,6 +346,10 @@ void DrawTitle2D(void)
 		}
 	}
 
+	// アルファテストを無効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);		// アルファテストを無効化
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);	// 比較方法(すべて描画)
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 255);				// 基準値を設定(すべてを描画している)
 }
 
 //==============================================================

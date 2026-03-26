@@ -444,7 +444,7 @@ void Collision(void)
 		if (GetSetCutIn())
 		{
 			g_player.pos.x = -WORLD_END;
-			SetPositionCamera(g_player.pos,CAMERATYPE_PLAYER);
+			SetPosCamera(g_player.pos,CAMERATYPE_PLAYER);
 			ResetTrap();
 			UninitFallPoint();
 			InitFallPoint();

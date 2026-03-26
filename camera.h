@@ -85,6 +85,7 @@ void SetCamera(void);										// カメラを設置（mainのDrawの最初にする）
 void SetUICamera(vec3 viewTopLeft, D3DXVECTOR2 size);		// UI用などで画面上にモデルを描画したい場合
 P_CAMERA GetCamera(CAMERATYPE type = (CAMERATYPE)0);		// カメラ除法配列の先頭アドレスを取得
 bool IsEnableCameraEdit(void);
-void SetPositionCamera(vec3 pos, CAMERATYPE type);
+void SetPosCamera(vec3 pos, CAMERATYPE type);
+void SetRotCamera(vec3 rot, CAMERATYPE type);
 
 #endif// !_CAMERA_H_#endif#endif

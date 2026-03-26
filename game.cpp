@@ -111,7 +111,7 @@ void InitGame(void)
 	// 最初のアイテムを設置
 	SetItem();
 
-	//PlaySound(SOUND_LABEL_000);
+	PlaySound(SOUND_LABEL_001);
 }
 
 //=============================================================================

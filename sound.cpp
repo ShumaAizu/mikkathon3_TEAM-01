@@ -34,7 +34,13 @@ DWORD g_aSizeAudio[SOUND_LABEL_MAX] = {};					// オーディオデータサイズ
 // サウンドの情報
 SOUNDINFO g_aSoundInfo[SOUND_LABEL_MAX] =
 {
-	"data\\SOUND\\BGM\\Game.wav"
+	{"data\\SOUND\\BGM\\Title.wav", -1},
+	{"data\\SOUND\\BGM\\Game.wav",-1},
+	{"data\\SOUND\\BGM\\Result.wav",-1},
+	{"data\\SOUND\\SE\\explotion.wav",0},
+	{"data\\SOUND\\SE\\fall.wav",0},
+	{"data\\SOUND\\SE\\fire.wav",0},
+	{"data\\SOUND\\SE\\whistle.wav",0},
 };
 
 //=============================================================================

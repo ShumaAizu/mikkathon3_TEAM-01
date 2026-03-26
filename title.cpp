@@ -175,6 +175,9 @@ void InitTitle(void)
 	// ñ∂ÇÃê›íË
 	SetFogEnable(true);
 	SetFog(COLOR_WHITE, GAMEFOG_START, GAMEFOG_END);
+
+	// âπäyçƒê∂
+	PlaySound(SOUND_LABEL_000);
 }
 
 //=========================================================================================

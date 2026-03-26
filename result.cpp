@@ -55,6 +55,9 @@ void InitResult(void)
 
 	// 霧の設定
 	SetFog(D3DXCOLOR(1.0f, 0.87f, 0.56f, 1.0f), RESULTFOG_START, RESULTFOG_END);
+
+	// 音楽再生
+	PlaySound(SOUND_LABEL_002);
 }
 
 //====================================
@@ -64,6 +67,9 @@ void UninitResult(void)
 {
 	// リザルトでの届けた数の終了
 	UninitResultDelivered();
+
+	// 音楽停止
+	StopSound();
 }
 
 //====================================

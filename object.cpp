@@ -54,7 +54,7 @@ void UpdateObject(void)
 			continue;
 		}
 
-		if (pObject->ObjectType == EVENTOBJECTTYPE_PARENT && pObject->ObjectInfo.ParentObject.motion.pMotionData != NULL)
+		if (pObject->ObjectType == OBJECTTYPE_PARENT && pObject->ObjectInfo.ParentObject.motion.pMotionData != NULL)
 		{// オブジェクトが階層構造モデルかつモーションがあるならば
 			// モーションを更新
 			UpdateMotion(&pObject->ObjectInfo.ParentObject.motion,
@@ -84,7 +84,7 @@ void DrawObject(void)
 			continue;
 		}
 
-		if (pObject->ObjectType == EVENTOBJECTTYPE_NORMAL)
+		if (pObject->ObjectType == OBJECTTYPE_NORMAL)
 		{// 通常オブジェクト
 			// ワールドマトリックスの初期化(デフォルトの値にする)
 			D3DXMatrixIdentity(&pObject->mtxWorld);
@@ -121,7 +121,7 @@ void DrawObject(void)
 			pDevice->SetMaterial(&matDef);
 
 		}
-		else if (pObject->ObjectType == EVENTOBJECTTYPE_PARENT)
+		else if (pObject->ObjectType == OBJECTTYPE_PARENT)
 		{// 階層構造オブジェクト
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&pObject->mtxWorld);
@@ -339,7 +339,7 @@ void SetObjectParent(D3DXVECTOR3 pos, D3DXVECTOR3 rot, PARENTMODELTYPE parentmod
 		pObject->pos = pos;							// 位置
 		pObject->rot = rot;							// 向き
 		pObject->fAlpha = 1.0f;						// アルファ値
-		pObject->ObjectType = EVENTOBJECTTYPE_PARENT;	// 通常か階層構造か
+		pObject->ObjectType = OBJECTTYPE_PARENT;	// 通常か階層構造か
 		pObject->bUse = true;							// 使用状態に
 
 		// オフセット情報を格納するメンバ変数へのポインタを取得

@@ -20,13 +20,13 @@
 //*****************************************************************************
 // 使用するオブジェクトの種類
 //*****************************************************************************
-typedef enum EVENTOBJECTTYPE
+typedef enum OBJECTTYPE
 {
-	EVENTOBJECTTYPE_NONE = -1,	// 何もない
-	EVENTOBJECTTYPE_NORMAL,		// 通常
-	EVENTOBJECTTYPE_PARENT,		// 階層構造
-	EVENTOBJECTTYPE_MAX
-}EVENTOBJECTTYPE;
+	OBJECTTYPE_NONE = -1,	// 何もない
+	OBJECTTYPE_NORMAL,		// 通常
+	OBJECTTYPE_PARENT,		// 階層構造
+	OBJECTTYPE_MAX
+}OBJECTTYPE;
 
 //*****************************************************************************
 // 通常オブジェクトの構造体定義
@@ -66,7 +66,7 @@ typedef struct Object
 	D3DXVECTOR3 pos;			// オブジェクトの位置
 	D3DXVECTOR3 rot;			// オブジェクトの向き
 	ObjectInfo ObjectInfo;		// オブジェクト情報
-	EVENTOBJECTTYPE ObjectType;	// オブジェクトの種類
+	OBJECTTYPE ObjectType;	// オブジェクトの種類
 	float fAlpha;				// アルファ値
 	int nCollisionIdx;			// 当たり判定のインデックス
 	bool bUse;					// 使用状態

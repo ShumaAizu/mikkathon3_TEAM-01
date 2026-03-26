@@ -18,6 +18,7 @@
 #include "cutin.h"
 #include "fallpoint.h"
 #include "game.h"
+#include "tutorialboard.h"
 
 //**************************************************************
 // 構造体の定義
@@ -107,6 +108,8 @@ void InitPlayer(void)
 
 	// プレイヤーの状態→今後、スタートのカウントダウンで設定
 	SetPlayerState(PLAYERSTATE_RUN);
+
+	g_bInvincible = true;
 }
 
 //=========================================================================================
@@ -128,6 +131,11 @@ void UninitPlayer(void)
 //=========================================================================================
 void UpdatePlayer(void)
 {
+	if (GetTutorialLevel() == TUTORIALLEVEL_MAX && g_bInvincible == true)
+	{
+		g_bInvincible = false;
+	}
+
 	if (g_player.bUse)
 	{
 		//**************************************************************
@@ -273,6 +281,7 @@ void Keyboard(void)
 {
 	//**************************************************************
 	// 変数宣言
+	static bool isMoveUP = false, isMoveLeft = false, isMoveRight = false;
 
 	//**************************************************************
 	// 移動
@@ -294,18 +303,26 @@ void Keyboard(void)
 				g_nFireCounter = 60;
 				PlaySound(SOUND_LABEL_005);
 			}
+			isMoveUP = true;
 		}
 
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_L))
 		{// 奥
 			g_player.move.z += g_parameter.fSpeedforce;
+			isMoveLeft = true;
 		}
 
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_R))
 		{// 手前
 			g_player.move.z -= g_parameter.fSpeedforce;
+			isMoveRight = true;
 		}
 	} while (0);
+
+	if (isMoveUP == true && isMoveLeft == true && isMoveRight == true && GetTutorialLevel() == TUTORIALLEVEL_001 && IsNextTutorialLevel() == false)
+	{
+		NextTutorialLevel(300);
+	}
 }
 
 //==============================================================

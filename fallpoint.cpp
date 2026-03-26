@@ -10,6 +10,7 @@
 #include "input.h"
 #include "delivered.h"
 #include "trap.h"
+#include "tutorialboard.h"
 
 //*****************************************************************************
 // É}ÉNÉçíËã`
@@ -331,7 +332,14 @@ void CollisionFallPoint(D3DXVECTOR3 pos)
 		if (fDiff <= pFallPoint->fInRadius)
 		{// ìñÇΩÇ¡ÇƒÇ¢ÇΩÇÁ
 			pFallPoint->bUse = false;
-			AddDelivered(1);
+			if (GetTutorialLevel() == TUTORIALLEVEL_002 && IsNextTutorialLevel() == false)
+			{
+				NextTutorialLevel(5);
+			}
+			else if(GetTutorialLevel() == TUTORIALLEVEL_MAX)
+			{
+				AddDelivered(1);
+			}
 		}
 	}
 }

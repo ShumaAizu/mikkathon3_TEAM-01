@@ -153,6 +153,9 @@
     <ClCompile Include="effect.cpp">
       <Filter>ソース ファイル\resource</Filter>
     </ClCompile>
+    <ClCompile Include="tutorialboard.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debugproc.h">
@@ -256,6 +259,9 @@
     </ClInclude>
     <ClInclude Include="effect.h">
       <Filter>ヘッダー ファイル\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorialboard.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

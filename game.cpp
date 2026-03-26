@@ -32,6 +32,7 @@
 #include "time.h"
 #include "delivered.h"
 #include "cutin.h"
+#include "tutorialboard.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -87,6 +88,8 @@ void InitGame(void)
 	// 落下地点目印の初期化
 	InitFallPoint();
 
+	InitTutorialboard();
+
 	// カットインの初期化
 	InitCutIn();
 
@@ -139,6 +142,9 @@ void UninitGame(void)
 
 	// 落下地点目印の終了
 	UninitFallPoint();
+
+	// 
+	UninitTutorialboard();
 
 	// 影の終了
 	UninitShadow();
@@ -203,6 +209,8 @@ void UpdateGame(void)
 
 		// 落下地点目印の更新
 		UpdateFallPoint();
+
+		UpdateTutorialboard();
 
 		// 影の更新
 		UpdateShadow();
@@ -272,6 +280,8 @@ void DrawGame(void)
 
 	// 落下地点目印の描画
 	DrawFallPoint();
+
+	DrawTutorialboard();
 
 	// 空の描画
 	DrawSkyBox();

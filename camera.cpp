@@ -63,6 +63,9 @@ void InitCamera(void)
 		pCamera->viewport.MaxZ = 1.0f;
 		pCamera->bUse = true;
 	}
+
+	// タイトルカメラの位置を変更
+	SetPosCamera(vec3(0.0f, 100.0f, 0.0f), CAMERATYPE_TITLE);
 }
 
 //=========================================================================================
@@ -100,7 +103,6 @@ void UpdateCamera(void)
 // タイトルモードのカメラ更新処理
 void TitleCamera(void)
 {
-	SetPositionCamera(vec3(0.0f,100.0f,0.0f),CAMERATYPE_TITLE);
 }
 
 //==============================================================

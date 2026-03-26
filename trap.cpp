@@ -19,21 +19,19 @@
 //*****************************************************************************
 #define MAX_TRAP			(256)		// トラップの最大数
 #define MAX_TRAPPATTERN		(32)		// トラップパターンの最大数
-#define MAX_GRID			(28)		// グリッドの最大数
-#define INIT_GRIDPOSX		(-2500.0f)	// グリッドの開始位置
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
 Trap g_atrap[MAX_TRAP];							// トラップの情報
 TrapPattern g_aTrapPattern[MAX_TRAPPATTERN];	// トラップパターンの情報
-int g_nNumTrapData;								// トラップデータ数
 int g_nNumTrap;									// 現在のトラップ数
 int g_nNumTrapPattern;							// 現在のトラップパターン数
 int g_nCntGrid;									// 現在のグリッド
 bool g_isTrapPattern[MAX_TRAPPATTERN];			// トラップパターンテーブル
 int g_nNumUsePattern;							// 使用しているパターン数
 float g_fGridPosX;								// 現在のグリッド位置
+int g_nGridUsePattern[MAX_GRID];				// そのグリッドで使ったパターン
 
 const int g_nLevelProbability[MAX_GAMELEVEL] =
 {
@@ -71,9 +69,9 @@ void InitTrap(void)
 	}
 
 	memset(&g_isTrapPattern[0], false, sizeof(bool) * MAX_TRAPPATTERN);
+	memset(&g_nGridUsePattern[0], -1, sizeof(int) * MAX_GRID);
 
 	g_nNumTrap = 0;
-	g_nNumTrapData = 0;
 	g_nNumTrapPattern = 0;
 	g_nCntGrid = 0;
 	g_nNumUsePattern = 0;
@@ -197,6 +195,7 @@ void SetTrap(void)
 			if (g_isTrapPattern[nCurrentPattern] == false)
 			{
 				g_isTrapPattern[nCurrentPattern] = true;
+				g_nGridUsePattern[nCntTrapPattern] = nCurrentPattern;
 				g_nNumUsePattern++;
 				break;
 			}
@@ -266,7 +265,6 @@ void SetTrapPattern(TrapPattern TrapPattern)
 //=============================================================================
 void ResetTrap(void)
 {
-
 	for (int nCntTrap = 0; nCntTrap < MAX_TRAP; nCntTrap++)
 	{
 		if (g_atrap[nCntTrap].nShadowIdx != -1)
@@ -287,4 +285,12 @@ void ResetTrap(void)
 	memset(&g_isTrapPattern[0], false, sizeof(bool) * MAX_TRAPPATTERN);
 
 	SetTrap();
+}
+
+//=============================================================================
+//	グリッドで使っている番号の取得処理
+//=============================================================================
+int* GetGridUsePattern(void)
+{
+	return &g_nGridUsePattern[0];
 }

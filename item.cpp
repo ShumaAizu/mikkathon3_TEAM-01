@@ -11,19 +11,35 @@
 
 #include "debugproc.h"
 
+#include "trap.h"
+#include "shadow.h"
+
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define MAX_ITEM			(16)								// アイテムの最大数
 #define ITEM_COLLOFFSET		(D3DXVECTOR3(0.0f, 9.25f, 0.0f))	// アイテムの当たり判定用オフセット
 #define ITEM_RADIUS			(13.5f)								// アイテムの半径
+#define MAX_ITEMPATTERN		(16)								// アイテムのパターン数
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-Item g_aitem[MAX_ITEM];				// アイテムの情報
-int g_nNumItemData;					// アイテムデータ数
-int g_nNumItem;						// 現在のアイテム数
+Item g_aitem[MAX_ITEM];							// アイテムの情報
+ItemPattern g_aItemPattern[MAX_ITEMPATTERN];	// トラップパターンの情報
+int g_nNumItem;									// 現在のアイテム数
+int g_nNumItemPattern;							// アイテムパターン数
+
+// アイテムの半径
+const float g_aItemRadius[ITEMTYPE_MAX] =
+{
+	ITEM_RADIUS,
+};
+
+MODELTYPE g_aItemModelType[ITEMTYPE_MAX] =
+{
+	MODELTYPE_PRESENT,
+};
 
 //=============================================================================
 //	アイテムの初期化処理
@@ -37,14 +53,12 @@ void InitItem(void)
 	{
 		g_aitem[nCntItem].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aitem[nCntItem].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_aitem[nCntItem].nShadowIdx = -1;
 		g_aitem[nCntItem].bUse = false;
 	}
 
 	g_nNumItem = 0;
-	g_nNumItemData = 0;
-
-	// test
-	//SetItem(D3DXVECTOR3(500.0f, 150.0f, 0.0f), INIT_D3DXVEC3, ITEMTYPE_000, MODELTYPE_PRESENT);
+	g_nNumItemPattern = 0;
 }
 
 //=============================================================================
@@ -153,34 +167,83 @@ int CollisionItem(D3DXVECTOR3 pos, float fRadius)
 //=============================================================================
 //	アイテムの設定処理
 //=============================================================================
-void SetItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, ITEMTYPE itemtype, MODELTYPE ModelType)
+void SetItem(void)
 {
-	Item* pItem = &g_aitem[0];
+	int* pGridUsePattern = GetGridUsePattern();
+	static float fGridPosX = INIT_GRIDPOSX;
 
-	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++, pItem++)
+	for (int nCntGrid = 0; nCntGrid < MAX_GRID; nCntGrid++, pGridUsePattern++)
 	{
-		if (pItem->bUse == true)
+		ItemPattern* pItemPattern = &g_aItemPattern[*pGridUsePattern];
+
+		Item* pItem = &g_aitem[0];
+
+		for (int nCntItemInfo = 0; nCntItemInfo < pItemPattern->nNumItem; nCntItemInfo++)
 		{
-			continue;
+			if (rand() % 11 > 5)
+			{
+				continue;
+			}
+
+
+			for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++, pItem++)
+			{
+				if (pItem->bUse == true)
+				{
+					continue;
+				}
+
+				pItem->pos = pItemPattern->aItemInfo[nCntItemInfo].pos;
+				pItem->rot = pItemPattern->aItemInfo[nCntItemInfo].rot;
+				pItem->itemtype = pItemPattern->aItemInfo[nCntItemInfo].itemtype;
+
+				pItem->pos.x += fGridPosX;
+
+				// モデルデータ設定
+				pItem->NormalObjectData.pModelData = SetModelData(g_aItemModelType[pItem->itemtype]);
+				pItem->nShadowIdx = SetShadow(g_aItemRadius[pItem->itemtype]);
+				SetPotisionShadow(pItem->nShadowIdx, pItem->pos, 1.0f);
+				pItem->bUse = true;
+
+				g_nNumItem++;
+				break;
+			}
 		}
 
-		pItem->pos = pos;
-		pItem->rot = rot;
-		pItem->itemtype = itemtype;
-
-		switch (itemtype)
-		{
-		case ITEMTYPE_000:
-			pItem->CollOffset = ITEM_COLLOFFSET;
-			pItem->fRadius = ITEM_RADIUS;
-			break;
-		}
-
-		// モデルデータ設定
-		pItem->NormalObjectData.pModelData = SetModelData(ModelType);
-		pItem->bUse = true;
-
-		g_nNumItem++;
-		break;
+		fGridPosX += 250.0f;
 	}
+
+	fGridPosX = INIT_GRIDPOSX;
+}
+
+//=============================================================================
+//	アイテムパターンの設定処理
+//=============================================================================
+void SetItemPattern(ItemPattern ItemPattern)
+{
+	g_aItemPattern[g_nNumItemPattern] = ItemPattern;
+
+	g_nNumItemPattern++;
+}
+
+//=============================================================================
+//	アイテムのリセット処理
+//=============================================================================
+void ResetItem(void)
+{
+	for (int nCntItem = 0; nCntItem < MAX_ITEM; nCntItem++)
+	{
+		if (g_aitem[nCntItem].nShadowIdx != -1)
+		{
+			ReleaseShadow(g_aitem[nCntItem].nShadowIdx);
+		}
+
+		g_aitem[nCntItem].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_aitem[nCntItem].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_aitem[nCntItem].nShadowIdx = -1;
+		g_aitem[nCntItem].bUse = false;
+	}
+
+	g_nNumItem = 0;
+	SetItem();
 }

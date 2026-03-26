@@ -104,8 +104,14 @@ void InitGame(void)
 	// トラップパターンの読み込み
 	LoadTrapPattern("data\\SCRIPTS\\TrapPatternInfo.txt");
 
+	// アイテムパターンの読み込み
+	LoadItemPattern("data\\SCRIPTS\\ItemPatternInfo.txt");
+
 	// 最初のトラップ設置
 	SetTrap();
+
+	// 最初のアイテムを設置
+	SetItem();
 
 	// 霧の設定
 	SetFogEnable(true);

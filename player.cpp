@@ -446,6 +446,7 @@ void Collision(void)
 			g_player.pos.x = -WORLD_END;
 			SetPosCamera(g_player.pos,CAMERATYPE_PLAYER);
 			ResetTrap();
+			ResetItem();
 			UninitFallPoint();
 			InitFallPoint();
 			AddGameLevel();

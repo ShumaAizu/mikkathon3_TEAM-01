@@ -15,6 +15,8 @@
 // マクロ定義
 //*****************************************************************************
 #define MAX_ONEPATTERNTRAP		(16)		// 一つのパターンに置けるトラップの最大
+#define MAX_GRID				(28)		// グリッドの最大数
+#define INIT_GRIDPOSX			(-2500.0f)	// グリッドの開始位置
 
 //*****************************************************************************
 // トラップの種類
@@ -70,5 +72,6 @@ bool CollisionTrap(D3DXVECTOR3 pos, float fRadius);
 void SetTrap(void);
 void SetTrapPattern(TrapPattern TrapPattern);
 void ResetTrap(void);
+int* GetGridUsePattern(void);
 
 #endif

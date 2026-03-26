@@ -9,6 +9,7 @@
 #include "modeldata.h"
 #include "object.h"
 #include "trap.h"
+#include "item.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -58,7 +59,9 @@
 #define LOAD_PATTERN		"PATTERNSET"				// トラップパターン読み込み
 #define LOAD_ENDPATTERN		"END_PATTERNSET"			// トラップパターン読み込み終了
 #define LOAD_TRAP			"TRAPSET"					// トラップ情報読み込み
-#define LOAD_ENDTRAP		"END_TRAPSET"				// トラップ情報読み込み
+#define LOAD_ENDTRAP		"END_TRAPSET"				// トラップ情報読み込み終了
+#define LOAD_ITEM			"ITEMSET"					// アイテム情報読み込み
+#define LOAD_ENDITEM		"END_ITEMSET"				// アイテム情報読み込み終了
 
 //*****************************************************************************
 // グローバル変数
@@ -1011,6 +1014,134 @@ HRESULT LoadTrapPattern(const char* pTrapPatternScript)
 		if (strcmp(aStrCpy, LOAD_END) == 0)
 		{// END_SCRIPTを読み込んだ
 			fclose(pTrapPatternFile);
+			break;
+		}
+	}
+
+	return S_OK;
+}
+
+//=============================================================================
+//	アイテムパターン読み込み処理
+//=============================================================================
+HRESULT LoadItemPattern(const char* pItemPatternScript)
+{
+	FILE* pItemPatternFile = fopen(pItemPatternScript, "r");
+
+	if (pItemPatternFile == NULL)
+	{// 読み込み失敗
+		return E_FAIL;
+	}
+
+	char aStr[MAX_STRING] = {};			   // 文字列読み込み
+	char aStrCpy[MAX_STRING] = {};		   // 文字列複製(整理)
+	char* pStart = NULL;				   // 文字列開始位置
+	ItemPattern ItemPattern = {};		   // トラップパターン情報
+	int type;
+
+	while (true)
+	{
+		memset(aStr, NULL, sizeof(aStr));					// 文字列クリア
+		(void)fgets(aStr, sizeof(aStr), pItemPatternFile);	// 一列読み込み
+
+		if (strstr(aStr, LOAD_START) != NULL)
+		{// LOAD_STARTを読み込めば読み込み開始
+			break;
+		}
+
+		if (feof(pItemPatternFile) != NULL)
+		{// 読み込み失敗
+			return E_FAIL;
+		}
+	}
+
+	while (true)
+	{
+		memset(aStr, NULL, sizeof(aStr));					// 文字列クリア
+		memset(aStrCpy, NULL, sizeof(aStrCpy));				// コピーもクリア
+		(void)fgets(aStr, sizeof(aStr), pItemPatternFile);	// 一列読み込み
+		LoadEnableString(&aStrCpy[0], &aStr[0]);			// 有効文字だけ抜き取って複製
+
+		if (strcmp(aStrCpy, LOAD_PATTERN) == 0)
+		{
+			while (true)
+			{
+				memset(aStr, NULL, sizeof(aStr));					// 文字列クリア
+				memset(aStrCpy, NULL, sizeof(aStrCpy));				// コピーもクリア
+				(void)fgets(aStr, sizeof(aStr), pItemPatternFile);	// 一列読み込み
+				LoadEnableString(&aStrCpy[0], &aStr[0]);			// 有効文字だけ抜き取って複製
+
+				if (strcmp(aStrCpy, LOAD_ITEM) == 0)
+				{
+					while (true)
+					{
+						memset(aStr, NULL, sizeof(aStr));					// 文字列クリア
+						memset(aStrCpy, NULL, sizeof(aStrCpy));				// コピーもクリア
+						(void)fgets(aStr, sizeof(aStr), pItemPatternFile);	// 一列読み込み
+						LoadEnableString(&aStrCpy[0], &aStr[0]);			// 有効文字だけ抜き取って複製
+
+						if (strstr(aStr, LOAD_POS))
+						{// POSを読み込んだ
+							if ((pStart = strchr(aStr, '=')) == NULL)
+							{
+								continue;
+							}
+
+							(void)sscanf(pStart + 1, "%f %f %f", &ItemPattern.aItemInfo[ItemPattern.nNumItem].pos.x,
+								&ItemPattern.aItemInfo[ItemPattern.nNumItem].pos.y,
+								&ItemPattern.aItemInfo[ItemPattern.nNumItem].pos.z);
+
+							continue;
+						}
+
+						if (strstr(aStr, LOAD_ROT))
+						{// ROTを読み込んだ
+							if ((pStart = strchr(aStr, '=')) == NULL)
+							{
+								continue;
+							}
+
+							(void)sscanf(pStart + 1, "%f %f %f", &ItemPattern.aItemInfo[ItemPattern.nNumItem].rot.x,
+								&ItemPattern.aItemInfo[ItemPattern.nNumItem].rot.y,
+								&ItemPattern.aItemInfo[ItemPattern.nNumItem].rot.z);
+
+							continue;
+						}
+
+						if (strncmp(aStrCpy, LOAD_TYPE, sizeof(LOAD_TYPE + 1)) == 0)
+						{// TYPEを読み込んだ
+							if ((pStart = strchr(aStr, '=')) == NULL)
+							{
+								continue;
+							}
+
+							(void)sscanf(pStart + 1, "%d", &type);
+
+							ItemPattern.aItemInfo[ItemPattern.nNumItem].itemtype = (ITEMTYPE)type;
+
+							continue;
+						}
+
+						if (strcmp(aStrCpy, LOAD_ENDITEM) == 0)
+						{
+							ItemPattern.nNumItem++;
+							break;
+						}
+					}
+				}
+
+				if (strcmp(aStrCpy, LOAD_ENDPATTERN) == 0)
+				{
+					SetItemPattern(ItemPattern);
+					ZeroMemory(&ItemPattern, sizeof(ItemPattern));
+					break;
+				}
+			}
+		}
+
+		if (strcmp(aStrCpy, LOAD_END) == 0)
+		{// END_SCRIPTを読み込んだ
+			fclose(pItemPatternFile);
 			break;
 		}
 	}

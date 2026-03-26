@@ -41,6 +41,7 @@ SOUNDINFO g_aSoundInfo[SOUND_LABEL_MAX] =
 	{"data\\SOUND\\SE\\fall.wav",0},
 	{"data\\SOUND\\SE\\fire.wav",0},
 	{"data\\SOUND\\SE\\whistle.wav",0},
+	{"data\\SOUND\\SE\\entry.wav",0},
 };
 
 //=============================================================================

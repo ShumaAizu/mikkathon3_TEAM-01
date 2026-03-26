@@ -302,6 +302,7 @@ void TitleMenu(void)
 {
 	if (GetKeyboardTrigger(DIK_RETURN) || GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(JOYKEY_A))
 	{
+		PlaySound(SOUND_LABEL_007);
 		SetFade(MODE_GAME);
 	}
 }

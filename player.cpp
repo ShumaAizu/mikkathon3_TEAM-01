@@ -44,6 +44,7 @@ Player		g_player;						// プレイヤーの情報
 Parameter	g_parameter;					// 各種値
 
 bool g_bInvincible = false;					// 無敵モード
+int	 g_nDamageCouter = 0;
 
 //**************************************************************
 // プロトタイプ宣言
@@ -64,6 +65,8 @@ Parameter* GetParameter(void);	// パラメータ情報取得
 //=========================================================================================
 void InitPlayer(void)
 {
+	g_nDamageCouter = 0;
+
 	//**************************************************************
 	// 変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
@@ -80,7 +83,8 @@ void InitPlayer(void)
 	g_player.state = PLAYERSTATE_NONE;				// 状態
 	g_player.bUse = false;
 	g_player.pModel = SetModelData(MODELTYPE_BALLOON);	// モデル呼び出し
-	g_player.nLife = 1;
+	g_player.nLife = PLAYER_LIFE;
+	g_player.fFuel = PLAYER_FUEL;
 	g_player.nShadow = SetShadow(RADIUS_BASKET);
 
 	// 呼び出しに成功したら
@@ -153,6 +157,10 @@ void UpdatePlayer(void)
 		// 判定
 		Collision();
 
+		if (0 < g_nDamageCouter)
+			g_nDamageCouter--;
+		PrintDebugProc("DMG CNT %d", g_nDamageCouter);
+
 #if _DEBUG
 		DebugSetValue(&g_player.fWeight, 0.1f, DIK_UP, DIK_DOWN);
 		PrintDebugProc("\nプレイヤーの重さ [↑/↓]: %f", g_player.fWeight);
@@ -199,6 +207,14 @@ void UpdatePlayer(void)
 void PlayerState(void)
 {
 	//**************************************************************
+	// 無敵モード中
+	if (g_bInvincible)
+	{
+		g_player.nLife = PLAYER_LIFE;
+		g_player.fFuel = PLAYER_FUEL;
+	}
+
+	//**************************************************************
 	// 死んでいたら
 	if (g_player.nLife <= 0)
 	{
@@ -207,7 +223,7 @@ void PlayerState(void)
 
 	//**************************************************************
 	// 死んでいたら
-	if (g_player.state == PLAYERSTATE_DEAD && g_bInvincible == false)
+	if (g_player.state == PLAYERSTATE_DEAD)
 	{
 		// フラグを設定
 		if (GetNextGameFlag() != GAMEFLAG_GAMEOVER)
@@ -444,6 +460,7 @@ void Collision(void)
 				if (g_player.nItem[nCntItem] == -1)
 				{// アイテム欄に空きがあれば取得
 					g_player.nItem[nCntItem] = nItem;
+					g_player.fWeight += 0.1f;
 					break;
 				}
 				if (nCntItem == MAX_GETITEM)
@@ -458,6 +475,7 @@ void Collision(void)
 	if (CollisionTrap(Pos[0], RADIUS_BALLOON) || CollisionTrap(Pos[1], RADIUS_BASKET))
 	{
 		g_player.nLife--;
+		g_nDamageCouter = 120;
 	}
 	
 	// 地面
@@ -524,46 +542,51 @@ void DrawPlayer(void)
 	D3DXMATRIX		mtxRot, mtxTrans;				// マトリックス計算用
 	D3DMATERIAL9	matDef;							// 現在のマテリアル保存用
 	D3DXMATERIAL*	pMat;							// マテリアルデータへのポインタ
+	D3DXMATERIAL*	pMatBlight;						// 点滅用マテリアルデータへのポインタ
 	P_PLAYER		pPlayer = &g_player;
+
 	if (g_player.bUse)
 	{
-		//**************************************************************
-		// ワールドマトリックスの初期化
-		D3DXMatrixIdentity(&pPlayer->mtxWorldr);
-
-		// 向きを反映
-		D3DXMatrixRotationYawPitchRoll(&mtxRot, g_player.rot.y, g_player.rot.x, g_player.rot.z);
-		D3DXMatrixMultiply(&pPlayer->mtxWorldr, &pPlayer->mtxWorldr, &mtxRot);
-
-		// 位置を反映
-		D3DXMatrixTranslation(&mtxTrans, g_player.pos.x, g_player.pos.y, g_player.pos.z);
-		D3DXMatrixMultiply(&pPlayer->mtxWorldr, &pPlayer->mtxWorldr, &mtxTrans);
-
-		// ワールドマトリックスの設定
-		pDevice->SetTransform(D3DTS_WORLD, &pPlayer->mtxWorldr);
-
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		// 現在のマテリアルを取得
-		pDevice->GetMaterial(&matDef);
-
-		// マテリアルデータへのポインタを取得
-		pMat = (D3DXMATERIAL*)pPlayer->pModel->pBuffMat->GetBufferPointer();
-
-		for (int nCntMat = 0; nCntMat < (int)pPlayer->pModel->dwNumMat; nCntMat++)
+		if (((0 <= g_nDamageCouter && (g_nDamageCouter / 10) % 2 == 0) && g_bInvincible)|| g_bInvincible == false)
 		{
-			// マテリアルの設定
-			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+			//**************************************************************
+			// ワールドマトリックスの初期化
+			D3DXMatrixIdentity(&pPlayer->mtxWorldr);
 
-			// テクスチャの設定
-			pDevice->SetTexture(0, pPlayer->pModel->apTexture[nCntMat]);
+			// 向きを反映
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, g_player.rot.y, g_player.rot.x, g_player.rot.z);
+			D3DXMatrixMultiply(&pPlayer->mtxWorldr, &pPlayer->mtxWorldr, &mtxRot);
 
-			// モデル(パーツ)の描画
-			pPlayer->pModel->pMesh->DrawSubset(nCntMat);
+			// 位置を反映
+			D3DXMatrixTranslation(&mtxTrans, g_player.pos.x, g_player.pos.y, g_player.pos.z);
+			D3DXMatrixMultiply(&pPlayer->mtxWorldr, &pPlayer->mtxWorldr, &mtxTrans);
+
+			// ワールドマトリックスの設定
+			pDevice->SetTransform(D3DTS_WORLD, &pPlayer->mtxWorldr);
+
+			//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			// 現在のマテリアルを取得
+			pDevice->GetMaterial(&matDef);
+
+			// マテリアルデータへのポインタを取得
+			pMatBlight = pMat = (D3DXMATERIAL*)pPlayer->pModel->pBuffMat->GetBufferPointer();
+
+			for (int nCntMat = 0; nCntMat < (int)pPlayer->pModel->dwNumMat; nCntMat++)
+			{
+				// マテリアルの設定
+				pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+				// テクスチャの設定
+				pDevice->SetTexture(0, pPlayer->pModel->apTexture[nCntMat]);
+
+				// モデル(パーツ)の描画
+				pPlayer->pModel->pMesh->DrawSubset(nCntMat);
+			}
+
+			// 保存していたマテリアルに戻す
+			pDevice->SetMaterial(&matDef);
+			//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		}
-
-		// 保存していたマテリアルに戻す
-		pDevice->SetMaterial(&matDef);
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	}
 }
 

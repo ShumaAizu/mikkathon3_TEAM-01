@@ -28,6 +28,9 @@
 // プレイヤーパラメータ
 #define PLAYER_PARAMETERS	"data\\INFO\\status\\playerplam.bin"
 #define MAX_GETITEM			(64)			// 持てるアイテムの最大数
+#define ITEM_WEIGHT			(0.2f)			// アイテム一つの重さ
+#define PLAYER_FUEL			(4000)			// 初期燃料
+#define PLAYER_LIFE			(1)				// プレイヤーの初期体力
 #define OFFSET_BALLOON		(52.25f)		// 気球の風船の当たり判定のオフセット
 #define RADIUS_BALLOON		(27.5f)			// 気球の風船の当たり判定の半径
 #define OFFSET_BASKET		(7.5f)			// 気球のかごの当たり判定のオフセット
@@ -35,7 +38,7 @@
 #define PLAYER_WEIGHT		(10.0f)			// 気球の重さ
 #define GRAVITY				(0.0002f)		// 重力
 #define MOVE_FORCE			(0.8f)			// 加速力
-#define JUMP_FORCE			(0.046f)			// 上昇速度
+#define JUMP_FORCE			(0.046f)		// 上昇速度
 #define MOVE_FOC			(1.0f)			// 重さによる左右移動への影響係数
 #define SCROLL_FOC			(210)			// スクロール速度の係数
 #define MAX_MOVE_SPEED		(1.0f)			// 最大移動速度
@@ -95,6 +98,7 @@ typedef struct Player
 	D3DXVECTOR3 move;				// 移動速度
 	D3DXVECTOR3 spin;				// 回転速度
 	int			nLife;				// 体力
+	float		fFuel;				// 燃料
 	int			nShadow;			// 影番号
 	float		fWeight;			// 重さ
 	PLAYERSTATE state;				// 状態

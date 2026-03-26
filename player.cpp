@@ -15,6 +15,7 @@
 #include "trap.h"
 
 #include "cutin.h"
+#include "fallpoint.h"
 
 //**************************************************************
 // ç\ë¢ëÃÇÃíËã`
@@ -443,6 +444,9 @@ void Collision(void)
 		{
 			g_player.pos.x = -WORLD_END;
 			SetPositionCamera(g_player.pos,CAMERATYPE_PLAYER);
+			ResetTrap();
+			UninitFallPoint();
+			InitFallPoint();
 		}
 		else
 		{

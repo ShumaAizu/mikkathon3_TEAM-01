@@ -15,12 +15,19 @@
 //*****************************************************************************
 #define FALLPOINT_SPLIT		(64 + 1)							// 分割数
 #define FALLPOINT_ANGLE		(D3DX_PI / (FALLPOINT_SPLIT - 1))
+#define MAX_FALLPOINTGRID	(32)								// グリッド数
+#define FALLPOINTTABLEX		(4)
+#define FALLPOINTTABLEZ		(3)
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
 LPDIRECT3DTEXTURE9 g_pTextureFallPoint = NULL;			// テクスチャへのポインタ
 FallPoint g_aFallPoint[MAX_FALLPOINT];					// 目標地点の情報
+int g_nFallPaintGrid;									// 目標地点のグリッド
+
+bool g_isFallPointTableX[FALLPOINTTABLEX];				// X軸テーブル
+bool g_isFallPointTableZ[FALLPOINTTABLEZ];				// Z軸テーブル
 
 //=============================================================================
 //	目標地点の初期化処理
@@ -42,10 +49,11 @@ void InitFallPoint(void)
 		g_aFallPoint[nCntFallPoint].bUse = false;
 	}
 
-	// test
-	SetFallPoint(D3DXVECTOR3(300.0f, 0.5f, 25.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 25.0f, 35.0f);
+	memset(&g_isFallPointTableX[0], false, sizeof(bool) * FALLPOINTTABLEX);
+	memset(&g_isFallPointTableZ[0], false, sizeof(bool) * FALLPOINTTABLEZ);
 
-	//SetFallPoint(D3DXVECTOR3(425.0f, 0.5f, -100.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 25.0f, 35.0f);
+	// 目標地点設定
+	SetFallPoint();
 }
 
 //=============================================================================
@@ -75,6 +83,8 @@ void UninitFallPoint(void)
 			g_aFallPoint[nCntFallPoint].pIdxBuff->Release();
 			g_aFallPoint[nCntFallPoint].pIdxBuff = NULL;
 		}
+
+		g_aFallPoint[nCntFallPoint].bUse = false;
 	}
 }
 
@@ -164,86 +174,141 @@ void UpdateFallPoint(void)
 //=============================================================================
 //	目標地点の設定処理
 //=============================================================================
-void SetFallPoint(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fInRadius, float fOutRadius)
+void SetFallPoint(void)
 {
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
-	FallPoint* pFallPoint = &g_aFallPoint[0];	// 目標地点へのポインタ
+	D3DXVECTOR3 pos = D3DXVECTOR3(-2500.0f, 1.0f, 0.0f);
+	D3DXVECTOR3 rot = INIT_D3DXVEC3;
+	int nTable = 0;
 
-	for (int nCntFallPoint = 0; nCntFallPoint < MAX_FALLPOINT; nCntFallPoint++, pFallPoint++)
+	static int nCntTableX = 0;
+	static int nCntTableZ = 0;
+
+	for (int nCntGrid = 0; nCntGrid < MAX_FALLPOINTGRID; nCntGrid++)
 	{
-		if (g_aFallPoint[nCntFallPoint].bUse == true)
+		int nNumFallPoint = rand() % 3 + 1;
+
+		for (int nCntNumFallPoint = 0; nCntNumFallPoint < nNumFallPoint; nCntNumFallPoint++)
 		{
-			continue;
+			if (rand() % 11 / 6 == 0)
+			{// 6割で設置スキップ
+				continue;
+			}
+
+			FallPoint* pFallPoint = &g_aFallPoint[0];	// 目標地点へのポインタ
+
+			for (int nCntFallPoint = 0; nCntFallPoint < MAX_FALLPOINT; nCntFallPoint++, pFallPoint++)
+			{
+				if (g_aFallPoint[nCntFallPoint].bUse == true)
+				{
+					continue;
+				}
+
+				// 目標地点の設定
+				pFallPoint->pos = pos;
+				pFallPoint->rot = rot;
+				pFallPoint->fInRadius = FALLPOINT_INRADIUS;
+				pFallPoint->fOutRadius = FALLPOINT_OUTRADIUS;
+				pFallPoint->bUse = true;
+
+				while (true)
+				{
+					nTable = rand() % FALLPOINTTABLEX;
+					if (g_isFallPointTableX[nTable] == false)
+					{
+						g_isFallPointTableX[nTable] = true;
+						nCntTableX++;
+						if (nCntTableX >= FALLPOINTTABLEX)
+						{
+							memset(&g_isFallPointTableX[0], false, sizeof(bool) * FALLPOINTTABLEX);
+							nCntTableX = 0;
+						}
+						break;
+					}
+				}
+
+				pFallPoint->pos.x += (nCntGrid * 250.0f + 50.0f) + (nTable * 50.0f);
+
+				while (true)
+				{
+					nTable = rand() % FALLPOINTTABLEZ;
+					if (g_isFallPointTableZ[nTable] == false)
+					{
+						g_isFallPointTableZ[nTable] = true;
+						nCntTableZ++;
+						if (nCntTableZ >= FALLPOINTTABLEZ)
+						{
+							memset(&g_isFallPointTableZ[0], false, sizeof(bool) * FALLPOINTTABLEZ);
+							nCntTableZ = 0;
+						}
+						break;
+					}
+				}
+				pFallPoint->pos.z += -100.0f + (nTable * 125.0f);
+
+				// 頂点バッファの生成
+				pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * FALLPOINT_SPLIT * FALLPOINT_SPLIT,
+					D3DUSAGE_WRITEONLY,
+					FVF_VERTEX_3D,
+					D3DPOOL_MANAGED,
+					&g_aFallPoint[nCntFallPoint].pVtxBuff,
+					NULL);
+
+				// 初期化
+				VERTEX_3D* pVtx;			// 頂点情報へのポインタ
+
+				// 頂点バッファをロックし,頂点情報へのポインタを取得
+				pFallPoint->pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+				float fAngle = D3DX_PI;
+
+				for (int nCntVtx = 0; nCntVtx < FALLPOINT_SPLIT; nCntVtx++)
+				{
+					pVtx[0].pos = D3DXVECTOR3(sinf(fAngle) * pFallPoint->fOutRadius, 0.0f, cosf(fAngle) * pFallPoint->fOutRadius);
+					pVtx[1].pos = D3DXVECTOR3(sinf(fAngle) * pFallPoint->fInRadius, 0.0f, cosf(fAngle) * pFallPoint->fInRadius);
+
+					pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+					pVtx[1].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+					pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
+					pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
+
+					pVtx[0].tex = D3DXVECTOR2(1.0f * nCntVtx, 1.0f);
+					pVtx[1].tex = D3DXVECTOR2(1.0f * nCntVtx, 0.0f);
+
+					fAngle += -FALLPOINT_ANGLE * 2;
+					pVtx += 2;
+				}
+
+				// 頂点バッファをアンロックする
+				pFallPoint->pVtxBuff->Unlock();
+
+				// インデックスバッファの設定
+				pDevice->CreateIndexBuffer(sizeof(WORD) * FALLPOINT_SPLIT * FALLPOINT_SPLIT,
+					D3DUSAGE_WRITEONLY,
+					D3DFMT_INDEX16,
+					D3DPOOL_MANAGED,
+					&g_aFallPoint[nCntFallPoint].pIdxBuff,
+					NULL);
+
+				WORD* pIdx;		// インデックス情報へのポインタ
+
+				// インデックスバッファをロックし、頂点情報へのポインタを取得
+				g_aFallPoint[nCntFallPoint].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
+
+				for (int nCntVtx = 0; nCntVtx < FALLPOINT_SPLIT * FALLPOINT_SPLIT; nCntVtx++)
+				{
+					pIdx[nCntVtx] = nCntVtx;
+				}
+
+				// インデックスバッファをアンロックする
+				g_aFallPoint[nCntFallPoint].pIdxBuff->Unlock();
+
+				break;
+			}
 		}
-
-		// 目標地点の設定
-		pFallPoint->pos = pos;
-		pFallPoint->rot = rot;
-		pFallPoint->fInRadius = fInRadius;
-		pFallPoint->fOutRadius = fOutRadius;
-		pFallPoint->bUse = true;
-
-		// 頂点バッファの生成
-		pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * FALLPOINT_SPLIT * FALLPOINT_SPLIT,
-			D3DUSAGE_WRITEONLY,
-			FVF_VERTEX_3D,
-			D3DPOOL_MANAGED,
-			&g_aFallPoint[nCntFallPoint].pVtxBuff,
-			NULL);
-
-		// 初期化
-		VERTEX_3D* pVtx;			// 頂点情報へのポインタ
-
-		// 頂点バッファをロックし,頂点情報へのポインタを取得
-		pFallPoint->pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-		float fAngle = D3DX_PI;
-
-		for (int nCntVtx = 0; nCntVtx < FALLPOINT_SPLIT; nCntVtx++)
-		{
-			pVtx[0].pos = D3DXVECTOR3(sinf(fAngle) * pFallPoint->fOutRadius, 0.0f, cosf(fAngle) * pFallPoint->fOutRadius);
-			pVtx[1].pos = D3DXVECTOR3(sinf(fAngle) * pFallPoint->fInRadius, 0.0f, cosf(fAngle) * pFallPoint->fInRadius);
-
-			pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-			pVtx[1].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-
-			pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
-			pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
-
-			pVtx[0].tex = D3DXVECTOR2(1.0f * nCntVtx, 1.0f);
-			pVtx[1].tex = D3DXVECTOR2(1.0f * nCntVtx, 0.0f);
-
-			fAngle += -FALLPOINT_ANGLE * 2;
-			pVtx += 2;
-		}
-
-		// 頂点バッファをアンロックする
-		pFallPoint->pVtxBuff->Unlock();
-
-		// インデックスバッファの設定
-		pDevice->CreateIndexBuffer(sizeof(WORD) * FALLPOINT_SPLIT * FALLPOINT_SPLIT,
-			D3DUSAGE_WRITEONLY,
-			D3DFMT_INDEX16,
-			D3DPOOL_MANAGED,
-			&g_aFallPoint[nCntFallPoint].pIdxBuff,
-			NULL);
-
-		WORD* pIdx;		// インデックス情報へのポインタ
-
-		// インデックスバッファをロックし、頂点情報へのポインタを取得
-		g_aFallPoint[nCntFallPoint].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
-
-		for (int nCntVtx = 0; nCntVtx < FALLPOINT_SPLIT * FALLPOINT_SPLIT; nCntVtx++)
-		{
-			pIdx[nCntVtx] = nCntVtx;
-		}
-
-		// インデックスバッファをアンロックする
-		g_aFallPoint[nCntFallPoint].pIdxBuff->Unlock();
-
-		break;
 	}
 }
 

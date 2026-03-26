@@ -13,7 +13,9 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_FALLPOINT			(64)				// 目標地点の最大数
+#define MAX_FALLPOINT			(128)				// 目標地点の最大数
+#define FALLPOINT_INRADIUS		(25.0f)				// 内径
+#define FALLPOINT_OUTRADIUS		(35.0f)				// 外径
 
 //*****************************************************************************
 // 目標地点の構造体定義
@@ -37,7 +39,7 @@ void InitFallPoint(void);
 void UninitFallPoint(void);
 void UpdateFallPoint(void);
 void DrawFallPoint(void);
-void SetFallPoint(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fInRadius, float fOutRadius);
+void SetFallPoint(void);
 void CollisionFallPoint(D3DXVECTOR3 pos);
 
 #endif

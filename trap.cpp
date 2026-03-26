@@ -248,3 +248,31 @@ void SetTrapPattern(TrapPattern TrapPattern)
 
 	g_nNumTrapPattern++;
 }
+
+//=============================================================================
+//	トラップのリセット処理
+//=============================================================================
+void ResetTrap(void)
+{
+
+	for (int nCntTrap = 0; nCntTrap < MAX_TRAP; nCntTrap++)
+	{
+		if (g_atrap[nCntTrap].nShadowIdx != -1)
+		{
+			ReleaseShadow(g_atrap[nCntTrap].nShadowIdx);
+		}
+
+		g_atrap[nCntTrap].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_atrap[nCntTrap].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		g_atrap[nCntTrap].nShadowIdx = -1;
+		g_atrap[nCntTrap].bUse = false;
+	}
+
+	g_nNumTrap = 0;
+	g_nCntGrid = 0;
+	g_nNumUsePattern = 0;
+	g_fGridPosX = INIT_GRIDPOSX;
+	memset(&g_isTrapPattern[0], false, sizeof(bool) * MAX_TRAPPATTERN);
+
+	SetTrap();
+}

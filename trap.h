@@ -69,5 +69,6 @@ void DrawTrap(void);
 bool CollisionTrap(D3DXVECTOR3 pos, float fRadius);
 void SetTrap(void);
 void SetTrapPattern(TrapPattern TrapPattern);
+void ResetTrap(void);
 
 #endif

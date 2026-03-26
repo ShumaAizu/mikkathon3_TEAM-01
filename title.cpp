@@ -70,7 +70,8 @@ void InitTitle(void)
 	g_nCounterTitleState = 0;
 
 	g_titleModel[0].pModel = SetModelData(MODELTYPE_BALLOON);
-	g_titleModel[0].pos = vec3_ZORO;
+	g_titleModel[0].pos = vec3(-300.0f,170.0f,-200.0f);
+	g_titleModel[0].rot = vec3(0.0f, D3DX_PI * 0.125f, 0.0f);
 	g_titleModel[1].pModel = SetModelData(MODELTYPE_PRESENT);
 
 	// テクスチャの読み込み
@@ -135,6 +136,7 @@ void InitTitle(void)
 		{
 		case TITLEPOLYGON_TITLE:
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_TITLE].nTex;
+			TitleVtxPos(TITLEPOLYGON_TITLE, vec3(pTitle->pos.x, -400.0f, 0.0f), pTitle->size);
 			break;
 		case TITLEPOLYGON_START:
 			pTitle->nTex = g_aTitleTex[TITLETEXTURE_START_JOY].nTex;
@@ -172,6 +174,9 @@ void UninitTitle(void)
 void UpdateTitle(void)
 {
 	PrintDebugProc("TITLE\n");
+	g_nCounterTitleState++;
+	PrintDebugProc("\nCounterTitle: %d\n", g_nCounterTitleState);
+
 	switch (g_titleState)
 	{
 	case TITLESTATE_WAIT:	// 待機
@@ -198,6 +203,10 @@ void UpdateTitle(void)
 		g_titleState = TITLESTATE_WAIT;
 		break;
 	}
+	g_titleModel[0].spin.x += 0.01f;
+	g_titleModel[0].spin.y += 0.008f;
+	g_titleModel[0].rot.y += cosf(g_titleModel[0].spin.y) * 0.005f;
+	g_titleModel[0].pos.y += cosf(g_titleModel[0].spin.x) * 0.1f;
 
 	UpdateField();
 	UpdateSkyBox();
@@ -216,9 +225,16 @@ void TitleWait(void)
 // ぐいーん
 void TitleMove(void)
 {
+	P_TITLE pTitle = &g_aTitlePolygon[TITLEPOLYGON_TITLE];
+	float F = (float)g_nCounterTitleState / TITLE_MOVE_COUNT;
+	PrintDebugProc("F : %f\n", F);
+
+	TitleVtxPos(TITLEPOLYGON_TITLE, vec3(pTitle->pos.x, -pTitle->pos.y + (220.0f + pTitle->pos.y) * F, 0.0f), pTitle->size);
+
 	// 次へ
-	if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(JOYKEY_A))
+	if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(JOYKEY_A) || TITLE_MOVE_COUNT <= g_nCounterTitleState)
 	{
+		TitleVtxPos(TITLEPOLYGON_TITLE, pTitle->pos, pTitle->size);
 		SetTitleState(TITLESTATE_OP);
 	}
 }
@@ -238,17 +254,15 @@ void TitleOp(void)
 		return;
 	}
 
-	g_nCounterTitleState++;
-	PrintDebugProc("\nCounterTitle: %d\n", g_nCounterTitleState);
-	if (g_nCounterTitleState == TITLE_WAIT_BLINK)
-	{
-		TitleVtxCol(TITLEPOLYGON_START, D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f));
-	}
-	else if (g_nCounterTitleState == TITLE_WAIT_BLINK * 2)
+	if (g_nCounterTitleState % (TITLE_WAIT_BLINK * 2) == 0)
 	{
 		TitleVtxCol(TITLEPOLYGON_START, COLOR_WHITE);
 
 		g_nCounterTitleState = 0;
+	}
+	else if (g_nCounterTitleState % TITLE_WAIT_BLINK == 0)
+	{
+		TitleVtxCol(TITLEPOLYGON_START, D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f));
 	}
 }
 
@@ -414,6 +428,7 @@ void DrawTitle3D(void)
 void SetTitleState(TITLESTATE titlestate)
 {
 	g_titleState = titlestate;
+	g_nCounterTitleState = 0;
 }
 
 //=========================================================================================

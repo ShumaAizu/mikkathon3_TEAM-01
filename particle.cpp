@@ -15,8 +15,9 @@ const PARTICLE g_particleInfo[PARTICLE_MAX] =
 {//発生位置					、パーティクル寿命、角度							、角度幅	、発生数	、色							、速さ、大きさ、粒子寿命、種類			、設定したよ
 	{D3DXVECTOR3(0.0f,0.0f,0.0f)	,0	,D3DXVECTOR3(0.0f,0.0f,0.0f)			,0			,0		,D3DXCOLOR(0,0,0,0)					,0		,0		,0		,PARTICLE_NONE		,false},	// 未設定（NONE
 	{D3DXVECTOR3(0.0f,0.0f,0.0f)	,20	,D3DXVECTOR3(0.0f,0.0f,0.0f)			,314		,10		,COLX_GREEN							,1.0f	,5.0f	,150	,PARTICLE_ITEMGET	,true},		// アイテムゲット
-	{D3DXVECTOR3(0.0f,0.0f,0.0f)	,20	,D3DXVECTOR3(0.0f,0.0f,0.0f)			,314		,10		,COLX_RED							,1.0f	,5.0f	,150	,PARTICLE_ITEMUSE	,true},		// アイテム使用
-	{D3DXVECTOR3(0.0f,0.0f,0.0f)	,10	,D3DXVECTOR3(0.0f,0.0f,0.0f)			,314		,10		,D3DXCOLOR(1.0f,0.8f,0.8f,0.5f)		,1.0f	,1.0f	,150	,PARTICLE_EXPLOSION	,true},		// 弾爆発
+	{D3DXVECTOR3(0.0f,0.0f,0.0f)	,20	,D3DXVECTOR3(0.0f,0.0f,0.0f)			,314		,10		,COLX_RED							,1.0f	,5.0f	,150	,PARTICLE_ITEMUSE00	,true},		// アイテム使用
+	{D3DXVECTOR3(0.0f,0.0f,0.0f)	,20	,D3DXVECTOR3(0.0f,0.0f,0.0f)			,314		,6		,colX(1.0f,1.0f,0.0f,1.0f)			,0.7f	,4.0f	,70		,PARTICLE_ITEMUSE01	,true},		// アイテム使用
+	{D3DXVECTOR3(0.0f,0.0f,0.0f)	,5	,D3DXVECTOR3(0.0f,0.0f,0.0f)			,314		,1		,D3DXCOLOR(1.0f,0.8f,0.8f,0.5f)		,1.0f	,3.0f	,300	,PARTICLE_EXPLOSION	,true},		// 弾爆発
 	{D3DXVECTOR3(0.0f,0.0f,0.0f)	,0	,D3DXVECTOR3(0.0f,3.0f,0.0f)			,10			,1		,D3DXCOLOR(1.0f,0.8f,0.8f,0.5f)		,80.0f	,15.0f	,100	,PARTICLE_CLEAR		,true},		// クリア
 };//セット済みパーティクル情報
 PARTICLE g_particle[MAX_PARTICLE];//設置したパーティクル

@@ -7,6 +7,7 @@
 
 #include "main.h"
 #include "debugproc.h"
+#include "input.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -18,12 +19,15 @@
 //*****************************************************************************
 LPD3DXFONT g_pFont = NULL;					// フォントへのポインタ
 char g_aStrDebug[MAX_TEXT];					// 文字列(デバッグ情報)を格納するバッファ
+bool g_bHideDebug = false;
 
 //=============================================================================
 //	デバッグ表示の初期化処理
 //=============================================================================
 void InitDebugProc(void)
 {
+	g_bHideDebug = false;
+
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
@@ -54,6 +58,11 @@ void UninitDebugProc(void)
 //=============================================================================
 void UpdateDebugProc(void)
 {
+	if (GetKeyboardTrigger(DIK_F3))
+	{
+		g_bHideDebug = g_bHideDebug ^ 1;
+	}
+
 #ifndef _DEBUG
 	// デバッグ情報バッファのクリア
 	memset(&g_aStrDebug[0], 0, sizeof g_aStrDebug);
@@ -66,7 +75,7 @@ void UpdateDebugProc(void)
 void DrawDebugProc(void)
 {
 	RECT rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-
+	if(g_bHideDebug == false)
 	// テキストを描画
 	g_pFont->DrawText(NULL, &g_aStrDebug[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 0, 0, 255));
 

@@ -201,7 +201,12 @@ void DrawEffect(void)
 			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 
-			//Zテストを無効にする
+			//// アルファテストを有効にする
+			//pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);		// アルファテストを有効にする
+			//pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);	// 比較方法(基準値より大きければ描画)
+			//pDevice->SetRenderState(D3DRS_ALPHAREF, 150);				// アルファテストの参照値を設定(～以上で描画, intで設定)
+
+			// Zテストを無効にする
 			pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 			pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
@@ -212,6 +217,11 @@ void DrawEffect(void)
 			pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+			//// アルファテストを無効にする
+			//pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);		// アルファテストを無効化
+			//pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);	// 比較方法(すべて描画)
+			//pDevice->SetRenderState(D3DRS_ALPHAREF, 255);				// 基準値を設定(すべてを描画している)
 
 			//Zテストを有効にする
 			pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);

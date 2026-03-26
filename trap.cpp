@@ -21,6 +21,7 @@
 //*****************************************************************************
 #define MAX_TRAP			(256)		// トラップの最大数
 #define MAX_TRAPPATTERN		(32)		// トラップパターンの最大数
+#define TRAP_DENGER_AREA	(3)			// 危険エリア
 
 //*****************************************************************************
 // グローバル変数
@@ -160,6 +161,7 @@ bool CollisionTrap(D3DXVECTOR3 pos, float fRadius)
 	Trap* pTrap = &g_atrap[0];	// トラップへのポインタ
 
 	float fDiff = 0.0f;
+	float fRange = 0.0f;
 
 	for (int nCntItem = 0; nCntItem < MAX_TRAP; nCntItem++, pTrap++)
 	{
@@ -170,13 +172,22 @@ bool CollisionTrap(D3DXVECTOR3 pos, float fRadius)
 
 		// 各値を二乗して距離を算出
 		fDiff = powf(pTrap->pos.x - pos.x, 2) + powf(pTrap->pos.y - pos.y, 2) + powf(pTrap->pos.z - pos.z, 2);
+		fRange = powf(fRadius + g_aTrapRadius[pTrap->traptype], 2);
 
-		if (fDiff <= powf(fRadius + g_aTrapRadius[pTrap->traptype], 2))
-		{// 当たっていたら
-			pTrap->bUse = false;
-			SetParticle(pTrap->pos, PARTICLE_ITEMUSE);
-			PlaySound(SOUND_LABEL_003);
-			return true;
+		if (fDiff <= fRange * TRAP_DENGER_AREA)
+		{// アイテムの当たり判定の距離２倍の範囲内なら
+			// パーティクル
+			SetParticle(pTrap->pos, PARTICLE_EXPLOSION);
+
+
+			if (fDiff <= powf(fRadius + g_aTrapRadius[pTrap->traptype], 2))
+			{// 当たっていたら
+				pTrap->bUse = false;
+				SetParticle(pTrap->pos, PARTICLE_ITEMUSE00);
+				SetParticle(pTrap->pos, PARTICLE_ITEMUSE01);
+				PlaySound(SOUND_LABEL_003);
+				return true;
+			}
 		}
 	}
 

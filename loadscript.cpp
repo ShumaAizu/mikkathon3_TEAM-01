@@ -29,7 +29,6 @@
 #define LOAD_ENDMOTIONINFO	"END_MOTIONSET"				// モーション情報読み込み終了
 #define LOAD_NUMMODEL		"NUM_MODEL"					// モデル数読み込み
 #define LOAD_MODEL			"MODEL_FILENAME"			// モデルファイル名読み込み
-#define LOAD_ITEM			"ITEM_FILENAME"				// アイテムファイル名読み込み
 #define LOAD_MOTIONLOOP		"LOOP"						// ループモーションか読み込み
 #define LOAD_NUMKEY			"NUM_KEY"					// キー数読み込み
 #define LOAD_KEYSET			"KEYSET"					// キー情報読み込み

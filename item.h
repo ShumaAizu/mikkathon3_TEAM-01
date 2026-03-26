@@ -69,6 +69,7 @@ void InitItem(void);
 void UninitItem(void);
 void UpdateItem(void);
 void DrawItem(void);
+void OnUIitemEnable(void);
 int CollisionItem(D3DXVECTOR3 pos, float fRadius);
 void SetItem(void);
 void SetItemPattern(ItemPattern ItemPattern);

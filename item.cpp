@@ -14,6 +14,7 @@
 #include "trap.h"
 #include "shadow.h"
 #include "particle.h"
+#include "player.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -154,6 +155,78 @@ void DrawItem(void)
 
 		// 保存していたマテリアルを戻す
 		pDevice->SetMaterial(&matDef);
+	}
+
+	OnUIitemEnable();
+}
+
+//=========================================================================================
+// UI表示用 描画の簡略化のための関数わけ
+//=========================================================================================
+void OnUIitemEnable(void)
+{
+	D3DXMATRIX			mtxView, mtxRot, mtxTrans, mtxWorld;	// マトリックス計算用
+	ModelData*			pModel;						// モデルデータへのポインタ
+	LPDIRECT3DDEVICE9	pDevice = GetDevice();		// デバイスへのポインタ
+	D3DMATERIAL9		matDef;						// 現在のマテリアル保存用
+	D3DXMATERIAL*		pMat;						// マテリアルデータへのポインタ
+	vec3				pos = vec3_ZORO, rot = vec3_ZORO, posWin = vec3(90.0f, 50.0f, 0.0f);
+
+	int* pItem = GetPlayerItem();
+
+	for (int nCntItem = 0; nCntItem < MAX_GETITEM; nCntItem++, pItem++)
+	{
+		if (*pItem == -1)
+		{// 使われていなければ戻る
+			continue;
+		}
+
+		// カメラ設置
+		SetUiCameraCenter(posWin, D3DXVECTOR2(80.0f, 80.0f));
+		posWin.x += 80.0f;
+
+		//------------------------------
+		// モデル設置	
+		// インデックスからモデルデータを取得
+		pModel = SetModelData(MODELTYPE_PRESENT);
+
+		//**************************************************************
+		// ワールドマトリックスの初期化
+		D3DXMatrixIdentity(&mtxWorld);
+
+		// 向きを反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+
+		// 位置を反映
+		D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+
+		// ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &mtxWorld);
+
+		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		// 現在のマテリアルを取得
+		pDevice->GetMaterial(&matDef);
+
+		// マテリアルデータへのポインタを取得
+		pMat = (D3DXMATERIAL*)pModel->pBuffMat->GetBufferPointer();
+
+		for (int nCntMat = 0; nCntMat < (int)pModel->dwNumMat; nCntMat++)
+		{
+			// マテリアルの設定
+			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+			// テクスチャの設定
+			pDevice->SetTexture(0, pModel->apTexture[nCntMat]);
+
+			// モデル(パーツ)の描画
+			pModel->pMesh->DrawSubset(nCntMat);
+		}
+
+		// 保存していたマテリアルに戻す
+		pDevice->SetMaterial(&matDef);
+		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	}
 }
 

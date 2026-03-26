@@ -19,8 +19,8 @@
 #define SPLIT_HEIGTH	(1 + 1)										// 縦の分割数
 #define WALL_POSIN1		(D3DXVECTOR3(-5000.0f, 500.0f, 500.0f))		// 壁の位置
 #define WALL_POSOUT1	(D3DXVECTOR3(-7500.0f, 750.0f, 750.0f))		// 壁の位置
-#define WALL_POSIN2		(D3DXVECTOR3(-5000.0f, 500.0f, -250.0f))		// 壁の位置
-#define WALL_POSOUT2	(D3DXVECTOR3(-7500.0f, 750.0f, -300.0f))		// 壁の位置
+#define WALL_POSIN2		(D3DXVECTOR3(-5000.0f, 500.0f, -250.0f))	// 壁の位置
+#define WALL_POSOUT2	(D3DXVECTOR3(-7500.0f, 750.0f, -300.0f))	// 壁の位置
 
 //*****************************************************************************
 // グローバル変数

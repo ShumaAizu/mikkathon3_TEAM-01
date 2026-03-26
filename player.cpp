@@ -343,7 +343,11 @@ void Joypad(void)
 	//**************************************************************
 	// 移動
 	if (leftStick.x != 0)
+	{
 		g_player.move.z -= leftStick.x * g_parameter.fSpeedforce;
+		g_isMoveLeft = true;
+		g_isMoveRight = true;
+	}
 
 	if (0 < leftStick.y)
 	{
@@ -365,7 +369,7 @@ void Joypad(void)
 
 	do
 	{
-		if (GetKeyboardPress(PLAYER_PAD_MOVE_UP))
+		if (GetJoypadPress(PLAYER_PAD_MOVE_UP))
 		{// 上昇
 			if (g_player.pos.y <= HEIGHT_EASE)
 				// 地上付近では上昇力をブースト
@@ -384,13 +388,13 @@ void Joypad(void)
 			g_isMoveUP = true;
 		}
 
-		if (GetKeyboardPress(PLAYER_PAD_MOVE_L))
+		if (GetJoypadPress(PLAYER_PAD_MOVE_L))
 		{// 奥
 			g_player.move.z += g_parameter.fSpeedforce;
 			g_isMoveLeft = true;
 		}
 
-		if (GetKeyboardPress(PLAYER_PAD_MOVE_R))
+		if (GetJoypadPress(PLAYER_PAD_MOVE_R))
 		{// 手前
 			g_player.move.z -= g_parameter.fSpeedforce;
 			g_isMoveRight = true;

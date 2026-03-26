@@ -1969,7 +1969,7 @@ Mesh {
    1.000000;1.000000;1.000000;;
    1.000000;1.000000;1.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\mikkathon3_TEAM-01\\data\\TEXTURE\\tutorial000.jpg";
+    "data\\TEXTURE\\tutorial000.jpg";
    }
   }
   Material {
@@ -1978,7 +1978,7 @@ Mesh {
    1.000000;1.000000;1.000000;;
    1.000000;1.000000;1.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\mikkathon3_TEAM-01\\data\\TEXTURE\\tutorial001.jpg";
+    "data\\TEXTURE\\tutorial001.jpg";
    }
   }
   Material {

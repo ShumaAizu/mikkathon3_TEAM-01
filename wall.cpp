@@ -19,8 +19,8 @@
 #define SPLIT_HEIGTH	(1 + 1)										// 縦の分割数
 #define WALL_POSIN1		(D3DXVECTOR3(-5000.0f, 500.0f, 500.0f))		// 壁の位置
 #define WALL_POSOUT1	(D3DXVECTOR3(-7500.0f, 750.0f, 750.0f))		// 壁の位置
-#define WALL_POSIN2		(D3DXVECTOR3(5000.0f, 500.0f, 250.0f))		// 壁の位置
-#define WALL_POSOUT2	(D3DXVECTOR3(7500.0f, 750.0f, 500.0f))		// 壁の位置
+#define WALL_POSIN2		(D3DXVECTOR3(-5000.0f, 500.0f, -250.0f))		// 壁の位置
+#define WALL_POSOUT2	(D3DXVECTOR3(-7500.0f, 750.0f, -300.0f))		// 壁の位置
 
 //*****************************************************************************
 // グローバル変数
@@ -52,8 +52,9 @@ void InitWall(void)
 
 	SetWall(WALL_POSIN1, INIT_D3DXVEC3, 2500.0f, 500.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
 	SetWall(WALL_POSOUT1, INIT_D3DXVEC3, 3500.0f, 750.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
-	SetWall(WALL_POSIN2, D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.0f), 2500.0f, 500.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
-	SetWall(WALL_POSOUT2, D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.0f), 3500.0f, 750.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
+
+	SetWall(WALL_POSIN2, INIT_D3DXVEC3, 2500.0f, 500.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
+	SetWall(WALL_POSOUT2, INIT_D3DXVEC3, 3500.0f, 750.0f, SPLIT_WIDHT, SPLIT_HEIGTH);
 }
 
 //=============================================================================
@@ -93,6 +94,8 @@ void DrawWall(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスの取得
 	D3DXMATRIX mtxRot, mtxTrans;				// 計算用マトリックス
+
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);				// カリングの設定
 
 	// アルファテストを有効にする
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);		// アルファテストを有効にする
@@ -145,6 +148,8 @@ void DrawWall(void)
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);		// アルファテストを無効化
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);	// 比較方法(すべて描画)
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 255);				// 基準値を設定(すべてを描画している)
+
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);		// カリングの設定
 }
 
 //=============================================================================

@@ -48,6 +48,7 @@ Parameter	g_parameter;					// 各種値
 bool g_bInvincible = false;					// 無敵モード
 int	 g_nDamageCounter = 0;
 int  g_nFireCounter = 0;
+static bool g_isMoveUP = false, g_isMoveLeft = false, g_isMoveRight = false;
 
 //**************************************************************
 // プロトタイプ宣言
@@ -90,6 +91,10 @@ void InitPlayer(void)
 	g_player.nLife = PLAYER_LIFE;
 	g_player.fFuel = PLAYER_FUEL;
 	g_player.nShadow = SetShadow(RADIUS_BASKET);
+
+	g_isMoveUP = false;
+	g_isMoveLeft = false;
+	g_isMoveRight = false;
 
 	// 呼び出しに成功したら
 	if (g_player.pModel)
@@ -134,6 +139,12 @@ void UpdatePlayer(void)
 	if (GetTutorialLevel() == TUTORIALLEVEL_MAX && g_bInvincible == true)
 	{
 		g_bInvincible = false;
+	}
+
+	if (g_isMoveUP == true && g_isMoveLeft == true && g_isMoveRight == true && 
+		GetTutorialLevel() == TUTORIALLEVEL_001 && IsNextTutorialLevel() == false)
+	{
+		NextTutorialLevel(300);
 	}
 
 	if (g_player.bUse)
@@ -281,7 +292,6 @@ void Keyboard(void)
 {
 	//**************************************************************
 	// 変数宣言
-	static bool isMoveUP = false, isMoveLeft = false, isMoveRight = false;
 
 	//**************************************************************
 	// 移動
@@ -303,26 +313,21 @@ void Keyboard(void)
 				g_nFireCounter = 60;
 				PlaySound(SOUND_LABEL_005);
 			}
-			isMoveUP = true;
+			g_isMoveUP = true;
 		}
 
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_L))
 		{// 奥
 			g_player.move.z += g_parameter.fSpeedforce;
-			isMoveLeft = true;
+			g_isMoveLeft = true;
 		}
 
 		if (GetKeyboardPress(PLAYER_KEY_MOVE_R))
 		{// 手前
 			g_player.move.z -= g_parameter.fSpeedforce;
-			isMoveRight = true;
+			g_isMoveRight = true;
 		}
 	} while (0);
-
-	if (isMoveUP == true && isMoveLeft == true && isMoveRight == true && GetTutorialLevel() == TUTORIALLEVEL_001 && IsNextTutorialLevel() == false)
-	{
-		NextTutorialLevel(300);
-	}
 }
 
 //==============================================================
@@ -355,7 +360,7 @@ void Joypad(void)
 			g_nFireCounter = 60;
 			PlaySound(SOUND_LABEL_005);
 		}
-
+		g_isMoveUP = true;
 	}
 
 	do
@@ -376,17 +381,19 @@ void Joypad(void)
 				g_nFireCounter = 60;
 				PlaySound(SOUND_LABEL_005);
 			}
-
+			g_isMoveUP = true;
 		}
 
 		if (GetKeyboardPress(PLAYER_PAD_MOVE_L))
 		{// 奥
 			g_player.move.z += g_parameter.fSpeedforce;
+			g_isMoveLeft = true;
 		}
 
 		if (GetKeyboardPress(PLAYER_PAD_MOVE_R))
 		{// 手前
 			g_player.move.z -= g_parameter.fSpeedforce;
+			g_isMoveRight = true;
 		}
 	} while (0);
 

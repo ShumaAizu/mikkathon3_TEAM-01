@@ -80,7 +80,7 @@ void UpdateTutorialboard(void)
 			continue;
 		}
 
-		if (isOut == true && g_isNextTutorialLevel == true)
+		if (isOut == true && g_isNextTutorialLevel == true && isIn == false)
 		{
 			pTutorialboard->pos.y += 5.0f;
 			if (pTutorialboard->pos.y >= 500.0f)

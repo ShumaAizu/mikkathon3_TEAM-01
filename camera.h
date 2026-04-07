@@ -32,8 +32,8 @@
 #define CAMERA_UPLIM			(2.8f)						// カメラの上限角度
 #define CAMERA_LOWLIM			(2.8f)						// カメラの下限角度
 
-#define UICAMERA_POSV			vec3(20.0f,50.0f,30.0f)		// インターフェース用カメラの座標
-#define UICAMERA_POSR			vec3(0.0f,0.0f,0.0f)		// インターフェース用カメラの注視点座標
+#define UICAMERA_POSV			vec3(20.0f,40.0f,30.0f)		// インターフェース用カメラの座標
+#define UICAMERA_POSR			vec3(0.0f,10.0f,0.0f)		// インターフェース用カメラの注視点座標
 
 #define SetUiCameraCenter(A,size)		SetUICamera(vec3(A.x - (size.x * 0.5f),A.y - (size.y * 0.5f),A.z),size)
 

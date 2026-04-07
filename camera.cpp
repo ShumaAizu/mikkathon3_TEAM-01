@@ -354,14 +354,10 @@ void SetUICamera(vec3 viewTopLeft, D3DXVECTOR2 size)
 	// ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &mtxView);
 
-	////Zテストを無効にする
-	//pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-	//pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-
 	//**************************************************************
 	// 画面クリア(バックバッファとZバッファのクリア)
 	pDevice->Clear(0, NULL,
-		(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER),
+		(D3DCLEAR_ZBUFFER),
 		D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
 }
 

@@ -172,16 +172,13 @@ void OnUIitemEnable(void)
 
 	int* pItem = GetPlayerItem();
 
-	// Zテストを無効にする
-	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-
 	for (int nCntItem = 0; nCntItem < MAX_GETITEM; nCntItem++, pItem++)
 	{
 		if (*pItem == -1)
 		{// 使われていなければ戻る
 			continue;
 		}
+
 
 		// カメラ設置
 		SetUiCameraCenter(posWin, D3DXVECTOR2(80.0f, 80.0f));
@@ -230,11 +227,6 @@ void OnUIitemEnable(void)
 		pDevice->SetMaterial(&matDef);
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	}
-
-	//Zテストを有効にする
-	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-
 }
 
 //=============================================================================

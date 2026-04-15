@@ -329,7 +329,7 @@ void CollisionFallPoint(D3DXVECTOR3 pos)
 
 		float fDiff = SQRTF((pFallPoint->pos.x - pos.x), (pFallPoint->pos.z - pos.z));
 
-		if (fDiff <= pFallPoint->fInRadius)
+		if (fDiff <= pFallPoint->fInRadius * 1.5f)
 		{// “–‚½‚Á‚Ä‚¢‚½‚ç
 			pFallPoint->bUse = false;
 			if (GetTutorialLevel() == TUTORIALLEVEL_002 && IsNextTutorialLevel() == false)

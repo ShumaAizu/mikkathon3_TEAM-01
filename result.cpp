@@ -91,7 +91,7 @@ void UpdateResult(void)
 	// リザルトでの届けた数の更新
 	UpdateResultDelivered();
 
-	if (GetKeyboardTrigger(DIK_RETURN))
+	if (GetKeyboardTrigger(DIK_RETURN) == true || GetJoypadTrigger(JOYKEY_A) == true)
 	{
 		SetFade(MODE_TITLE);
 	}

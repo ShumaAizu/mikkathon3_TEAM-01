@@ -61,6 +61,7 @@ void InitItem(void)
 		g_aitem[nCntItem].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aitem[nCntItem].curve = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aitem[nCntItem].nShadowIdx = -1;
+		g_aitem[nCntItem].bMg = false;
 		g_aitem[nCntItem].bUse = false;
 	}
 
@@ -254,9 +255,10 @@ int CollisionItem(D3DXVECTOR3 pos, float fRadius)
 
 		if (fDiff <= fRange * MAGNET_AREA)
 		{// ƒAƒCƒeƒ€‚Ì“–‚½‚è”»’è‚Ì‹——£‚Q”{‚Ì”ÍˆÍ“à‚È‚ç
+			// ˆø‚«Šñ‚¹ON
+			pItem->bMg = true;
 			float fRatio = 1 - (fDiff / (fRange * MAGNET_AREA));
-			// ˆø‚«Šñ‚¹‚é
-			pItem->pos += (pos - pItem->pos) * 0.05f * fRatio;
+			pItem->pos += (pos - pItem->pos) * 0.08f * fRatio;
 
 			// “–‚½‚è”»’è
 			if (fDiff <= fRange)
@@ -267,6 +269,11 @@ int CollisionItem(D3DXVECTOR3 pos, float fRadius)
 				SetParticle(pItem->pos, PARTICLE_ITEMGET);
 				return (int)pItem->itemtype;
 			}
+		}
+
+		// ˆø‚«Šñ‚¹
+		if (pItem->bMg && pItem->bUse == true)
+		{
 		}
 	}
 
@@ -314,6 +321,7 @@ void SetItem(void)
 				pItem->nShadowIdx = SetShadow(g_aItemRadius[pItem->itemtype]);
 				SetPotisionShadow(pItem->nShadowIdx, pItem->pos, 1.0f);
 				pItem->bUse = true;
+				pItem->bMg = false;
 
 				g_nNumItem++;
 				break;

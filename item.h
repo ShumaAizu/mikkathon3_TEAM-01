@@ -40,6 +40,7 @@ typedef struct Item
 	float fRadius;								// 半径
 	int nShadowIdx;								// 影のインデックス
 	int nCollisionIdx;							// 当たり判定のインデックス
+	bool		bMg;							// 引き寄せ
 	bool bUse;									// 使用状態
 }Item;
 

@@ -36,13 +36,14 @@
 #define OFFSET_BASKET		(7.5f)			// 気球のかごの当たり判定のオフセット
 #define RADIUS_BASKET		(15.0f)			// 気球のかごの当たり判定の半径
 #define PLAYER_WEIGHT		(10.0f)			// 気球の重さ
-#define GRAVITY				(0.0002f)		// 重力
+#define GRAVITY				(0.0006f)		// 重力
 #define MOVE_FORCE			(0.8f)			// 加速力
-#define JUMP_FORCE			(0.046f)		// 上昇速度
+#define JUMP_FORCE			(0.1f)			// 上昇速度
 #define MOVE_FOC			(1.0f)			// 重さによる左右移動への影響係数
 #define SCROLL_FOC			(210)			// スクロール速度の係数
 #define MAX_MOVE_SPEED		(1.0f)			// 最大移動速度
 #define MAX_RISE_SPEED		(0.4f)			// 最大上昇速度
+#define MAX_DROP_SPEED		(-0.3f)			// 最大下降速度
 #define PLAYER_SHADOWSIZE	(15.0f)			// プレイヤーの影の大きさ
 #define POSMOVE_FACTOR		(0.05f)			// 移動慣性の補正係数
 #define ROTMOVE_FACTOR		(0.1f)			// 回転慣性の補正係数

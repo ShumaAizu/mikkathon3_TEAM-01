@@ -31,6 +31,7 @@ typedef struct
 		fJumpforce,		// 上昇力
 		fMaxMoveSpeed,	// 最大水平移動速度
 		fMaxRiseSpeed,	// 最大上昇速度
+		fMaxDropSpeed,	// 最大下降速度
 		fInertia,		// 慣性割合
 		fGravity,		// 重力
 		fFacMove,		// 重さによる左右移動への影響
@@ -105,7 +106,7 @@ void InitPlayer(void)
 	// アイテム欄の初期化
 	for (int nCntItem = 0; nCntItem < MAX_GETITEM; nCntItem++)
 	{
-		g_player.nItem[nCntItem] = -1;
+		g_player.nItem[nCntItem] = 0;
 	}
 
 	// プレイヤーパラメータ情報の読み込み
@@ -194,8 +195,6 @@ void UpdatePlayer(void)
 		DebugSetValue(&g_player.fWeight, 0.1f, DIK_UP, DIK_DOWN);
 		PrintDebugProc("\nプレイヤーの重さ [↑/↓]: %f", g_player.fWeight);
 
-		//DebugSetValue(&g_parameter.fGravity, 0.0001f, DIK_O, DIK_L);
-		//PrintDebugProc("\n重力             [ O/ L]: %f", g_parameter.fGravity);
 		DebugSetValue(&g_parameter.fMaxRiseSpeed, 0.0001f, DIK_O, DIK_L);
 		PrintDebugProc("\n最大上昇速度     [ O/ L]: %f", g_parameter.fMaxRiseSpeed);
 
@@ -205,8 +204,10 @@ void UpdatePlayer(void)
 		DebugSetValue(&g_parameter.fSpeedforce, 0.01f, DIK_U, DIK_J);
 		PrintDebugProc("\n加速力           [ U/ J]: %f", g_parameter.fSpeedforce);
 
-		DebugSetValue(&g_parameter.fFacMove, 0.01f, DIK_Y, DIK_H);
-		PrintDebugProc("\n左右速度係数     [ Y/ H]: %f", g_parameter.fFacMove);
+		DebugSetValue(&g_parameter.fGravity, 0.0001f, DIK_Y, DIK_H);
+		PrintDebugProc("\n重力			   [ Y/ H]: %f", g_parameter.fGravity);
+		//DebugSetValue(&g_parameter.fFacMove, 0.01f, DIK_Y, DIK_H);
+		//PrintDebugProc("\n左右速度係数     [ Y/ H]: %f", g_parameter.fFacMove);
 
 		if (GetKeyboardRepeat(DIK_T))
 		{
@@ -413,8 +414,10 @@ void PlayerMove(void)
 
 	//**************************************************************
 	// 速度の制限
-	if (g_parameter.fMaxRiseSpeed <= g_player.move.y)
+	if (g_parameter.fMaxRiseSpeed <= g_player.move.y)	// 上昇
 		g_player.move.y = g_parameter.fMaxRiseSpeed;
+	if (g_player.move.y <= g_parameter.fMaxDropSpeed)	// 下降
+		g_player.move.y = g_parameter.fMaxDropSpeed;
 
 	//**************************************************************
 	// 移動・回転
@@ -470,9 +473,8 @@ void ItemDrop(int nItem)
 	//**************************************************************
 	// 変数宣言
 	int* pItem = &g_player.nItem[0];
-	int* pItemNext = &g_player.nItem[1];
 
-	// 書っとボタンが押されたら
+	// 投下ボタンが押されたら
 	if (GetKeyboardTrigger(PLAYER_KEY_SHOT)
 		|| GetKeyboardTrigger(DIK_SPACE)
 		|| GetKeyboardTrigger(DIK_RETURN)
@@ -485,13 +487,13 @@ void ItemDrop(int nItem)
 			SetFallItem(g_player.pos, g_player.rot, (ITEMTYPE)*pItem);
 
 		// 前に詰める
-		for (int nCntItem = 1; nCntItem < MAX_GETITEM; nCntItem++,pItem++,pItemNext++)
+		for (int nCntItem = 0; nCntItem < MAX_GETITEM - 1; nCntItem++,pItem++)
 		{
-			*pItem = *pItemNext;
+			*pItem = *(pItem + 1);
 		}
 
 		// 最後を開ける
-		*pItemNext = nItem;
+		*pItem = nItem;
 	}
 }
 
@@ -521,6 +523,7 @@ void Collision(void)
 					g_player.fWeight += 0.1f;
 					break;
 				}
+
 				if (nCntItem == MAX_GETITEM)
 				{// 最後まで空きがなければ、その場で一つ落としてから取得
 					ItemDrop(nItem);
@@ -715,6 +718,7 @@ void ParameterLoad(void)
 		g_parameter.fJumpforce = JUMP_FORCE;
 		g_parameter.fMaxMoveSpeed = MAX_MOVE_SPEED;
 		g_parameter.fMaxRiseSpeed = MAX_RISE_SPEED;
+		g_parameter.fMaxDropSpeed = MAX_DROP_SPEED;
 		g_parameter.fInertia = POSMOVE_FACTOR;
 		g_parameter.fGravity = GRAVITY;
 		g_parameter.fFacMove = MOVE_FAC;
